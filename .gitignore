@@ -1,0 +1,8 @@
+/build/
+/.lake/
+/lake-packages/
+.DS_Store
+/references/
+/test/
+CLAUDE.md
+.claude/
