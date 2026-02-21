@@ -1,10 +1,14 @@
 # MTC Module TODO
 
-## Status: Full module chain compiles (all sorry proofs, no placeholders)
+## Status: Full module chain compiles; 11 sorrys proved in Phase 1
 
 All files compile. All definitions are proper (no `True := trivial` placeholders,
 no `.choose` in definitions, proper `Module.finrank` for fusion coefficients,
 proper `scalarOfEndo` for twist values and S-matrix entries).
+
+Phase 1 (easy algebraic wins) is complete. Remaining sorrys require
+Drinfeld iso infrastructure (Phase 2), pivotal/spherical proofs (Phase 3-4),
+fusion coefficient identities (Phase 5), and advanced properties (Phase 6-8).
 
 ## Recent Audit Fixes
 - PivotalCategory: added both zigzag identities (pivotalIso_leftDuality,
@@ -49,7 +53,7 @@ MTC/
 - [ ] `toPivotalCategory.pivotalIso_leftDuality` - first zigzag for left duality
 - [ ] `toPivotalCategory.pivotalIso_leftDuality_dual` - second zigzag for left duality
 - [ ] `toSphericalCategory` instance - show ribbon implies spherical
-- [ ] `twist_unit` - θ_{𝟙} = id
+- [x] `twist_unit` - θ_{𝟙} = id (**proved**)
 
 ### Endomorphism.lean
 - [x] `scalarOfEndo_id` - proved
@@ -59,21 +63,25 @@ MTC/
 ## Priority 2: Core theorem sorrys
 
 ### FusionCategory.lean
-- [ ] `dual_simple` - dual of a simple is simple
-- [ ] `fusionCoeff_vacuum_eq/ne` - fusion with vacuum gives δ
+- [x] `dual_simple` - dual of a simple is simple (**proved** via `Simple.of_iso`)
+- [x] `fusionCoeff_vacuum_eq/ne` - fusion with vacuum gives δ (**proved** via Schur + `Linear.homCongr`)
 - [ ] `fusionCoeff_assoc` - associativity of fusion
 - [ ] `fusionCoeff_frobenius` - Frobenius reciprocity N^m_{ij} = N^i_{m,j*}
 - [ ] `fusionCoeff_dual_swap` - all duals + swap: N^m_{ij} = N^{m*}_{j*,i*}
 
 ### BraidedFusion.lean
-- [ ] `unit_transparent` - tensor unit is transparent
-- [ ] `transparent_tensor` - transparent closed under tensor
+- [x] `unit_transparent` - tensor unit is transparent (**proved**)
+- [x] `transparent_tensor` - transparent closed under tensor (**proved** via hexagon decomposition)
 - [ ] `transparent_dual` - transparent closed under duals
-- [ ] `fusionCoeff_symmetric` - N^m_{ij} = N^m_{ji} (from braiding)
+- [x] `fusionCoeff_symmetric` - N^m_{ij} = N^m_{ji} (**proved** via braiding + `LinearEquiv.finrank_eq`)
 
 ### RibbonFusion.lean
-- [ ] `twistValue_vacuum` - θ_0 = 1
-- [ ] `monodromy_eq_twist_ratio` - monodromy = twist ratio
+- [x] `twistValue_vacuum` - θ_0 = 1 (**proved** via `twist_unit` + `scalarOfEndo_id`)
+- [x] `monodromy_eq_twist_ratio` - monodromy = twist ratio (**proved**)
+
+### Semisimple.lean
+- [x] `hom_simple_eq_zero` - nonzero hom between simples is iso (**proved** via Schur)
+- [x] `hom_simple_eq_zero'` - reverse direction (**proved**)
 
 ### SMatrix.lean
 - [ ] `sMatrixEnd_symmetric` - S_{ij} = S_{ji}
@@ -84,14 +92,15 @@ MTC/
 - [ ] `sMatrix_orthogonality` - ∑ S_{im} S_{m*,j} = D² δ_{ij}
 
 ### ModularTensorCategory.lean
-- [ ] `transparent_iff_unit` - in MTC, transparent ↔ unit
+- [x] `transparent_iff_unit` (backward) - transparent simple ≅ unit (**proved** via braiding naturality)
+- [ ] `transparent_iff_unit` (forward) - unit is transparent (follows from `unit_transparent`)
 - [ ] `sMatrix_squared` - S² = charge conjugation matrix
 - [ ] `modular_relation` - (ST)³ = p₊ · S²
 
 ### Verlinde.lean
 - [ ] `verlinde_formula` - N^m_{ij} = ∑ S S S / S
 - [ ] `sMatrix_diagonalizes_fusion` - S diagonalizes fusion matrices
-- [ ] `dimTQFTSpace_torus` - dim V(T²) = rank
+- [x] `dimTQFTSpace_torus` - dim V(T²) = rank (**proved**)
 
 ### Spherical.lean
 - [ ] `qdim_dual` - dim(X*) = dim(X)
