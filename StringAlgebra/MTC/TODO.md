@@ -1,14 +1,17 @@
 # MTC Module TODO
 
-## Status: Full module chain compiles; 11 sorrys proved in Phase 1
+## Status: Phases 1-2 complete; Phase 3 in progress
 
 All files compile. All definitions are proper (no `True := trivial` placeholders,
 no `.choose` in definitions, proper `Module.finrank` for fusion coefficients,
 proper `scalarOfEndo` for twist values and S-matrix entries).
 
-Phase 1 (easy algebraic wins) is complete. Remaining sorrys require
-Drinfeld iso infrastructure (Phase 2), pivotal/spherical proofs (Phase 3-4),
-fusion coefficient identities (Phase 5), and advanced properties (Phase 6-8).
+- Phase 1 (easy algebraic wins): **complete** — 11 sorrys proved
+- Phase 2 (Drinfeld iso infrastructure): **complete** — hom_inv_id, inv_hom_id,
+  + 4 helper lemmas (whiskerRight_eval_cancel, drinfeldIsoIso_eval,
+  drinfeldIsoIso_coeval, drinfeldIsoIso_naturality)
+- Phase 3 (pivotal structure from ribbon): **in progress** — naturality proved,
+  zigzag identities have complete proof plan (see ProofIdeas/Ribbon.md)
 
 ## Recent Audit Fixes
 - PivotalCategory: added both zigzag identities (pivotalIso_leftDuality,
@@ -47,12 +50,12 @@ MTC/
 - [ ] `leftRightDualIso.inv_hom_id` - zigzag proof
 
 ### Ribbon.lean
-- [ ] `toPivotalCategory.hom_inv_id` - j = u∘θ⁻¹ is an iso
-- [ ] `toPivotalCategory.inv_hom_id` - j = u∘θ⁻¹ is an iso
-- [ ] `toPivotalCategory.pivotalIso_naturality` - naturality of j
-- [ ] `toPivotalCategory.pivotalIso_leftDuality` - first zigzag for left duality
-- [ ] `toPivotalCategory.pivotalIso_leftDuality_dual` - second zigzag for left duality
-- [ ] `toSphericalCategory` instance - show ribbon implies spherical
+- [x] `toPivotalCategory.hom_inv_id` - j = u∘θ⁻¹ is an iso (**proved** via rightDualIso.symm)
+- [x] `toPivotalCategory.inv_hom_id` - j = u∘θ⁻¹ is an iso (**proved** via rightDualIso.symm)
+- [x] `toPivotalCategory.pivotalIso_naturality` - naturality of j (**proved** via drinfeldIsoIso_naturality)
+- [ ] `toPivotalCategory.pivotalIso_leftDuality` - first zigzag for left duality (proof plan complete)
+- [ ] `toPivotalCategory.pivotalIso_leftDuality_dual` - second zigzag for left duality (proof plan complete)
+- [ ] `toSphericalCategory` instance - show ribbon implies spherical (depends on zigzags)
 - [x] `twist_unit` - θ_{𝟙} = id (**proved**)
 
 ### Endomorphism.lean
