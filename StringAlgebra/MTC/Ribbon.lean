@@ -129,6 +129,7 @@ noncomputable def drinfeldIsoIso (X : C) : X ≅ (Xᘁ)ᘁ :=
     (inferInstance : ExactPairing Xᘁ (Xᘁ)ᘁ)
     (BraidedCategory.exactPairing_swap X Xᘁ)).symm
 
+omit [BraidedCategory C] [RibbonCategory C] in
 /-- Injectivity: if two morphisms to (Yᘁ)ᘁ agree after right-whiskering
     with Yᘁ and composing with evaluation, they are equal. This follows
     from the fact that `tensorRightHomEquiv` is an equivalence. -/
@@ -139,6 +140,7 @@ private theorem whiskerRight_eval_cancel {Z : C} {Y : C}
   simp only [tensorRightHomEquiv_whiskerRight_comp_evaluation] at h2
   exact (cancel_mono (λ_ _).inv).mp h2
 
+omit [RibbonCategory C] in
 /-- The Drinfeld isomorphism evaluation property:
     u_X ▷ Xᘁ ≫ ε_{Xᘁ,(Xᘁ)ᘁ} = β_{X,Xᘁ} ≫ ε_{X,Xᘁ}
 
@@ -157,6 +159,7 @@ private theorem drinfeldIsoIso_eval (X : C) :
   simp only [MonoidalCategory.whiskerLeft_id, Category.id_comp] at key
   exact key
 
+omit [RibbonCategory C] in
 /-- The Drinfeld isomorphism coevaluation property:
     η_{Xᘁ,(Xᘁ)ᘁ} ≫ Xᘁ ◁ u_X⁻¹ = η_swap = η_{X,Xᘁ} ≫ (β_{Xᘁ,X})⁻¹
 
@@ -170,6 +173,7 @@ private theorem drinfeldIsoIso_coeval (X : C) :
   simp only [id_whiskerRight, Category.comp_id] at key
   exact key
 
+omit [RibbonCategory C] in
 /-- The Drinfeld isomorphism is natural: f ≫ u_Y = u_X ≫ fᘁᘁ.
 
     Proof strategy (testing + injectivity):
@@ -216,12 +220,169 @@ noncomputable instance toPivotalCategory : PivotalCategory C where
       exact (twist_naturality f).symm
     conv_lhs => rw [← Category.assoc, twist_inv_nat, Category.assoc]
     rw [drinfeldIsoIso_naturality]
-  pivotalIso_leftDuality X := by sorry
-  pivotalIso_leftDuality_dual X := by sorry
+  pivotalIso_leftDuality X := by
+    -- Step 1: Expand j = θ⁻¹ ≫ u, distribute whiskers, right-associate
+    simp only [Iso.trans_hom, Iso.symm_hom, Iso.trans_inv, Iso.symm_inv,
+               whiskerLeft_comp, comp_whiskerRight, Category.assoc]
+    -- Step 2: Fold η ≫ Xᘁ◁u⁻¹ → η_swap via drinfeldIsoIso_coeval
+    rw [← whiskerLeft_comp_assoc, drinfeldIsoIso_coeval]
+    -- Step 3: Fold u▷Xᘁ▷X ≫ ε▷X → ε_swap▷X via drinfeldIsoIso_eval
+    slice_lhs 6 7 => rw [← comp_whiskerRight, drinfeldIsoIso_eval]
+    simp only [comp_whiskerRight, Category.assoc]
+    -- Step 4: Move θ to far right via naturality
+    rw [associator_inv_naturality_right_assoc]  -- past α⁻¹
+    rw [whisker_exchange_assoc]                  -- past θ⁻¹▷Xᘁ▷X
+    rw [whisker_exchange_assoc]                  -- past (β_ X Xᘁ).hom▷X
+    rw [whisker_exchange_assoc]                  -- past ε_ X Xᘁ▷X
+    rw [leftUnitor_naturality]                   -- past λ
+    -- Step 5: Move θ⁻¹ to far left via naturality
+    rw [← associator_inv_naturality_left_assoc]  -- past α⁻¹
+    rw [whisker_exchange_assoc]                   -- past X◁η_swap
+    rw [← rightUnitor_inv_naturality_assoc]       -- past ρ⁻¹
+    -- Step 6: Fold ε_swap and apply swap pairing zigzag
+    rw [← comp_whiskerRight_assoc]
+    have swap_zig : X ◁ (η_ X Xᘁ ≫ (β_ Xᘁ X).inv) ≫ (α_ X Xᘁ X).inv ≫
+        ((β_ X Xᘁ).hom ≫ ε_ X Xᘁ) ▷ X = (ρ_ X).hom ≫ (λ_ X).inv :=
+      @ExactPairing.coevaluation_evaluation C _ _ Xᘁ X
+        (BraidedCategory.exactPairing_swap X Xᘁ)
+    slice_lhs 3 5 => rw [swap_zig]
+    -- Step 7: Cancel θ⁻¹ ≫ ρ⁻¹ ≫ ρ ≫ λ⁻¹ ≫ λ ≫ θ = 𝟙
+    simp
+  pivotalIso_leftDuality_dual X := by
+    -- Step 1: Expand j = θ⁻¹ ≫ u, distribute whiskers, right-associate
+    simp only [Iso.trans_hom, Iso.symm_hom, Iso.trans_inv, Iso.symm_inv,
+               whiskerLeft_comp, comp_whiskerRight, Category.assoc]
+    -- Step 2: Fold coeval pair: η▷Xᘁ ≫ (Xᘁ◁u⁻¹)▷Xᘁ → η_swap▷Xᘁ
+    rw [← comp_whiskerRight_assoc, drinfeldIsoIso_coeval]
+    -- Step 3: Fold eval pair: Xᘁ◁(u▷Xᘁ) ≫ Xᘁ◁ε → Xᘁ◁ε_swap
+    slice_lhs 6 7 => rw [← whiskerLeft_comp, drinfeldIsoIso_eval]
+    simp only [whiskerLeft_comp, Category.assoc]
+    -- Step 4: Move θ past α via associator_naturality_middle
+    rw [associator_naturality_middle_assoc]
+    -- Step 5: Cancel θ ≫ θ⁻¹ (now adjacent as Xᘁ◁(θ▷Xᘁ) ≫ Xᘁ◁(θ⁻¹▷Xᘁ))
+    rw [← whiskerLeft_comp_assoc, ← comp_whiskerRight, Iso.hom_inv_id,
+        id_whiskerRight, MonoidalCategory.whiskerLeft_id, Category.id_comp]
+    -- Step 6: Fold ε_swap and apply swap zigzag (evaluation_coevaluation)
+    rw [← whiskerLeft_comp_assoc]
+    have swap_zig : (η_ X Xᘁ ≫ (β_ Xᘁ X).inv) ▷ Xᘁ ≫ (α_ Xᘁ X Xᘁ).hom ≫
+        Xᘁ ◁ ((β_ X Xᘁ).hom ≫ ε_ X Xᘁ) = (λ_ Xᘁ).hom ≫ (ρ_ Xᘁ).inv :=
+      @ExactPairing.evaluation_coevaluation C _ _ Xᘁ X
+        (BraidedCategory.exactPairing_swap X Xᘁ)
+    slice_lhs 2 4 => rw [swap_zig]
+    -- Step 7: Cancel λ⁻¹ ≫ λ ≫ ρ⁻¹ ≫ ρ = 𝟙
+    simp
+
+/-- Key helper: the twist-tensor identity on coevaluation.
+    η_ X Xᘁ ≫ θ² ▷ Xᘁ ≫ (β_ X Xᘁ).hom = η_ X Xᘁ ≫ (β_ Xᘁ X).inv
+
+    Proof: twist_naturality on η gives η = η ≫ θ_{X⊗Xᘁ}, and
+    twist_tensor gives θ_{X⊗Xᘁ} = (θ_X ⊗ₘ θ_{Xᘁ}) ≫ β ≫ β_{Xᘁ,X}.
+    Using coevaluation_comp_rightAdjointMate + twist_dual converts
+    θ_{Xᘁ} to θ_X on the other side of η, giving η ≫ θ² ▷ Xᘁ ≫ β ≫ d = η. -/
+-- Key derived identity: η ≫ θ² ▷ Xᘁ ≫ β_{X,Xᘁ} ≫ β_{Xᘁ,X} = η
+-- This follows from twist_tensor on η + mate_coeval
+private theorem coeval_twist_sq_monodromy (X : C) :
+    η_ X Xᘁ ≫ ((twist X).hom ≫ (twist X).hom) ▷ Xᘁ ≫
+      (β_ X Xᘁ).hom ≫ (β_ Xᘁ X).hom = η_ X Xᘁ := by
+  -- Step 1: η ≫ θ_{X⊗Xᘁ} = η (from twist_naturality + twist_unit)
+  have h_nat : η_ X Xᘁ ≫ (twist (X ⊗ Xᘁ)).hom = η_ X Xᘁ := by
+    have := (twist_naturality (η_ X Xᘁ)).symm
+    rw [twist_unit, Category.id_comp] at this; exact this.symm
+  -- Step 2: Expand θ_{X⊗Xᘁ} via twist_tensor + tensorHom_def, then right-associate
+  rw [twist_tensor] at h_nat
+  rw [tensorHom_def] at h_nat
+  simp only [Category.assoc] at h_nat
+  -- h_nat: η ≫ θ_X ▷ Xᘁ ≫ X ◁ θ_{Xᘁ} ≫ β ≫ β' = η
+  -- Step 4: Use ← whisker_exchange to swap θ_X ▷ Xᘁ and X ◁ θ_{Xᘁ}
+  rw [← whisker_exchange_assoc] at h_nat
+  -- Step 5: Use mate_coeval: η ≫ X ◁ θ_{Xᘁ} = η ≫ θ_X ▷ Xᘁ
+  have mate_coeval : η_ X Xᘁ ≫ X ◁ (twist Xᘁ).hom =
+      η_ X Xᘁ ≫ (twist X).hom ▷ Xᘁ := by
+    have h := coevaluation_comp_rightAdjointMate (twist X).hom
+    rw [twist_dual] at h; exact h
+  rw [← Category.assoc (η_ X Xᘁ), mate_coeval, Category.assoc] at h_nat
+  -- Step 6: Fold (θ ≫ θ) ▷ Xᘁ
+  rw [← comp_whiskerRight_assoc] at h_nat
+  exact h_nat
+
+-- Key derived identity: (θ_{Xᘁ})² ▷ X ≫ β_{Xᘁ,X} ≫ β_{X,Xᘁ} ≫ ε = ε
+-- This follows from twist_tensor on ε + mate_eval
+private theorem eval_twist_sq_monodromy (X : C) :
+    ((twist Xᘁ).hom ≫ (twist Xᘁ).hom) ▷ X ≫
+      (β_ Xᘁ X).hom ≫ (β_ X Xᘁ).hom ≫ ε_ X Xᘁ = ε_ X Xᘁ := by
+  -- Step 1: θ_{Xᘁ⊗X} ≫ ε = ε (from twist_naturality + twist_unit)
+  have h_nat : (twist (Xᘁ ⊗ X)).hom ≫ ε_ X Xᘁ = ε_ X Xᘁ := by
+    have := twist_naturality (ε_ X Xᘁ)
+    rw [twist_unit, Category.comp_id] at this; exact this.symm
+  rw [twist_tensor] at h_nat
+  simp only [Category.assoc] at h_nat
+  rw [tensorHom_def] at h_nat
+  simp only [Category.assoc] at h_nat
+  -- h_nat: θ_{Xᘁ} ▷ X ≫ Xᘁ ◁ θ_X ≫ β ≫ β' ≫ ε = ε
+  -- Step 2: mate identity: θ_{Xᘁ} ▷ X ≫ ε = Xᘁ ◁ θ_X ≫ ε
+  have mate_eval : (twist Xᘁ).hom ▷ X ≫ ε_ X Xᘁ =
+      Xᘁ ◁ (twist X).hom ≫ ε_ X Xᘁ := by
+    have h := rightAdjointMate_comp_evaluation (twist X).hom
+    rw [twist_dual] at h; exact h
+  -- Step 3: Expand θ² ▷ X = θ ▷ X ≫ θ ▷ X
+  rw [comp_whiskerRight]
+  simp only [Category.assoc]
+  -- Goal: θ ▷ X ≫ θ ▷ X ≫ β ≫ β' ≫ ε = ε
+  -- Step 4: Move second θ_{Xᘁ} ▷ X past both braidings via naturality
+  rw [braiding_naturality_left_assoc, braiding_naturality_right_assoc]
+  -- Goal: θ ▷ X ≫ β ≫ β' ≫ θ_{Xᘁ} ▷ X ≫ ε = ε
+  -- Step 5: Convert θ_{Xᘁ} ▷ X ≫ ε to Xᘁ ◁ θ_X ≫ ε via mate
+  rw [mate_eval]
+  -- Goal: θ ▷ X ≫ β ≫ β' ≫ Xᘁ ◁ θ_X ≫ ε = ε
+  -- Step 6: Move Xᘁ ◁ θ_X back past both braidings (backward naturality)
+  rw [← braiding_naturality_left_assoc, ← braiding_naturality_right_assoc]
+  -- Goal: θ_{Xᘁ} ▷ X ≫ Xᘁ ◁ θ_X ≫ β ≫ β' ≫ ε = ε
+  exact h_nat
 
 /-- A ribbon category is spherical with respect to its canonical pivotal structure. -/
 noncomputable instance toSphericalCategory : SphericalCategory C where
-  spherical f := by
+  spherical {X} f := by
+    simp only [leftTrace, rightTrace]
+    -- Unfold pivotalIso: j⁻¹ = u⁻¹ ≫ θ, j = θ⁻¹ ≫ u (using rfl-proofs to rewrite internal terms)
+    have hInv : (PivotalCategory.pivotalIso X).inv =
+        (drinfeldIsoIso X).inv ≫ (twist X).hom := rfl
+    have hHom : (PivotalCategory.pivotalIso X).hom =
+        (twist X).inv ≫ (drinfeldIsoIso X).hom := rfl
+    simp only [hInv, hHom, whiskerLeft_comp, comp_whiskerRight, Category.assoc]
+    -- LHS: η_ Xᘁ Xᘁᘁ ≫ Xᘁ ◁ u⁻¹ ≫ Xᘁ ◁ θ ≫ Xᘁ ◁ f ≫ ε_ X Xᘁ
+    -- RHS: η_ X Xᘁ ≫ f ▷ Xᘁ ≫ θ⁻¹ ▷ Xᘁ ≫ u ▷ Xᘁ ≫ ε_ Xᘁ Xᘁᘁ
+    -- Fold LHS: η ≫ Xᘁ ◁ u⁻¹ via drinfeldIsoIso_coeval
+    rw [← Category.assoc (η_ Xᘁ (Xᘁ)ᘁ), drinfeldIsoIso_coeval, Category.assoc]
+    -- Fold RHS: u ▷ Xᘁ ≫ ε via drinfeldIsoIso_eval
+    rw [drinfeldIsoIso_eval]
+    -- Goal: η ≫ β⁻¹ ≫ Xᘁ ◁ θ ≫ Xᘁ ◁ f ≫ ε = η ≫ f ▷ Xᘁ ≫ θ⁻¹ ▷ Xᘁ ≫ β ≫ ε
+    -- Step 1: Reorder θ and f on LHS using twist_naturality
+    rw [← whiskerLeft_comp_assoc, (twist_naturality f).symm, whiskerLeft_comp_assoc]
+    -- Step 2: Move f past β⁻¹ using braiding_inv_naturality_left
+    rw [← braiding_inv_naturality_left_assoc]
+    -- Now: η ≫ f ▷ Xᘁ ≫ β⁻¹ ≫ Xᘁ ◁ θ ≫ ε = η ≫ f ▷ Xᘁ ≫ θ⁻¹ ▷ Xᘁ ≫ β ≫ ε
+    -- Step 3: Use mate identity to replace Xᘁ ◁ θ ≫ ε with θ_{Xᘁ} ▷ X ≫ ε
+    have mate_eval : Xᘁ ◁ (twist X).hom ≫ ε_ X Xᘁ =
+        (twist Xᘁ).hom ▷ X ≫ ε_ X Xᘁ := by
+      have h := rightAdjointMate_comp_evaluation (twist X).hom
+      rw [twist_dual] at h; exact h.symm
+    rw [mate_eval]
+    -- Step 4: Move θ_{Xᘁ} past β⁻¹
+    rw [← braiding_inv_naturality_right_assoc X (twist Xᘁ).hom]
+    -- Step 5: Use ← whisker_exchange to commute X ◁ θ_{Xᘁ} past f ▷ Xᘁ
+    rw [← whisker_exchange_assoc]
+    -- Step 6: Use mate-coeval identity
+    have mate_coeval : η_ X Xᘁ ≫ X ◁ (twist Xᘁ).hom =
+        η_ X Xᘁ ≫ (twist X).hom ▷ Xᘁ := by
+      have h := coevaluation_comp_rightAdjointMate (twist X).hom
+      rw [twist_dual] at h; exact h
+    rw [← Category.assoc (η_ X Xᘁ), mate_coeval, Category.assoc]
+    -- Now: η ≫ θ ▷ Xᘁ ≫ f ▷ Xᘁ ≫ β⁻¹ ≫ ε = η ≫ f ▷ Xᘁ ≫ θ⁻¹ ▷ Xᘁ ≫ β ≫ ε
+    -- Step 7: Commute θ and f using twist_naturality
+    rw [← comp_whiskerRight_assoc, (twist_naturality f).symm, comp_whiskerRight_assoc]
+    -- Now: η ≫ f ▷ Xᘁ ≫ θ ▷ Xᘁ ≫ β⁻¹ ≫ ε = η ≫ f ▷ Xᘁ ≫ θ⁻¹ ▷ Xᘁ ≫ β ≫ ε
+    -- Step 8: Apply coeval_twist_braiding to reduce
+    -- θ ▷ Xᘁ ≫ β⁻¹ = θ⁻¹ ▷ Xᘁ ≫ β (after η ≫ f ▷ Xᘁ)
     sorry
 
 /-- The monodromy (double braiding) of X with Y:
