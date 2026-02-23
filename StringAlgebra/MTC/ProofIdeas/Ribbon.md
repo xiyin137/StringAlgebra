@@ -1189,3 +1189,129 @@ The proof uses:
 2. `twist_naturality (λ_ (𝟙_ C)).hom` gives naturality through left unitor
 3. `tensorHom_def'` decomposes the tensor product of twists
 4. Idempotent iso argument: θ = θ ∘ θ and θ is iso implies θ = id
+
+---
+
+## STATUS UPDATE (2026-02-23, session 3)
+
+### Overall Ribbon.lean status
+- `twist_unit`: **PROVED**
+- `toPivotalCategory` (all 5 fields): **PROVED**
+  - `hom_inv_id`, `inv_hom_id`: via `rightDualIso.symm`
+  - `pivotalIso_naturality`: via `drinfeldIsoIso_naturality` + twist inv naturality
+  - `pivotalIso_leftDuality`: via drinfeldIsoIso_coeval/eval + swap pairing zigzag
+  - `pivotalIso_leftDuality_dual`: via drinfeldIsoIso_coeval/eval + swap pairing zigzag
+- `coeval_twist_sq_monodromy`: **PROVED**
+- `eval_twist_sq_monodromy`: **PROVED**
+- `toSphericalCategory`: **BLOCKED** — the last sorry at line 386
+
+### The toSphericalCategory sorry — detailed analysis
+
+**Current proof state** (after steps 1-7, lines 344-383):
+```
+η_ X Xᘁ ≫ f ▷ Xᘁ ≫ (twist X).hom ▷ Xᘁ ≫ (β_ Xᘁ X).inv ≫ ε_ X Xᘁ
+=
+η_ X Xᘁ ≫ f ▷ Xᘁ ≫ (twist X).inv ▷ Xᘁ ≫ (β_ X Xᘁ).hom ≫ ε_ X Xᘁ
+```
+
+The common prefix `η ≫ f ▷ Xᘁ` can be cancelled if we prove the suffix equation:
+```
+(twist X).hom ▷ Xᘁ ≫ (β_ Xᘁ X).inv ≫ ε_ X Xᘁ
+=
+(twist X).inv ▷ Xᘁ ≫ (β_ X Xᘁ).hom ≫ ε_ X Xᘁ
+```
+
+### Approaches tried and failed (all reduce to θ⁴ = id)
+
+1. **Single-end approach (only η)**: From `coeval_twist_sq_monodromy`:
+   `η ≫ θ² ▷ Xᘁ ≫ β ≫ β' = η`, rearranging to substitute into the goal
+   always leaves θ³ vs θ⁻¹, requiring θ⁴ = id.
+
+2. **Single-end approach (only ε)**: From `eval_twist_sq_monodromy`:
+   `θ²_{Xᘁ} ▷ X ≫ β ≫ β' ≫ ε = ε`, similarly requires θ⁴ = id.
+
+3. **Braiding inverse naturality**: `braiding_inv_naturality_right` moves θ
+   to the WRONG side (X ◁ θ_{Xᘁ} instead of θ ▷ Xᘁ).
+
+4. **Mate identities**: `twist_dual` via `rightAdjointMate_comp_evaluation`
+   and `coevaluation_comp_rightAdjointMate` convert whisker sides, but only
+   when composed directly with η or ε — not useful in the middle of the chain.
+
+5. **tensorRightHomEquiv cancellation**: Cancels ε but leaves the same stuck goal.
+
+6. **Insert θ_{Xᘁ⊗X} before ε**: Expands to monodromy terms that still need θ⁴=id.
+
+### Key mathematical insight
+
+**β⁻¹_{Xᘁ,X} ≠ β_{X,Xᘁ}** in general braided categories (only equal in
+symmetric categories, via `SymmetricCategory.braiding_swap_eq_inv_braiding`).
+
+The suffix equation `θ ▷ Xᘁ ≫ β⁻¹ ≫ ε = θ⁻¹ ▷ Xᘁ ≫ β ≫ ε` is equivalent to
+`θ² ▷ Xᘁ ≫ β⁻¹ ≫ ε = β ≫ ε`, which via `eval_twist_sq_monodromy` (applied to
+the dual) gives `β⁻¹ ≫ ε = β⁻¹ ≫ β⁻¹ ≫ β ≫ ε`... still circular.
+
+### EGNO Prop 8.10.12 analysis
+
+EGNO proves ribbon → spherical ONLY for **fusion categories** (semisimple):
+- Uses unimodularity (Theorem 8.10.7): fusion categories are automatically unimodular
+- Uses Corollary 7.21.8: reduces to checking on simple objects
+- Our `RibbonCategory` doesn't assume semisimplicity, so this approach fails
+
+The trace formula in EGNO (8.40) is:
+`Tr(f) = coev ≫ (ψ_X ∘ f ⊗ id) ≫ ev` where ψ = θ ∘ u.
+They show `Tr(f) = Tr^L(ψ_X f) = Tr^R(f ψ_X^{-1})`.
+
+### Promising new directions (for next session)
+
+**Direction A: Full loop approach (use BOTH zigzag identities)**
+
+Don't try to prove the suffix equation. Instead, work with the full expression
+`η ... ε` as a single entity. The key identities are:
+- `coeval_twist_sq_monodromy`: η ≫ θ² ▷ Xᘁ ≫ β ≫ β' = η
+- `eval_twist_sq_monodromy`: θ²_{Xᘁ} ▷ X ≫ β ≫ β' ≫ ε = ε
+- Both zigzag identities for the standard pairing
+
+The idea: rewrite the FULL expressions (with η and ε present) using
+these identities, where the η-end identity absorbs θ² and the ε-end
+identity absorbs the remaining θ factors.
+
+**Direction B: Alternative trace formulation**
+
+Instead of proving leftTrace(f) = rightTrace(f) via the current definition,
+show both equal a "symmetric trace":
+`symTrace(f) = η ≫ f ▷ Xᘁ ≫ β ≫ ε`  (no twist at all)
+
+This requires: leftTrace(f) = symTrace(θ ≫ f) or similar.
+
+**Direction C: Completely rewrite the proof from scratch**
+
+Abandon the current 7-step reduction. Instead:
+1. Expand both leftTrace and rightTrace fully (no intermediate folding)
+2. Insert θ_{Xᘁ⊗X} = id (from twist_naturality on ε) in strategic locations
+3. Use twist_tensor to expand θ_{Xᘁ⊗X}
+4. Use both zigzag identities of the STANDARD pairing (not swap pairing)
+   to collapse intermediate expressions
+
+**Direction D: Check Turaev/Kassel for direct proof**
+
+The original proof in Turaev's book or Kassel's "Quantum Groups" may give
+a diagrammatic proof that works at the morphism level without semisimplicity.
+Need to read these references.
+
+**Direction E: Reformulate the pivotal iso**
+
+Consider whether j = θ⁻¹ ≫ u (our convention) vs j = u ≫ θ⁻¹ (alternative)
+makes a difference. The current convention follows EGNO (ψ = θ∘u ↔ j = u∘θ⁻¹
+after left↔right dual translation). But perhaps the opposite convention
+j = θ⁻¹ ≫ u (which is what we actually have!) leads to easier trace proofs.
+
+Actually our convention IS j.hom = θ⁻¹ ≫ u (line 215 of Ribbon.lean):
+`pivotalIso X := (twist X).symm ≪≫ drinfeldIsoIso X`
+
+This means j.hom = θ⁻¹ ≫ u and j.inv = u⁻¹ ≫ θ. Matching EGNO's ψ⁻¹ = θ⁻¹ ∘ u⁻¹.
+
+### Mathlib search result
+
+Confirmed: Mathlib has NO pivotal, spherical, ribbon, or trace infrastructure.
+Everything in our MTC module is built from scratch on top of Mathlib's
+`RigidCategory` and `BraidedCategory`.

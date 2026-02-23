@@ -623,3 +623,45 @@ This gives a projective representation of SL(2,Z).
 
 5. **Convention differences**: EGNO uses left duals, we use right duals.
    EGNO writes psi = u theta, we write j = theta^{-1} then u.
+
+---
+
+## Re-read of Prop 8.10.12 (session 3, 2026-02-23)
+
+### Precise proof structure in EGNO
+
+**Statement**: Let C be a braided **fusion** category with twist θ. The canonical
+pivotal structure ψ = θ∘u is spherical iff θ is a ribbon structure.
+
+**Proof (⇐ direction, ribbon → spherical)**:
+1. θ*_X = (θ_X)* translates to ψ_{X*} = (ψ_X ∘ u_X⁻¹)* ∘ u_{X*}
+2. By naturality of u and **unimodularity** (Theorem 8.10.7 — fusion categories
+   are automatically unimodular), get:
+   ψ_{X*} = ψ*_{X**} ∘ δ_{X*}⁻¹
+   where δ is the distinguished invertible object from unimodularity
+3. Since C is unimodular, δ = 1, so ψ_{X*} = ψ*_{X**}
+4. This gives Tr(ψ_{X*}) = Tr(ψ*_{X**})
+5. By **Corollary 7.21.8**: Tr(ψ*_{X**}) = Tr(ψ_{X**})
+   (This corollary works for SIMPLE objects only — reduces to scalars)
+6. Since X** ≅ X (via ψ itself), get Tr(ψ_{X*}) = Tr(ψ_X), i.e., spherical.
+
+### Why this CANNOT be directly adapted to our setting
+
+- Step 2 uses **unimodularity**, which is a property of FINITE tensor categories
+- Step 5 uses **Corollary 7.21.8**, which requires **semisimplicity** (reduces to simples)
+- Our RibbonCategory class has no semisimplicity assumption
+
+### Prop 8.10.14 (useful identity, also from EGNO)
+
+For any ribbon fusion category, for any object X:
+```
+1 --coev_X--> X ⊗ X* --θ_X ⊗ id--> X ⊗ X* --c_{X,X*}--> X* ⊗ X --ev_X--> 1
+```
+equals dim(X). This is `η ≫ θ ▷ X* ≫ β ≫ ε = dim(X)`.
+This is a CONSEQUENCE of spherical, not a proof tool.
+
+### Next steps for ribbon→spherical
+
+Need to find a DIRECT morphism-level proof. Check Turaev "Quantum Invariants"
+and Kassel "Quantum Groups" for diagrammatic proofs not relying on semisimplicity.
+See ProofIdeas/Ribbon.md for detailed analysis of approaches tried.

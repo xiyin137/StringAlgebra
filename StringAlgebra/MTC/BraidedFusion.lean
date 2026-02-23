@@ -92,10 +92,47 @@ theorem transparent_tensor {X Y : C} (hX : isTransparent X) (hY : isTransparent 
   -- Combine X ◁ (β_ Y Z).hom ≫ X ◁ (β_ Z Y).hom, use hY
   rw [← whiskerLeft_comp_assoc, hYZ, whiskerLeft_id, Category.id_comp, Iso.hom_inv_id]
 
+omit [Preadditive C] [MonoidalPreadditive C] [HasFiniteBiproducts C] in
 /-- Transparent objects are closed under duals. -/
 theorem transparent_dual {X : C} (hX : isTransparent X) :
     isTransparent Xᘁ := by
-  sorry
+  intro Y
+  unfold monodromy
+  -- Goal: (β_ Xᘁ Y).hom ≫ (β_ Y Xᘁ).hom = 𝟙 (Xᘁ ⊗ Y)
+  -- Strategy: Use tensorLeftHomEquiv (adjunction) injectivity.
+  -- The adjunction says Hom(Xᘁ⊗Y, Xᘁ⊗Y) ≃ Hom(Y, X⊗(Xᘁ⊗Y)),
+  -- and we show the images of c²(Xᘁ,Y) and 𝟙 are equal.
+  apply_fun (tensorLeftHomEquiv Y X Xᘁ (Xᘁ ⊗ Y))
+  -- Unfold tensorLeftHomEquiv: φ(f) = λ⁻¹ ≫ η ▷ Y ≫ α ≫ X ◁ f
+  simp only [tensorLeftHomEquiv, Equiv.coe_fn_mk, MonoidalCategory.whiskerLeft_id,
+    Category.comp_id, whiskerLeft_comp]
+  -- Goal: λ⁻¹ ≫ η ▷ Y ≫ α ≫ X ◁ β ≫ X ◁ β' = λ⁻¹ ≫ η ▷ Y ≫ α
+  rw [cancel_epi (λ_ Y).inv]
+  -- Goal: η ▷ Y ≫ α ≫ X ◁ β ≫ X ◁ β' = η ▷ Y ≫ α
+  -- Step 1: c²(X⊗Xᘁ, Y) = α ≫ X ◁ c²(Xᘁ,Y) ≫ α⁻¹ via hexagon + transparency
+  have h_hex : (β_ (X ⊗ Xᘁ) Y).hom ≫ (β_ Y (X ⊗ Xᘁ)).hom =
+      (α_ X Xᘁ Y).hom ≫ X ◁ (β_ Xᘁ Y).hom ≫
+        X ◁ (β_ Y Xᘁ).hom ≫ (α_ X Xᘁ Y).inv := by
+    have hXY := hX Y; unfold monodromy at hXY
+    simp only [BraidedCategory.braiding_tensor_left_hom,
+      BraidedCategory.braiding_tensor_right_hom, Category.assoc]
+    rw [Iso.hom_inv_id_assoc]
+    rw [← comp_whiskerRight_assoc, hXY, id_whiskerRight, Category.id_comp]
+    rw [Iso.inv_hom_id_assoc]
+  -- Step 2: η ▷ Y ≫ c²(X⊗Xᘁ, Y) = η ▷ Y via braiding naturality with unit
+  have h_eta : (η_ X Xᘁ) ▷ Y ≫ (β_ (X ⊗ Xᘁ) Y).hom ≫ (β_ Y (X ⊗ Xᘁ)).hom =
+      (η_ X Xᘁ) ▷ Y := by
+    rw [BraidedCategory.braiding_naturality_left_assoc]
+    rw [BraidedCategory.braiding_naturality_right Y (η_ X Xᘁ)]
+    rw [braiding_tensorUnit_left, braiding_tensorUnit_right]
+    simp [Category.assoc]
+  -- Step 3: Combine steps 1-2 and cancel the associator
+  rw [h_hex] at h_eta
+  -- h_eta : η ▷ Y ≫ α ≫ X ◁ β ≫ X ◁ β' ≫ α⁻¹ = η ▷ Y
+  -- Compose with α on the right, using cancel_mono on α⁻¹
+  rw [← cancel_mono (α_ X Xᘁ Y).inv]
+  simp only [Category.assoc, Iso.hom_inv_id, Category.comp_id]
+  exact h_eta
 
 /-- The Müger center Z₂(C) is the full subcategory of transparent objects.
 

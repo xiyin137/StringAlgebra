@@ -10,8 +10,10 @@ proper `scalarOfEndo` for twist values and S-matrix entries).
 - Phase 2 (Drinfeld iso infrastructure): **complete** — hom_inv_id, inv_hom_id,
   + 4 helper lemmas (whiskerRight_eval_cancel, drinfeldIsoIso_eval,
   drinfeldIsoIso_coeval, drinfeldIsoIso_naturality)
-- Phase 3 (pivotal structure from ribbon): **in progress** — naturality proved,
-  zigzag identities have complete proof plan (see ProofIdeas/Ribbon.md)
+- Phase 3 (pivotal structure from ribbon): **complete** — naturality proved,
+  both zigzag identities proved (pivotalIso_leftDuality, pivotalIso_leftDuality_dual)
+- Phase 4 (spherical from ribbon): **in progress** — toSphericalCategory blocked
+  (see ProofIdeas/Ribbon.md for detailed analysis)
 
 ## Recent Audit Fixes
 - PivotalCategory: added both zigzag identities (pivotalIso_leftDuality,
@@ -53,9 +55,9 @@ MTC/
 - [x] `toPivotalCategory.hom_inv_id` - j = u∘θ⁻¹ is an iso (**proved** via rightDualIso.symm)
 - [x] `toPivotalCategory.inv_hom_id` - j = u∘θ⁻¹ is an iso (**proved** via rightDualIso.symm)
 - [x] `toPivotalCategory.pivotalIso_naturality` - naturality of j (**proved** via drinfeldIsoIso_naturality)
-- [ ] `toPivotalCategory.pivotalIso_leftDuality` - first zigzag for left duality (proof plan complete)
-- [ ] `toPivotalCategory.pivotalIso_leftDuality_dual` - second zigzag for left duality (proof plan complete)
-- [ ] `toSphericalCategory` instance - show ribbon implies spherical (depends on zigzags)
+- [x] `toPivotalCategory.pivotalIso_leftDuality` - first zigzag (**proved** via swap pairing zigzag)
+- [x] `toPivotalCategory.pivotalIso_leftDuality_dual` - second zigzag (**proved** via swap pairing zigzag)
+- [ ] `toSphericalCategory` instance - show ribbon implies spherical (**BLOCKED** — see ProofIdeas/Ribbon.md)
 - [x] `twist_unit` - θ_{𝟙} = id (**proved**)
 
 ### Endomorphism.lean
@@ -75,7 +77,7 @@ MTC/
 ### BraidedFusion.lean
 - [x] `unit_transparent` - tensor unit is transparent (**proved**)
 - [x] `transparent_tensor` - transparent closed under tensor (**proved** via hexagon decomposition)
-- [ ] `transparent_dual` - transparent closed under duals
+- [x] `transparent_dual` - transparent closed under duals (**proved** via hexagon + transparency transfer)
 - [x] `fusionCoeff_symmetric` - N^m_{ij} = N^m_{ji} (**proved** via braiding + `LinearEquiv.finrank_eq`)
 
 ### RibbonFusion.lean
