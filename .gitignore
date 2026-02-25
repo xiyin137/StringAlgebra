@@ -5,5 +5,7 @@
 /references/
 /test/
 CLAUDE.md
+/agent.md
 .claude/
 .mcp.json
+claudereview.md

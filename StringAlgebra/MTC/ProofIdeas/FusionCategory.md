@@ -29,6 +29,30 @@ Key infrastructure needed:
 - `Module.finrank` preserved under linear equivalence
 - Schur's lemma for finrank: finrank Hom(X_i, X_j) = 1 or 0
 
+Status update:
+- Implemented `fusionCoeff_vacuum_iso`:
+  if `simpleObj j ≅ simpleObj m`, then `fusionCoeff unitIdx j m = 1`.
+- Implemented `fusionCoeff_vacuum_kronecker` under
+  `CanonicalSimpleIndex`: `fusionCoeff unitIdx j m = if j = m then 1 else 0`.
+
+## Canonical index coherence
+
+Motivation:
+- `FusionCategory` stores representative simples `simpleObj : Idx → C`.
+- To use `Idx`-level Kronecker formulas directly (rather than iso-classes),
+  one needs that isomorphic representatives are equal in index.
+
+Current infrastructure:
+- Optional class `CanonicalSimpleIndex` with field
+  `eq_of_iso : Nonempty (simpleObj i ≅ simpleObj j) → i = j`.
+- Derived simp lemma:
+  `simpleObj_iso_iff_eq : Nonempty (simpleObj i ≅ simpleObj j) ↔ i = j`.
+
+Usefulness:
+- Makes vacuum fusion and vacuum fusion-matrix normalization statements
+  available as strict index equalities.
+- Keeps the base `FusionCategory` class flexible (coherence is opt-in).
+
 ## fusionCoeff_assoc: ∑_p N^p_{ij} N^m_{pk} = ∑_q N^q_{jk} N^m_{iq}
 
 Strategy:
@@ -74,3 +98,39 @@ Strategy:
 Requires:
 - (X ⊗ Y)ᘁ ≅ Yᘁ ⊗ Xᘁ (noted as future work in Mathlib, need to prove)
 - dim Hom(X, Y) = dim Hom(Y, X) for semisimple categories
+
+## fusion matrices (new infrastructure)
+
+Status:
+- Implemented in `FusionMatrices.lean`:
+  - `leftFusionMatrix i` with entries `(N_i)_{j,m} = N^m_{i,j}`
+  - `leftFusionMatrixK i` (field-valued cast of fusion matrices)
+  - canonical reindexing `idxEquivFin : Idx ≃ Fin rank`
+  - Fin-indexed families `leftFusionMatrixFinNat`, `leftFusionMatrixFin`,
+    `leftFusionMatrixByFinNat`, `leftFusionMatrixByFin`
+  - `leftFusionMatrix_mul_apply` (entrywise multiplication formula)
+  - `leftFusionMatrix_mul_assoc_entry` (associativity rewritten in matrix form)
+  - `leftFusionMatrix_mul_eq_linearCombination`
+  - `leftFusionMatrixK_mul_eq_linearCombination`
+  - Fin-reindexed multiplication identities
+    (`leftFusionMatrixFinNat_mul_eq_linearCombination`,
+    `leftFusionMatrixFin_mul_eq_linearCombination`)
+  - braided commutativity:
+    `leftFusionMatrix_mul_comm` (`N_i N_j = N_j N_i`)
+    and lifted versions
+    (`leftFusionMatrixK_mul_comm`,
+    `leftFusionMatrixFinNat_mul_comm`, `leftFusionMatrixFin_mul_comm`,
+    `leftFusionMatrixByFinNat_mul_comm`, `leftFusionMatrixByFin_mul_comm`)
+  - braided symmetry of linear-combination matrices:
+    `leftFusionProductLinearCombination_comm`,
+    `leftFusionProductLinearCombinationK_comm`,
+    `leftFusionProductLinearCombinationFinNat_comm`,
+    `leftFusionProductLinearCombinationFin_comm`
+  - vacuum matrix normalization under `CanonicalSimpleIndex`:
+    `leftFusionMatrix_unit`, `leftFusionMatrixK_unit`,
+    `leftFusionMatrixFinNat_unit`, `leftFusionMatrixFin_unit`,
+    `leftFusionMatrixByFinNat_unit`, `leftFusionMatrixByFin_unit`
+
+Usefulness:
+- Provides the matrix-side entry point for Frobenius-Perron dimension work.
+- Cleanly isolates algebraic manipulations of fusion rules from categorical proofs.

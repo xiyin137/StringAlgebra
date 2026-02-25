@@ -1,41 +1,35 @@
 # Proof Ideas: Spherical.lean
 
-## qdim_dual: dim(Xᘁ) = dim(X)
+## Status (2026-02-25)
 
-Strategy:
-- dim(X) = trace(id_X) = leftTrace(id_X)
-- dim(Xᘁ) = trace(id_{Xᘁ}) = leftTrace(id_{Xᘁ})
-- The left trace of id_X involves the pairing (X, Xᘁ)
-- The left trace of id_{Xᘁ} involves the pairing (Xᘁ, (Xᘁ)ᘁ)
-- Using the pivotal isomorphism j : X ≅ (Xᘁ)ᘁ, relate the two traces
-- In a spherical category, leftTrace = rightTrace, which gives extra
-  flexibility in choosing which trace formula to use
+`qdim_dual`, `qdim_unit`, and `qdim_tensor` are now exposed through the
+assumption class:
 
-## qdim_unit: dim(𝟙) = id_{𝟙}
+- `SphericalDimAxioms`
 
-Strategy:
-- dim(𝟙) = trace(id_𝟙) = leftTrace(id_𝟙)
-- leftTrace(id_𝟙) = η_{𝟙ᘁ,(𝟙ᘁ)ᘁ} ≫ (𝟙ᘁ ◁ j_𝟙⁻¹) ≫ (𝟙ᘁ ◁ id_𝟙) ≫ ε_{𝟙,𝟙ᘁ}
-- Since 𝟙ᘁ = 𝟙 (definitionally in Mathlib), this simplifies significantly
-- (𝟙ᘁ)ᘁ = 𝟙ᘁ = 𝟙, and the exact pairings for the unit are simple
-- Need to show that η_{𝟙,𝟙} and ε_{𝟙,𝟙} compose to give id_{𝟙}
+The exported theorem names remain unchanged (`qdim_dual`, `qdim_unit`,
+`qdim_tensor`), while proof debt is isolated behind an explicit contract.
 
-Key Mathlib facts:
-- `(𝟙_ C)ᘁ = 𝟙_ C` (from `hasRightDualUnit`)
-- The ExactPairing for (𝟙, 𝟙) should have simple evaluation/coevaluation
+## Proof Obligations To Replace Axioms
 
-## qdim_tensor: dim(X ⊗ Y) = dim(X) ≫ dim(Y)
+### `qdim_dual`: dim(Xᘁ) = dim(X)
+- Prove a trace-duality bridge lemma:
+  `leftTrace (𝟙 (Xᘁ)) = rightTrace (𝟙 X)`.
+- Combine with sphericality `leftTrace = rightTrace`.
+- Normalize with pivotal isomorphism naturality and mate lemmas.
 
-This is the multiplicativity of quantum dimension. It requires the
-full monoidal condition on the pivotal isomorphism (both zigzags).
+### `qdim_unit`: dim(𝟙) = 𝟙
+- Specialize pivotal zigzags at `X = 𝟙_ C`.
+- Reduce the resulting expression to unit exact-pairing identities.
+- Keep this as a reusable normalization lemma for later trace proofs.
 
-Strategy:
-- dim(X ⊗ Y) = trace(id_{X⊗Y})
-- Need to decompose this into trace(id_X) ≫ trace(id_Y)
-- The key step is relating j_{X⊗Y} to j_X ⊗ j_Y
-- In a spherical category, trace is both left and right trace, giving
-  flexibility in how to decompose the tensor product trace
-- The "partial trace" argument: trace_{X⊗Y}(f ⊗ g) = trace_X(f) ≫ trace_Y(g)
+### `qdim_tensor`: dim(X ⊗ Y) = dim(X) ≫ dim(Y)
+- Introduce a partial-trace multiplicativity lemma.
+- Use monoidality of the pivotal structure (both zigzags already available).
+- Apply sphericality only at the final normalization boundary.
 
-This is likely the hardest of the three spherical proofs and requires
-the pivotalIso_leftDuality + pivotalIso_leftDuality_dual zigzags.
+## Recommended Ordering
+
+1. Prove `qdim_unit`.
+2. Prove `qdim_dual`.
+3. Prove `qdim_tensor` using the previous normalization lemmas.
