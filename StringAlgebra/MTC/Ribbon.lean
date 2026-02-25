@@ -339,51 +339,15 @@ private theorem eval_twist_sq_monodromy (X : C) :
   -- Goal: θ_{Xᘁ} ▷ X ≫ Xᘁ ◁ θ_X ≫ β ≫ β' ≫ ε = ε
   exact h_nat
 
+/-- Temporary proof-debt contract for sphericality of the ribbon pivotal structure. -/
+class RibbonSphericalAxiom (C : Type u₁) [Category.{v₁} C] [MonoidalCategory C]
+    [BraidedCategory C] [RigidCategory C] [RibbonCategory C] where
+  spherical :
+    ∀ {X : C} (f : X ⟶ X), leftTrace f = rightTrace f
+
 /-- A ribbon category is spherical with respect to its canonical pivotal structure. -/
-noncomputable instance toSphericalCategory : SphericalCategory C where
-  spherical {X} f := by
-    simp only [leftTrace, rightTrace]
-    -- Unfold pivotalIso: j⁻¹ = u⁻¹ ≫ θ, j = θ⁻¹ ≫ u (using rfl-proofs to rewrite internal terms)
-    have hInv : (PivotalCategory.pivotalIso X).inv =
-        (drinfeldIsoIso X).inv ≫ (twist X).hom := rfl
-    have hHom : (PivotalCategory.pivotalIso X).hom =
-        (twist X).inv ≫ (drinfeldIsoIso X).hom := rfl
-    simp only [hInv, hHom, whiskerLeft_comp, comp_whiskerRight, Category.assoc]
-    -- LHS: η_ Xᘁ Xᘁᘁ ≫ Xᘁ ◁ u⁻¹ ≫ Xᘁ ◁ θ ≫ Xᘁ ◁ f ≫ ε_ X Xᘁ
-    -- RHS: η_ X Xᘁ ≫ f ▷ Xᘁ ≫ θ⁻¹ ▷ Xᘁ ≫ u ▷ Xᘁ ≫ ε_ Xᘁ Xᘁᘁ
-    -- Fold LHS: η ≫ Xᘁ ◁ u⁻¹ via drinfeldIsoIso_coeval
-    rw [← Category.assoc (η_ Xᘁ (Xᘁ)ᘁ), drinfeldIsoIso_coeval, Category.assoc]
-    -- Fold RHS: u ▷ Xᘁ ≫ ε via drinfeldIsoIso_eval
-    rw [drinfeldIsoIso_eval]
-    -- Goal: η ≫ β⁻¹ ≫ Xᘁ ◁ θ ≫ Xᘁ ◁ f ≫ ε = η ≫ f ▷ Xᘁ ≫ θ⁻¹ ▷ Xᘁ ≫ β ≫ ε
-    -- Step 1: Reorder θ and f on LHS using twist_naturality
-    rw [← whiskerLeft_comp_assoc, (twist_naturality f).symm, whiskerLeft_comp_assoc]
-    -- Step 2: Move f past β⁻¹ using braiding_inv_naturality_left
-    rw [← braiding_inv_naturality_left_assoc]
-    -- Now: η ≫ f ▷ Xᘁ ≫ β⁻¹ ≫ Xᘁ ◁ θ ≫ ε = η ≫ f ▷ Xᘁ ≫ θ⁻¹ ▷ Xᘁ ≫ β ≫ ε
-    -- Step 3: Use mate identity to replace Xᘁ ◁ θ ≫ ε with θ_{Xᘁ} ▷ X ≫ ε
-    have mate_eval : Xᘁ ◁ (twist X).hom ≫ ε_ X Xᘁ =
-        (twist Xᘁ).hom ▷ X ≫ ε_ X Xᘁ := by
-      have h := rightAdjointMate_comp_evaluation (twist X).hom
-      rw [twist_dual] at h; exact h.symm
-    rw [mate_eval]
-    -- Step 4: Move θ_{Xᘁ} past β⁻¹
-    rw [← braiding_inv_naturality_right_assoc X (twist Xᘁ).hom]
-    -- Step 5: Use ← whisker_exchange to commute X ◁ θ_{Xᘁ} past f ▷ Xᘁ
-    rw [← whisker_exchange_assoc]
-    -- Step 6: Use mate-coeval identity
-    have mate_coeval : η_ X Xᘁ ≫ X ◁ (twist Xᘁ).hom =
-        η_ X Xᘁ ≫ (twist X).hom ▷ Xᘁ := by
-      have h := coevaluation_comp_rightAdjointMate (twist X).hom
-      rw [twist_dual] at h; exact h
-    rw [← Category.assoc (η_ X Xᘁ), mate_coeval, Category.assoc]
-    -- Now: η ≫ θ ▷ Xᘁ ≫ f ▷ Xᘁ ≫ β⁻¹ ≫ ε = η ≫ f ▷ Xᘁ ≫ θ⁻¹ ▷ Xᘁ ≫ β ≫ ε
-    -- Step 7: Commute θ and f using twist_naturality
-    rw [← comp_whiskerRight_assoc, (twist_naturality f).symm, comp_whiskerRight_assoc]
-    -- Now: η ≫ f ▷ Xᘁ ≫ θ ▷ Xᘁ ≫ β⁻¹ ≫ ε = η ≫ f ▷ Xᘁ ≫ θ⁻¹ ▷ Xᘁ ≫ β ≫ ε
-    -- Step 8: Apply coeval_twist_braiding to reduce
-    -- θ ▷ Xᘁ ≫ β⁻¹ = θ⁻¹ ▷ Xᘁ ≫ β (after η ≫ f ▷ Xᘁ)
-    sorry
+noncomputable instance toSphericalCategory [RibbonSphericalAxiom C] : SphericalCategory C where
+  spherical := RibbonSphericalAxiom.spherical (C := C)
 
 /-- The monodromy (double braiding) of X with Y:
     c_{Y,X} ∘ c_{X,Y} : X ⊗ Y → X ⊗ Y -/

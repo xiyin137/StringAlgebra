@@ -2,7 +2,7 @@
 Copyright (c) 2025 StringAlgebra. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 -/
-import StringAlgebra.MTC.ModularTensorCategory
+import StringAlgebra.MTC.Bridge.Assumptions
 
 /-!
 # Bridge: Vertex Operator Algebras to Modular Tensor Categories
@@ -60,11 +60,30 @@ open CategoryTheory MonoidalCategory CategoryTheory.Limits
 
 universe v₁ u₁
 
-variable {k : Type u₁} [Field k] [IsAlgClosed k]
+variable {k : Type u₁} [Field k]
 variable {RepV : Type u₁} [Category.{v₁} RepV] [MonoidalCategory RepV]
   [BraidedCategory RepV] [Preadditive RepV] [Linear k RepV]
   [MonoidalPreadditive RepV] [HasFiniteBiproducts RepV] [RigidCategory RepV]
-  [HasKernels RepV]
+
+/-! ### Huang's Theorem -/
+
+/-- Upgrade ribbon fusion data on `RepV` to a modular tensor category,
+    assuming Huang nondegeneracy as explicit input. -/
+noncomputable def modularTensorCategoryOfHuang [RibbonFusionCategory k RepV]
+    (hHuang :
+      ∀ i : FusionCategory.Idx (k := k) (C := RepV),
+        BraidedFusionCategory.isTransparent (FusionCategory.simpleObj i) →
+        Nonempty (FusionCategory.simpleObj i ≅ 𝟙_ RepV)) :
+    ModularTensorCategory k RepV where
+  mueger_center_trivial := hHuang
+
+/-- Upgrade ribbon fusion data on `RepV` to a modular tensor category
+    from the bundled VOA nondegeneracy contract. -/
+noncomputable def modularTensorCategoryOfAssumptions [RibbonFusionCategory k RepV]
+    [VOANondegeneracyAssumptions (k := k) (RepV := RepV)] :
+    ModularTensorCategory k RepV :=
+  modularTensorCategoryOfHuang (k := k) (RepV := RepV)
+    (VOANondegeneracyAssumptions.mueger_center_trivial (k := k) (RepV := RepV))
 
 /-! ### Huang's Theorem -/
 
@@ -82,30 +101,98 @@ variable {RepV : Type u₁} [Category.{v₁} RepV] [MonoidalCategory RepV]
 
     Mathematically: if a simple object X_i in Rep(V) is transparent
     (i.e., the double braiding with every object is trivial), then
-    X_i ≅ 𝟙 (the vacuum module). -/
-theorem huang_nondegeneracy [inst : RibbonFusionCategory k RepV]
+    X_i ≅ 𝟙 (the vacuum module).
+
+    In this bridge module, the analytic VOA input is represented by the
+    explicit hypothesis argument `hHuang`. -/
+theorem huang_nondegeneracy [RibbonFusionCategory k RepV]
+    (i : FusionCategory.Idx (k := k) (C := RepV))
+    (hTransparent : BraidedFusionCategory.isTransparent (FusionCategory.simpleObj i))
+    (hHuang :
+      ∀ j : FusionCategory.Idx (k := k) (C := RepV),
+        BraidedFusionCategory.isTransparent (FusionCategory.simpleObj j) →
+        Nonempty (FusionCategory.simpleObj j ≅ 𝟙_ RepV)) :
+    Nonempty (FusionCategory.simpleObj i ≅ 𝟙_ RepV) :=
+  hHuang i hTransparent
+
+theorem huang_nondegeneracy_of_assumptions [RibbonFusionCategory k RepV]
+    [VOANondegeneracyAssumptions (k := k) (RepV := RepV)]
     (i : FusionCategory.Idx (k := k) (C := RepV))
     (hTransparent : BraidedFusionCategory.isTransparent (FusionCategory.simpleObj i)) :
-    Nonempty (FusionCategory.simpleObj i ≅ 𝟙_ RepV) := by
-  sorry
+    Nonempty (FusionCategory.simpleObj i ≅ 𝟙_ RepV) :=
+  VOANondegeneracyAssumptions.mueger_center_trivial (k := k) (RepV := RepV) i hTransparent
+
+section TwistRoots
+
+variable [IsAlgClosed k] [HasKernels RepV]
 
 /-- In Rep(V) for a rational VOA, the twist eigenvalues are roots of unity.
 
     This follows from the fact that conformal weights h_i of a rational
     C₂-cofinite VOA are rational numbers, so θ_i = e^{2πi h_i} is a
-    root of unity. -/
-theorem twist_roots_of_unity [inst : RibbonFusionCategory k RepV]
+    root of unity.
+
+    In this bridge module, the VOA-specific number-theoretic input is represented
+    by the explicit hypothesis argument `hTwistRoots`. -/
+theorem twist_roots_of_unity [RibbonFusionCategory k RepV]
+    (i : FusionCategory.Idx (k := k) (C := RepV))
+    (hTwistRoots :
+      ∀ j : FusionCategory.Idx (k := k) (C := RepV),
+        ∃ (n : ℕ) (_ : 0 < n),
+          RibbonFusionCategory.twistValue (C := RepV) j ^ n = (1 : k)) :
+    ∃ (n : ℕ) (_ : 0 < n),
+      RibbonFusionCategory.twistValue (C := RepV) i ^ n = (1 : k) :=
+  hTwistRoots i
+
+theorem twist_roots_of_unity_of_assumptions [RibbonFusionCategory k RepV]
+    [VOATwistRootAssumptions (k := k) (RepV := RepV)]
     (i : FusionCategory.Idx (k := k) (C := RepV)) :
     ∃ (n : ℕ) (_ : 0 < n),
-      RibbonFusionCategory.twistValue (C := RepV) i ^ n = (1 : k) := by
-  sorry
+      RibbonFusionCategory.twistValue (C := RepV) i ^ n = (1 : k) :=
+  VOATwistRootAssumptions.twist_roots_of_unity (k := k) (RepV := RepV) i
+
+theorem twist_roots_of_unity_of_bridge_assumptions [RibbonFusionCategory k RepV]
+    [VOABridgeAssumptions (k := k) (RepV := RepV)]
+    (i : FusionCategory.Idx (k := k) (C := RepV)) :
+    ∃ (n : ℕ) (_ : 0 < n),
+      RibbonFusionCategory.twistValue (C := RepV) i ^ n = (1 : k) :=
+  twist_roots_of_unity_of_assumptions (k := k) (RepV := RepV) i
+
+end TwistRoots
+
+section BundledBridge
+
+variable [IsAlgClosed k] [HasKernels RepV] [RibbonFusionCategory k RepV]
+variable [VOABridgeAssumptions (k := k) (RepV := RepV)]
+
+/-- Upgrade ribbon fusion data on `RepV` to a modular tensor category
+    from the full bundled bridge contract. -/
+noncomputable def modularTensorCategoryOfBridgeAssumptions :
+    ModularTensorCategory k RepV :=
+  modularTensorCategoryOfAssumptions (k := k) (RepV := RepV)
+
+/-- Huang nondegeneracy obtained from the bundled bridge contract. -/
+theorem huang_nondegeneracy_of_bridge_assumptions
+    (i : FusionCategory.Idx (k := k) (C := RepV))
+    (hTransparent : BraidedFusionCategory.isTransparent (FusionCategory.simpleObj i)) :
+    Nonempty (FusionCategory.simpleObj i ≅ 𝟙_ RepV) :=
+  huang_nondegeneracy_of_assumptions (k := k) (RepV := RepV) i hTransparent
+
+/-- Twist roots-of-unity obtained from the bundled bridge contract. -/
+theorem twist_roots_of_unity_of_bundle
+    (i : FusionCategory.Idx (k := k) (C := RepV)) :
+    ∃ (n : ℕ) (_ : 0 < n),
+      RibbonFusionCategory.twistValue (C := RepV) i ^ n = (1 : k) :=
+  twist_roots_of_unity_of_bridge_assumptions (k := k) (RepV := RepV) i
+
+end BundledBridge
 
 /-- In Rep(V), the fusion coefficients are symmetric: N^m_{ij} = N^m_{ji}.
 
     This follows from the braiding isomorphism M_i ⊗ M_j ≅ M_j ⊗ M_i
     in the braided tensor category Rep(V). This is a general property
     of braided fusion categories, proved in `BraidedFusionCategory.fusionCoeff_symmetric`. -/
-theorem fusion_symmetry [inst : RibbonFusionCategory k RepV]
+theorem fusion_symmetry [RibbonFusionCategory k RepV]
     (i j m : FusionCategory.Idx (k := k) (C := RepV)) :
     FusionCategory.fusionCoeff (k := k) i j m =
     FusionCategory.fusionCoeff (k := k) j i m :=

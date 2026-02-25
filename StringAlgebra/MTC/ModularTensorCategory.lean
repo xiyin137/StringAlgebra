@@ -81,23 +81,22 @@ namespace ModularTensorCategory
 /-- In an MTC, only objects isomorphic to direct sums of the unit are transparent.
 
     This is equivalent to the S-matrix non-degeneracy condition. -/
-theorem transparent_iff_unit (i : FusionCategory.Idx (k := k) (C := C)) :
-    BraidedFusionCategory.isTransparent (FusionCategory.simpleObj i) ↔
-    Nonempty (FusionCategory.simpleObj i ≅ 𝟙_ C) := by
-  constructor
-  · exact mueger_center_trivial i
-  · intro ⟨iso⟩
-    -- Transfer unit_transparent along iso : simpleObj i ≅ 𝟙_ C
-    intro Y
-    unfold BraidedFusionCategory.monodromy
-    have h := BraidedFusionCategory.unit_transparent (C := C) Y
-    unfold BraidedFusionCategory.monodromy at h
-    -- Use braiding naturality to conjugate monodromy by iso.hom ▷ Y
-    rw [← cancel_mono (iso.hom ▷ Y), Category.id_comp, Category.assoc,
-        ← BraidedCategory.braiding_naturality_right Y iso.hom,
-        ← Category.assoc,
-        ← BraidedCategory.braiding_naturality_left iso.hom Y,
-        Category.assoc, h, Category.comp_id]
+  theorem transparent_iff_unit (i : FusionCategory.Idx (k := k) (C := C)) :
+      BraidedFusionCategory.isTransparent (FusionCategory.simpleObj i) ↔
+      Nonempty (FusionCategory.simpleObj i ≅ 𝟙_ C) := by
+    constructor
+    · exact mueger_center_trivial i
+    · intro ⟨iso⟩ Y
+      -- Transfer unit_transparent along iso : simpleObj i ≅ 𝟙_ C
+      unfold BraidedFusionCategory.monodromy
+      have h := BraidedFusionCategory.unit_transparent (C := C) Y
+      unfold BraidedFusionCategory.monodromy at h
+      -- Use braiding naturality to conjugate monodromy by iso.hom ▷ Y
+      rw [← cancel_mono (iso.hom ▷ Y), Category.id_comp, Category.assoc,
+          ← BraidedCategory.braiding_naturality_right Y iso.hom,
+          ← Category.assoc,
+          ← BraidedCategory.braiding_naturality_left iso.hom Y,
+          Category.assoc, h, Category.comp_id]
 
 /-- The rank of the MTC (number of simple isoclasses). -/
 noncomputable def rank : ℕ := FusionCategory.rank (k := k) (C := C)
@@ -109,7 +108,8 @@ section ModularData
 variable [IsAlgClosed k] [HasKernels C]
 
 /-- The total quantum dimension squared is nonzero in an MTC. -/
-theorem totalDimSq_pos : SMatrix.totalDimSq (C := C) ≠ (0 : k) :=
+theorem totalDimSq_pos [SMatrix.SMatrixAxioms (k := k) (C := C)] :
+    SMatrix.totalDimSq (C := C) ≠ (0 : k) :=
   SMatrix.totalDimSq_ne_zero
 
 /-- The modular data of an MTC: the S-matrix and T-matrix together. -/
@@ -152,23 +152,48 @@ noncomputable def gaussSum : k :=
     RibbonFusionCategory.twistValue (C := C) i *
     SMatrix.quantumDim (C := C) i ^ 2
 
+/-- Temporary proof-debt contract for modular `S,T` relations. -/
+class ModularDataAxioms (k : Type u₁) [Field k]
+    (C : Type u₁) [Category.{v₁} C] [MonoidalCategory C] [BraidedCategory C]
+    [Preadditive C] [Linear k C] [MonoidalPreadditive C]
+    [HasFiniteBiproducts C] [RigidCategory C] [ModularTensorCategory k C]
+    [IsAlgClosed k] [HasKernels C] where
+  sMatrix_squared :
+    ∀ (i j : FusionCategory.Idx (k := k) (C := C)),
+      matMul (SMatrix.sMatrix (C := C)) (SMatrix.sMatrix (C := C)) i j =
+      if i = FusionCategory.dualIdx j
+      then SMatrix.totalDimSq (C := C)
+      else 0
+  modular_relation :
+    ∀ (i j : FusionCategory.Idx (k := k) (C := C)),
+      matMul (matMul (matMul (SMatrix.sMatrix (C := C))
+        (RibbonFusionCategory.tMatrix (C := C) (k := k)))
+        (matMul (SMatrix.sMatrix (C := C))
+          (RibbonFusionCategory.tMatrix (C := C) (k := k))))
+        (matMul (SMatrix.sMatrix (C := C))
+          (RibbonFusionCategory.tMatrix (C := C) (k := k))) i j =
+      gaussSum (C := C) *
+        matMul (SMatrix.sMatrix (C := C)) (SMatrix.sMatrix (C := C)) i j
+
 /-- S² is the charge conjugation matrix: (S²)_{ij} = δ_{i, j*} · D²
     where j* = dualIdx j and D² is the total quantum dimension squared.
 
     Equivalently, S² = D² · C where C_{ij} = δ_{i,j*}. -/
-theorem sMatrix_squared (i j : FusionCategory.Idx (k := k) (C := C)) :
+theorem sMatrix_squared [ModularDataAxioms (k := k) (C := C)]
+    (i j : FusionCategory.Idx (k := k) (C := C)) :
     matMul (SMatrix.sMatrix (C := C)) (SMatrix.sMatrix (C := C)) i j =
     if i = FusionCategory.dualIdx j
     then SMatrix.totalDimSq (C := C)
-    else 0 := by
-  sorry
+    else 0 :=
+  ModularDataAxioms.sMatrix_squared (k := k) (C := C) i j
 
 /-- The modular relation: (ST)³ = p₊ · S².
 
     This is the fundamental relation showing that S and T generate a
     projective representation of SL(2,ℤ), the modular group of the torus.
     Stated component-wise. -/
-theorem modular_relation (i j : FusionCategory.Idx (k := k) (C := C)) :
+theorem modular_relation [ModularDataAxioms (k := k) (C := C)]
+    (i j : FusionCategory.Idx (k := k) (C := C)) :
     matMul (matMul (matMul (SMatrix.sMatrix (C := C))
       (RibbonFusionCategory.tMatrix (C := C) (k := k)))
       (matMul (SMatrix.sMatrix (C := C))
@@ -176,8 +201,8 @@ theorem modular_relation (i j : FusionCategory.Idx (k := k) (C := C)) :
       (matMul (SMatrix.sMatrix (C := C))
         (RibbonFusionCategory.tMatrix (C := C) (k := k))) i j =
     gaussSum (C := C) *
-      matMul (SMatrix.sMatrix (C := C)) (SMatrix.sMatrix (C := C)) i j := by
-  sorry
+      matMul (SMatrix.sMatrix (C := C)) (SMatrix.sMatrix (C := C)) i j :=
+  ModularDataAxioms.modular_relation (k := k) (C := C) i j
 
 end ModularData
 

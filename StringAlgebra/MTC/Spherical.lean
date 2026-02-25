@@ -44,7 +44,7 @@ class SphericalCategory (C : Type u₁) [Category.{v₁} C] [MonoidalCategory C]
   spherical : ∀ {X : C} (f : X ⟶ X), leftTrace f = rightTrace f
 
 variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory C] [RigidCategory C]
-variable [PivotalCategory C] [SphericalCategory C]
+variable [PivotalCategory C]
 
 /-- The categorical trace in a spherical category (left = right). -/
 def trace {X : C} (f : X ⟶ X) : (𝟙_ C ⟶ 𝟙_ C) := leftTrace f
@@ -52,20 +52,39 @@ def trace {X : C} (f : X ⟶ X) : (𝟙_ C ⟶ 𝟙_ C) := leftTrace f
 /-- The quantum dimension of an object in a spherical category. -/
 def dim (X : C) : (𝟙_ C ⟶ 𝟙_ C) := trace (𝟙 X)
 
+section
+
+variable [SphericalCategory C]
+
 /-- In a spherical category, left and right quantum dimensions agree. -/
 theorem spherical_dim (X : C) : leftDim X = rightDim X :=
   SphericalCategory.spherical (𝟙 X)
 
-/-- The quantum dimension of a dual equals the quantum dimension of the object. -/
-theorem qdim_dual (X : C) : dim Xᘁ = dim X := by
-  sorry
+end
 
-/-- The quantum dimension of the tensor unit is the identity. -/
-theorem qdim_unit : dim (𝟙_ C) = 𝟙 (𝟙_ C) := by
-  sorry
+/-! ### Placeholder proof obligations (explicit assumptions) -/
 
-/-- The quantum dimension is multiplicative under tensor product. -/
-theorem qdim_tensor (X Y : C) : dim (X ⊗ Y) = dim X ≫ dim Y := by
-  sorry
+/-- Temporary proof-debt contract for spherical quantum-dimension identities. -/
+class SphericalDimAxioms (C : Type u₁) [Category.{v₁} C] [MonoidalCategory C]
+    [RigidCategory C] [PivotalCategory C] [SphericalCategory C] where
+  qdim_dual :
+    ∀ (X : C), dim Xᘁ = dim X
+  qdim_unit :
+    dim (𝟙_ C) = 𝟙 (𝟙_ C)
+  qdim_tensor :
+    ∀ (X Y : C), dim (X ⊗ Y) = dim X ≫ dim Y
+
+/-- Placeholder assumption for `qdim_dual`; replace with a proof from trace duality. -/
+theorem qdim_dual [SphericalCategory C] [SphericalDimAxioms C] (X : C) : dim Xᘁ = dim X :=
+  SphericalDimAxioms.qdim_dual (C := C) X
+
+/-- Placeholder assumption for `qdim_unit`; replace with a proof from pivotal unit identities. -/
+theorem qdim_unit [SphericalCategory C] [SphericalDimAxioms C] : dim (𝟙_ C) = 𝟙 (𝟙_ C) :=
+  SphericalDimAxioms.qdim_unit (C := C)
+
+/-- Placeholder assumption for `qdim_tensor`; replace with a proof from trace multiplicativity. -/
+theorem qdim_tensor [SphericalCategory C] [SphericalDimAxioms C]
+    (X Y : C) : dim (X ⊗ Y) = dim X ≫ dim Y :=
+  SphericalDimAxioms.qdim_tensor (C := C) X Y
 
 end StringAlgebra.MTC

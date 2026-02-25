@@ -103,24 +103,36 @@ variable [PivotalCategory C]
 abbrev j (X : C) : X ≅ (Xᘁ)ᘁ := pivotalIso X
 
 /-- In a pivotal category, the left and right duals of any object are
-    canonically isomorphic. The isomorphism (ᘁX) ≅ (Xᘁ) is constructed from the
-    pivotal structure using evaluation/coevaluation maps.
+    canonically isomorphic.
 
-    Forward map ᘁX → Xᘁ: create the Xᘁ-(Xᘁ)ᘁ pair via coevaluation,
-    use j⁻¹ : (Xᘁ)ᘁ → X to convert, then evaluate the ᘁX-X pair.
+    We first use the pivotal isomorphism to build an exact pairing
+    `ExactPairing Xᘁ X`, then invoke uniqueness of left duals. -/
+private def pivotalExactPairing (X : C) : ExactPairing Xᘁ X where
+  coevaluation' := η_ Xᘁ (Xᘁ)ᘁ ≫ (Xᘁ ◁ (pivotalIso X).inv)
+  evaluation' := ((pivotalIso X).hom ▷ Xᘁ) ≫ ε_ Xᘁ (Xᘁ)ᘁ
+  coevaluation_evaluation' := by
+    have h := pivotalIso_leftDuality (C := C) X
+    have h' :
+        (X ◁ η_ Xᘁ (Xᘁ)ᘁ) ≫ (X ◁ (Xᘁ ◁ (pivotalIso X).inv)) ≫
+          (α_ X Xᘁ X).inv ≫ (((pivotalIso X).hom ▷ Xᘁ) ▷ X) ≫
+          ((ε_ Xᘁ (Xᘁ)ᘁ) ▷ X) = (ρ_ X).hom ≫ (λ_ X).inv := by
+      have h1 := congrArg (fun t => (ρ_ X).hom ≫ t ≫ (λ_ X).inv) h
+      simpa [Category.assoc] using h1
+    simpa [MonoidalCategory.whiskerLeft_comp, comp_whiskerRight, Category.assoc] using h'
+  evaluation_coevaluation' := by
+    have h := pivotalIso_leftDuality_dual (C := C) X
+    have h' :
+        (η_ Xᘁ (Xᘁ)ᘁ ▷ Xᘁ) ≫ ((Xᘁ ◁ (pivotalIso X).inv) ▷ Xᘁ) ≫
+          (α_ Xᘁ X Xᘁ).hom ≫ (Xᘁ ◁ ((pivotalIso X).hom ▷ Xᘁ)) ≫
+          (Xᘁ ◁ ε_ Xᘁ (Xᘁ)ᘁ) = (λ_ Xᘁ).hom ≫ (ρ_ Xᘁ).inv := by
+      have h1 := congrArg (fun t => (λ_ Xᘁ).hom ≫ t ≫ (ρ_ Xᘁ).inv) h
+      simpa [Category.assoc] using h1
+    simpa [comp_whiskerRight, MonoidalCategory.whiskerLeft_comp, Category.assoc] using h'
 
-    Backward map Xᘁ → ᘁX: create the ᘁX-X pair via coevaluation,
-    use j : X → (Xᘁ)ᘁ to convert, then evaluate the (Xᘁ)ᘁ-Xᘁ pair. -/
-noncomputable def leftRightDualIso (X : C) : (ᘁX) ≅ (Xᘁ) where
-  hom :=
-    (λ_ (ᘁX)).inv ≫ (η_ Xᘁ (Xᘁ)ᘁ ▷ (ᘁX)) ≫ (α_ Xᘁ (Xᘁ)ᘁ (ᘁX)).hom ≫
-      (Xᘁ ◁ ((pivotalIso X).inv ▷ (ᘁX))) ≫ (Xᘁ ◁ ε_ (ᘁX) X) ≫ (ρ_ Xᘁ).hom
-  inv :=
-    (λ_ Xᘁ).inv ≫ (η_ (ᘁX) X ▷ Xᘁ) ≫ (α_ (ᘁX) X Xᘁ).hom ≫
-      ((ᘁX) ◁ ((pivotalIso X).hom ▷ Xᘁ)) ≫ ((ᘁX) ◁ ε_ Xᘁ (Xᘁ)ᘁ) ≫
-      (ρ_ (ᘁX)).hom
-  hom_inv_id := by sorry
-  inv_hom_id := by sorry
+noncomputable def leftRightDualIso (X : C) : (ᘁX) ≅ (Xᘁ) :=
+  leftDualIso
+    (inferInstance : ExactPairing (ᘁX) X)
+    (pivotalExactPairing (C := C) X)
 
 end PivotalCategory
 
