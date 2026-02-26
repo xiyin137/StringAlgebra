@@ -35,10 +35,10 @@ This file tracks formal soundness debt for `StringAlgebra/Linfinity` under `agen
    - `Formality.lean`: removed hardcoded zero graph/quantization outputs; now requires explicit witness data for formality, MC transport, and quantization outputs.
    - `Formality.lean`: strengthened MC transport to explicit element-level output (`linfty_preserves_mc`) and added reflexive/symmetric/transitive gauge-equivalence infrastructure with a `Setoid` instance on star products.
    - `Formality.lean`: added explicit star-product gauge-class quotient interface (`StarProductGaugeClass`, projection, and exact equality↔gauge-equivalence bridge lemmas).
-   - `Formality.lean`: added classification bridge theorem on quotient classes (`starProductClassification_toGaugeClass`) to consume assumptions directly at the `toGaugeClass` level.
-   - `Formality.lean`: added converse and iff classification bridges (`starProductClassification_of_toGaugeClass`, `starProductClassification_iff_toGaugeClass`) so gauge-equivalence and quotient-class formulations are explicitly inter-derivable.
+   - `Formality.lean`: added classification bridge theorem on quotient classes (`starProductClassification_toGaugeClass`) derived directly from `starProductClassification`.
+   - `Formality.lean`: added an explicit iff bridge (`starProductClassification_iff_toGaugeClass`) so gauge-equivalence and quotient-class formulations are inter-derivable without forwarding classify hypotheses.
    - `Formality.lean`: added directional extraction lemmas from classification bridges (`starProductClassification_gaugeEquivalent_of_poisson_eq`, `starProductClassification_poisson_eq_of_gaugeEquivalent`, `starProductClassification_toGaugeClass_eq_of_poisson_eq`, `starProductClassification_poisson_eq_of_toGaugeClass_eq`) for direct forward/backward use in downstream proofs.
-   - `Formality.lean`: added directional extraction lemmas from quotient-class classification assumptions (`starProductClassification_toGaugeClass_eq_of_poisson_eq_of_toGaugeClass`, `starProductClassification_poisson_eq_of_toGaugeClass_eq_of_toGaugeClass`, `starProductClassification_gaugeEquivalent_of_poisson_eq_of_toGaugeClass`, `starProductClassification_poisson_eq_of_gaugeEquivalent_of_toGaugeClass`) to use `toGaugeClass`-level hypotheses without manual conversion.
+   - `Formality.lean`: removed redundant quotient-class assumption-forwarding wrappers; extraction now flows through `starProductClassification_toGaugeClass` and the directional lemmas derived from it.
    - `Formality.lean`: removed redundant classification-contract alias layer; classification is now tracked directly through theorem-level gauge/quotient bridge statements.
    - `Formality.lean`: gauge transformations are now identity-normalized (`T₀ = 0`) and composition/symmetry preserve and combine explicit transformation data instead of discarding components; the local `ConfigurationSpace` model also enforces collision-freeness via injectivity.
    - `Formality.lean`: strengthened `KontsevichGraph.ordering` by replacing the tautological ground-target branch with an explicit finite-index bound (`j.val < groundVertices`).
@@ -159,15 +159,10 @@ isFormal_unpacked
 starProductClassification
 <-> starProductClassification_iff_toGaugeClass
 -> starProductClassification_toGaugeClass
--> starProductClassification_of_toGaugeClass
 -> starProductClassification_gaugeEquivalent_of_poisson_eq
 -> starProductClassification_poisson_eq_of_gaugeEquivalent
 -> starProductClassification_toGaugeClass_eq_of_poisson_eq
 -> starProductClassification_poisson_eq_of_toGaugeClass_eq
--> starProductClassification_toGaugeClass_eq_of_poisson_eq_of_toGaugeClass
--> starProductClassification_poisson_eq_of_toGaugeClass_eq_of_toGaugeClass
--> starProductClassification_gaugeEquivalent_of_poisson_eq_of_toGaugeClass
--> starProductClassification_poisson_eq_of_gaugeEquivalent_of_toGaugeClass
 
 ```
 

@@ -98,12 +98,12 @@ Current audited status (2026-02-26):
 7. Transfer extraction interfaces now include linear-bijectivity-preserving existence theorems (`minimal_model_exists_with_linear_bijectivity`, `isFormal_unpacked_with_linear_bijectivity`, `isFormal_exists_formalityLinear_isBijective`) so witness unpacking does not lose arity-1 isomorphism data.
 8. Transfer formality extraction now has explicit reverse/iff bridges (`isFormal_of_unpacked_with_linear_bijectivity`, `isFormal_iff_unpacked_with_linear_bijectivity`, `isFormal_iff_exists_formalityLinear_isBijective`) so strengthened unpacked/package-level views are theorem-level equivalent to `isFormal`.
 9. Transfer extraction conservativity is now explicit (`minimal_model_exists_with_linear_bijectivity_iff`, `unpacked_with_linear_bijectivity_iff_unpacked`): strengthened “with linear bijectivity” statements are equivalent to base quasi-isomorphism existence/unpacked statements.
-10. Formality classification bridges are now bidirectional (`starProductClassification_toGaugeClass`, `starProductClassification_of_toGaugeClass`) with an explicit equivalence theorem (`starProductClassification_iff_toGaugeClass`) between gauge-equivalence and quotient-class formulations.
+10. Formality classification now has a direct quotient-class bridge (`starProductClassification_toGaugeClass`) and an explicit equivalence theorem (`starProductClassification_iff_toGaugeClass`) between gauge-equivalence and quotient-class formulations.
 11. Transfer no longer includes tautological minimal-model uniqueness wrappers that only forwarded supplied comparison-map assumptions.
 12. Transfer formality extraction now has direct bridges from unpacked data views to package-level linear-bijectivity witnesses (`unpacked_with_linear_bijectivity_iff_exists_formalityLinear_isBijective`, `unpacked_iff_exists_formalityLinear_isBijective`).
 13. Formality classification now also exposes directional extraction lemmas (`starProductClassification_gaugeEquivalent_of_poisson_eq`, `starProductClassification_poisson_eq_of_gaugeEquivalent`, `starProductClassification_toGaugeClass_eq_of_poisson_eq`, `starProductClassification_poisson_eq_of_toGaugeClass_eq`) to consume classification bridges without manually unpacking iff statements.
-14. Formality classification now also exposes directional extraction lemmas directly from quotient-class assumptions (`starProductClassification_toGaugeClass_eq_of_poisson_eq_of_toGaugeClass`, `starProductClassification_poisson_eq_of_toGaugeClass_eq_of_toGaugeClass`, `starProductClassification_gaugeEquivalent_of_poisson_eq_of_toGaugeClass`, `starProductClassification_poisson_eq_of_gaugeEquivalent_of_toGaugeClass`).
-15. Formality classification interface is now kept at direct theorem level (`starProductClassification` and quotient-class bridge/extraction theorems), without extra alias contract layers.
+14. Formality classification removed assumption-forwarding wrapper families; directional extraction lemmas now depend directly on `starProductClassification` and `starProductClassification_toGaugeClass`.
+15. Formality classification interface is now kept at direct theorem level (`starProductClassification` and quotient-class bridge/extraction theorems), without alias-contract or classify-parameter forwarding layers.
 16. Remaining semantic debt is tracked explicitly in `StringAlgebra/Linfinity/TODO.md`.
 
 Current dependency flow toward `Formality.lean`:
@@ -139,15 +139,11 @@ isFormal_of_unpacked_with_linear_bijectivity -> isFormal
 isFormal <-> isFormal_iff_unpacked_with_linear_bijectivity <-> isFormal_iff_exists_formalityLinear_isBijective
 isFormal_unpacked_with_linear_bijectivity <-> unpacked_with_linear_bijectivity_iff_exists_formalityLinear_isBijective
 isFormal_unpacked <-> unpacked_iff_exists_formalityLinear_isBijective
-starProductClassification <-> starProductClassification_iff_toGaugeClass -> starProductClassification_toGaugeClass -> starProductClassification_of_toGaugeClass
+starProductClassification <-> starProductClassification_iff_toGaugeClass -> starProductClassification_toGaugeClass
 -> starProductClassification_gaugeEquivalent_of_poisson_eq
 -> starProductClassification_poisson_eq_of_gaugeEquivalent
 -> starProductClassification_toGaugeClass_eq_of_poisson_eq
 -> starProductClassification_poisson_eq_of_toGaugeClass_eq
--> starProductClassification_toGaugeClass_eq_of_poisson_eq_of_toGaugeClass
--> starProductClassification_poisson_eq_of_toGaugeClass_eq_of_toGaugeClass
--> starProductClassification_gaugeEquivalent_of_poisson_eq_of_toGaugeClass
--> starProductClassification_poisson_eq_of_gaugeEquivalent_of_toGaugeClass
 -> linfty_preserves_mc (with MCPreservation witness)
 -> MaurerCartan local deformation packaging (explicit KuranishiTheory witness)
 -> deformationQuantization (with QuantizationResult witness)
