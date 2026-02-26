@@ -21,6 +21,7 @@ This file tracks formal soundness debt for `StringAlgebra/Linfinity` under `agen
    - `Formality.lean`: removed hardcoded zero graph/quantization outputs; now requires explicit witness data for formality, MC transport, and quantization outputs.
    - `Formality.lean`: strengthened MC transport to explicit element-level output (`linfty_preserves_mc`) with an existence wrapper lemma, and added reflexive/symmetric/transitive gauge-equivalence infrastructure with a `Setoid` instance on star products.
    - `Formality.lean`: added explicit star-product gauge-class quotient interface (`StarProductGaugeClass`, projection, and exact equality↔gauge-equivalence bridge lemmas).
+   - `Formality.lean`: added classification bridge theorem on quotient classes (`starProductClassification_toGaugeClass`) to consume assumptions directly at the `toGaugeClass` level.
    - `Basic.lean`: removed tautological Jacobi fields; now carries explicit law interfaces.
    - `LInfinityAlgebra.lean`: removed fake twisted/Lie conversion fallbacks and synthetic transfer morphism defaults; transfer morphisms are now explicit witness fields, and core `LInftyMorphism` composition now uses explicit composition data with canonical identity instances.
    - `LInfinityAlgebra.lean`: homotopy-transfer witness package now includes explicit quasi-isomorphism certification of the lifted inclusion, with derived transfer linear/quasi-iso lemmas.

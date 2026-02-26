@@ -627,6 +627,22 @@ theorem starProductClassification (data : FormalityData R)
   intro star₁ star₂ h1 h2
   exact classify star₁ star₂ h1 h2
 
+theorem starProductClassification_toGaugeClass (data : FormalityData R)
+    (π : PoissonStructure R data.tPoly)
+    (classify :
+      ∀ (star₁ star₂ : StarProduct R data.dPoly),
+        star₁.poissonBracket = data.hkr.component 1 π.bivector →
+        star₂.poissonBracket = data.hkr.component 1 π.bivector →
+        (star₁.gaugeEquivalent star₂ ↔
+          star₁.poissonBracket = star₂.poissonBracket))
+    (star₁ star₂ : StarProduct R data.dPoly)
+    (h1 : star₁.poissonBracket = data.hkr.component 1 π.bivector)
+    (h2 : star₂.poissonBracket = data.hkr.component 1 π.bivector) :
+    star₁.toGaugeClass = star₂.toGaugeClass ↔
+      star₁.poissonBracket = star₂.poissonBracket := by
+  simpa [StarProduct.toGaugeClass_eq_iff_gaugeEquivalent] using
+    (classify star₁ star₂ h1 h2)
+
 /-! ## Physical Interpretation -/
 
 /-- In quantum mechanics, the commutator of observables gives:
