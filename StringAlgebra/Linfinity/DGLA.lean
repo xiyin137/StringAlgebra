@@ -351,6 +351,10 @@ structure DGLAMorphismLInftyLift {R : Type u} [CommRing R]
     LInftyMorphism R L.toLInftyAlgebra L'.toLInftyAlgebra
   /-- Linear component agrees with the underlying DGLA map degreewise. -/
   linear_spec : ∀ n : ℤ, morphism.linear n = f.toDGMorphism.componentMap n
+  /-- The unary higher component agrees with the underlying DGLA map. -/
+  higher_one_spec : ∀ n : ℤ, morphism.higher 1 n = f.toDGMorphism.componentMap n
+  /-- All non-unary higher components vanish in this canonical DGLA lift model. -/
+  higher_other_zero : ∀ k : ℕ, k ≠ 1 → ∀ n : ℤ, morphism.higher k n = 0
 
 /-- Canonical L∞ morphism associated to a DGLA morphism in the current
     `LInftyMorphism` interface. -/
@@ -396,6 +400,12 @@ def DGLAMorphism.canonicalLInftyLift {R : Type u} [CommRing R]
   linear_spec := by
     intro n
     rfl
+  higher_one_spec := by
+    intro n
+    simp [DGLAMorphism.toLInftyMorphism]
+  higher_other_zero := by
+    intro k hk n
+    simp [DGLAMorphism.toLInftyMorphism, hk]
 
 /-- Degreewise-linear DGLA quasi-isomorphisms induce quasi-isomorphisms for the
     canonical associated L∞ morphism. -/
