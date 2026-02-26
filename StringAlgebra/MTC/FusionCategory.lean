@@ -157,6 +157,19 @@ theorem fusionCoeff_vacuum_eq (j : Idx (k := k) (C := C)) :
   haveI := simpleObj_simple (k := k) (C := C) j
   exact finrank_endomorphism_simple_eq_one k (simpleObj j)
 
+/-- Right vacuum fusion: `N^i_{i,0} = 1`. -/
+theorem fusionCoeff_right_vacuum_eq (i : Idx (k := k) (C := C)) :
+    fusionCoeff (k := k) i unitIdx i = 1 := by
+  unfold fusionCoeff
+  have iso :
+      simpleObj (k := k) i ⊗ simpleObj (k := k) (C := C) (unitIdx (k := k) (C := C)) ≅
+        simpleObj (k := k) i :=
+    (whiskerLeftIso (simpleObj (k := k) i) (unitIdx_iso (k := k) (C := C))) ≪≫
+      (ρ_ (simpleObj (k := k) i))
+  rw [LinearEquiv.finrank_eq (Linear.homCongr k iso (Iso.refl (simpleObj i)))]
+  haveI := simpleObj_simple (k := k) (C := C) i
+  exact finrank_endomorphism_simple_eq_one k (simpleObj i)
+
 /-- If `X_j` and `X_m` are isomorphic simples, then `N^m_{0,j} = 1`. -/
 theorem fusionCoeff_vacuum_iso
     (j m : Idx (k := k) (C := C))
@@ -169,6 +182,22 @@ theorem fusionCoeff_vacuum_iso
   haveI := simpleObj_simple (k := k) (C := C) j
   haveI := simpleObj_simple (k := k) (C := C) m
   exact (finrank_hom_simple_simple_eq_one_iff k (simpleObj j) (simpleObj m)).2 h
+
+/-- If `X_i` and `X_m` are isomorphic simples, then `N^m_{i,0} = 1`. -/
+theorem fusionCoeff_right_vacuum_iso
+    (i m : Idx (k := k) (C := C))
+    (h : Nonempty (simpleObj i ≅ simpleObj m)) :
+    fusionCoeff (k := k) i unitIdx m = 1 := by
+  unfold fusionCoeff
+  have iso :
+      simpleObj (k := k) i ⊗ simpleObj (k := k) (C := C) (unitIdx (k := k) (C := C)) ≅
+        simpleObj (k := k) i :=
+    (whiskerLeftIso (simpleObj (k := k) i) (unitIdx_iso (k := k) (C := C))) ≪≫
+      (ρ_ (simpleObj (k := k) i))
+  rw [LinearEquiv.finrank_eq (Linear.homCongr k iso (Iso.refl (simpleObj m)))]
+  haveI := simpleObj_simple (k := k) (C := C) i
+  haveI := simpleObj_simple (k := k) (C := C) m
+  exact (finrank_hom_simple_simple_eq_one_iff k (simpleObj i) (simpleObj m)).2 h
 
 omit [IsAlgClosed k] in
 theorem fusionCoeff_vacuum_ne (j m : Idx (k := k) (C := C))
@@ -183,6 +212,23 @@ theorem fusionCoeff_vacuum_ne (j m : Idx (k := k) (C := C))
   apply finrank_hom_simple_simple_eq_zero_of_not_iso
   intro i; exact h ⟨i⟩
 
+omit [IsAlgClosed k] in
+theorem fusionCoeff_right_vacuum_ne (i m : Idx (k := k) (C := C))
+    (h : ¬Nonempty (simpleObj i ≅ simpleObj m)) :
+    fusionCoeff (k := k) i unitIdx m = 0 := by
+  unfold fusionCoeff
+  have iso :
+      simpleObj (k := k) i ⊗ simpleObj (k := k) (C := C) (unitIdx (k := k) (C := C)) ≅
+        simpleObj (k := k) i :=
+    (whiskerLeftIso (simpleObj (k := k) i) (unitIdx_iso (k := k) (C := C))) ≪≫
+      (ρ_ (simpleObj (k := k) i))
+  rw [LinearEquiv.finrank_eq (Linear.homCongr k iso (Iso.refl (simpleObj m)))]
+  haveI := simpleObj_simple (k := k) (C := C) i
+  haveI := simpleObj_simple (k := k) (C := C) m
+  apply finrank_hom_simple_simple_eq_zero_of_not_iso
+  intro him
+  exact h ⟨him⟩
+
 /-- Vacuum fusion as a Kronecker delta on indices, under canonical indexing. -/
 theorem fusionCoeff_vacuum_kronecker
     [CanonicalSimpleIndex (k := k) (C := C)]
@@ -195,6 +241,19 @@ theorem fusionCoeff_vacuum_kronecker
       intro h
       exact hEq (CanonicalSimpleIndex.eq_of_iso (k := k) (C := C) h)
     simp [hEq, fusionCoeff_vacuum_ne (k := k) (C := C) j m hIso]
+
+/-- Right vacuum fusion as a Kronecker delta on indices, under canonical indexing. -/
+theorem fusionCoeff_right_vacuum_kronecker
+    [CanonicalSimpleIndex (k := k) (C := C)]
+    (i m : Idx (k := k) (C := C)) :
+    fusionCoeff (k := k) i unitIdx m = if i = m then 1 else 0 := by
+  by_cases hEq : i = m
+  · subst hEq
+    simp [fusionCoeff_right_vacuum_eq]
+  · have hIso : ¬Nonempty (simpleObj i ≅ simpleObj m) := by
+      intro h
+      exact hEq (CanonicalSimpleIndex.eq_of_iso (k := k) (C := C) h)
+    simp [hEq, fusionCoeff_right_vacuum_ne (k := k) (C := C) i m hIso]
 
 end FusionVacuum
 

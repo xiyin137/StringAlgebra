@@ -6,6 +6,9 @@
 - Proof-gap count: **16 theorem-level `sorry` markers** in `StringAlgebra/MTC`.
 - No local MTC assumption-bundle/axiom-class wrappers remain (`*Axioms`, `*Assumptions`, `RibbonSphericalAxiom` removed).
 - Open debt is represented directly at theorem sites.
+- `FusionCategory.lean` now includes both-sided vacuum normalization infrastructure
+  (`fusionCoeff_vacuum_*`, `fusionCoeff_right_vacuum_*` including Kronecker forms),
+  so downstream S-matrix/modular proofs can rewrite vacuum legs without extra ad-hoc lemmas.
 
 ## Proof-Gap Inventory (16)
 

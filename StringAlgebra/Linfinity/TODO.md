@@ -16,7 +16,11 @@ This file tracks formal soundness debt for `StringAlgebra/Linfinity` under `agen
 3. Current Linfinity theorem-level `sorry` loci:
    - `LInfinityAlgebra.lean`: `transferMorphism_isQuasiIso`
    - `Transfer.lean`: `minimalModelMorphism_isQuasiIso`, `formalityMorphism_isQuasiIso`
-4. `rg` scans show no `axiom`, `admit`, `Classical.choose`, or placeholder markers in Linfinity Lean files.
+4. `rg` scans show no `axiom`, `admit`, `unsafe`, `Classical.choose`, or placeholder markers in Linfinity Lean files.
+   - Re-verified on 2026-02-26 with:
+     `rg -n '\\baxiom\\b|\\badmit\\b|\\bunsafe\\b|\\bpostulate\\b' StringAlgebra/Linfinity --glob '*.lean'`
+     and
+     `rg -n 'Classical\\.choose|Classical\\.epsilon' StringAlgebra/Linfinity --glob '*.lean'`.
 5. Recent hardening completed:
    - `Transfer.lean`: removed fabricated transfer outputs and `Classical.choose` inversion; now uses explicit transfer witness packages.
    - `Transfer.lean`: removed tautological minimal-model "uniqueness" wrappers that merely restated provided comparison-map assumptions.
