@@ -104,7 +104,6 @@ PolyvectorFieldsDGLA.toDGLAData
 
 -> kontsevichFormality
 -> kontsevichFormality_is_quasi_iso
--> formalityTheorem
 
 transfer_is_quasiIso
 + transferInclusion_linear

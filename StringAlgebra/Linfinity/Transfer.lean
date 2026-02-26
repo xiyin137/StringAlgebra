@@ -681,10 +681,8 @@ theorem unpacked_iff_exists_formalityLinear_isBijective
   exact (isFormal_iff_unpacked (L := L)).symm.trans
     (isFormal_iff_exists_formalityLinear_isBijective (L := L))
 
-/-- Kontsevich's formality theorem: The DGLA of polyvector fields
-    is formal (quasi-isomorphic to the Lie algebra of polyvectors
-    with Schouten bracket). -/
-theorem kontsevich_formality {R : Type u} [CommRing R]
+/-- Constructor-style bridge from a witness package to the `isFormal` predicate. -/
+theorem isFormal_of_formalityResult {R : Type u} [CommRing R]
     {V : ℤ → Type v}
     [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
     (L : LInftyAlgebra R V)

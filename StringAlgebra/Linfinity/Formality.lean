@@ -15,7 +15,7 @@ This file states Kontsevich's formality theorem and derives deformation quantiza
 ## Main Results
 
 * `FormalityMorphism` - Explicit witness package for U : T_poly → D_poly
-* `formalityTheorem` - Quasi-isomorphism statement from a supplied formality witness
+* `kontsevichFormality_is_quasi_iso` - Quasi-isomorphism statement from a supplied formality witness
 * `deformationQuantization` - Star-product existence statement from supplied quantization data
 
 ## Mathematical Background
@@ -356,12 +356,6 @@ theorem hkr_chain_equation (data : FormalityData R) :
   intro n x
   exact data.hkr.chain_map n x
 
-/-- Compatibility alias for historical theorem naming. -/
-theorem kontsevichFormality_is_linfty_morphism (data : FormalityData R) :
-    ∀ n : ℤ, ∀ x : data.tPoly.fields n,
-      data.dPoly.differential n (data.hkr.component n x) = 0 :=
-  hkr_chain_equation data
-
 /-- Witness-level quasi-isomorphism statement for a supplied formality morphism.
 
     The linear part U₁ : T_poly → D_poly induces an isomorphism on cohomology:
@@ -376,13 +370,6 @@ theorem kontsevichFormality_is_quasi_iso
     (data : FormalityData R) (U : FormalityMorphism data) :
     (kontsevichFormality data U).isQuasiIso := by
   sorry
-
-/-- Witness-driven formality statement:
-    any supplied `FormalityMorphism` yields a quasi-isomorphism. -/
-theorem formalityTheorem (data : FormalityData R) (U : FormalityMorphism data) :
-    -- The Kontsevich construction is a quasi-isomorphism
-    (kontsevichFormality data U).isQuasiIso :=
-  kontsevichFormality_is_quasi_iso data U
 
 /-! ## Transfer of Maurer-Cartan Elements
 

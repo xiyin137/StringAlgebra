@@ -104,7 +104,6 @@ Theorem-critical flow toward deformation quantization:
 PolyvectorFieldsDGLA.toDGLAData + HochschildCochainsDGLA.toDGLAData + HKRMap + FormalityMorphism witness
 -> kontsevichFormality
 -> kontsevichFormality_is_quasi_iso
--> formalityTheorem
 transfer_is_quasiIso + transferInclusion_linear -> transferInclusionLinear_isBijective
 minimalModelMorphism_isQuasiIso + minimalModelMorphism_linear_eq -> minimalModelMorphism_linear_isBijective -> minimalModelLinear_isBijective
 formalityMorphism_isQuasiIso + formalityMorphism_linear_eq -> formalityMorphism_linear_isBijective -> formalityLinear_isBijective
