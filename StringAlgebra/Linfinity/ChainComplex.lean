@@ -5,7 +5,9 @@ Authors: ModularPhysics Contributors
 -/
 import Mathlib.Algebra.Homology.HomologicalComplex
 import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
+import Mathlib.Algebra.Homology.ShortComplex.Abelian
 import Mathlib.Algebra.Category.ModuleCat.Basic
+import Mathlib.Algebra.Category.ModuleCat.Abelian
 import Mathlib.CategoryTheory.Abelian.Basic
 import Mathlib.Algebra.Module.Submodule.Basic
 import Mathlib.LinearAlgebra.Quotient.Basic
@@ -161,18 +163,8 @@ theorem coboundaries_le_cocycles (V : DGModule R) (n : ℤ) :
 /-- The n-th cohomology H^n(V) = Z^n / B^n
 
     In Mathlib, this is computed by `V.toComplex.homology n` -/
-def cohomology (V : DGModule R) (n : ℤ) : Type _ :=
-  (V.cocycles n) ⧸ ((V.coboundaries n).comap (V.cocycles n).subtype)
-
-instance cohomologyAddCommGroup (V : DGModule R) (n : ℤ) : AddCommGroup (V.cohomology n) :=
-  Submodule.Quotient.addCommGroup _
-
-instance cohomologyModule (V : DGModule R) (n : ℤ) : Module R (V.cohomology n) :=
-  Submodule.Quotient.module _
-
-/-- Projection from cocycles to cohomology -/
-def toCohomology (V : DGModule R) (n : ℤ) : V.cocycles n →ₗ[R] V.cohomology n :=
-  Submodule.mkQ _
+noncomputable abbrev cohomology (V : DGModule R) (n : ℤ) : Type _ :=
+  V.toComplex.homology n
 
 end DGModule
 
@@ -234,20 +226,9 @@ def mapCocycles {V W : DGModule R} (f : DGMorphism R V W) (n : ℤ) :
   map_smul' r x := Subtype.ext ((f.componentMap n).map_smul r x.val)
 
 /-- The induced linear map on cohomology -/
-def mapCohomology {V W : DGModule R} (f : DGMorphism R V W) (n : ℤ) :
-    V.cohomology n →ₗ[R] W.cohomology n := by
-  refine Submodule.liftQ _ ((W.toCohomology n).comp (f.mapCocycles n)) ?_
-  intro x hx
-  simp only [LinearMap.mem_ker, LinearMap.coe_comp, Function.comp_apply, DGModule.toCohomology]
-  rw [Submodule.mem_comap] at hx
-  -- x.val is a coboundary, so f(x.val) is a coboundary
-  have hfx := f.map_coboundaries n x.val hx
-  -- The image of a coboundary in cohomology is zero
-  -- p.mkQ y = 0 ↔ y ∈ p
-  have : (f.mapCocycles n x) ∈ (W.coboundaries n).comap (W.cocycles n).subtype := by
-    simp only [mapCocycles, Submodule.mem_comap]
-    exact hfx
-  exact (Submodule.Quotient.mk_eq_zero _).mpr this
+noncomputable def mapCohomology {V W : DGModule R} (f : DGMorphism R V W) (n : ℤ) :
+    V.cohomology n →ₗ[R] W.cohomology n :=
+  (HomologicalComplex.homologyMap f.toHom n).hom
 
 /-- The identity morphism -/
 def id (V : DGModule R) : DGMorphism R V V where
@@ -273,17 +254,8 @@ theorem id_mapCocycles_eq (V : DGModule R) (n : ℤ) (z : V.cocycles n) :
 /-- The mapCohomology of id is the identity -/
 theorem id_mapCohomology_eq (V : DGModule R) (n : ℤ) (x : V.cohomology n) :
     (id V).mapCohomology n x = x := by
-  -- Use the quotient induction principle
-  obtain ⟨z, hz⟩ := Submodule.Quotient.mk_surjective _ x
-  rw [← hz]
-  -- mapCohomology sends mk z to mk (mapCocycles z)
-  -- For id, mapCocycles z = z, so mapCohomology (mk z) = mk z
-  show (id V).mapCohomology n (Submodule.Quotient.mk z) = Submodule.Quotient.mk z
-  -- The key is that mapCohomology is defined via liftQ, so it maps mk z to mk (mapCocycles z)
-  have key : (id V).mapCohomology n (Submodule.Quotient.mk z) =
-      Submodule.Quotient.mk ((id V).mapCocycles n z) := by
-    rfl
-  rw [key, id_mapCocycles_eq]
+  simpa [mapCohomology, id] using
+    congrArg (fun φ => φ.hom x) (HomologicalComplex.homologyMap_id V.toComplex n)
 
 /-- Identity is a quasi-isomorphism -/
 theorem id_isQuasiIso (V : DGModule R) : (id V).isQuasiIso := by
@@ -301,10 +273,8 @@ theorem id_isQuasiIso (V : DGModule R) : (id V).isQuasiIso := by
 theorem comp_mapCohomology {V W U : DGModule R} (g : DGMorphism R W U) (f : DGMorphism R V W)
     (n : ℤ) (x : V.cohomology n) :
     (g.comp f).mapCohomology n x = g.mapCohomology n (f.mapCohomology n x) := by
-  obtain ⟨z, hz⟩ := Submodule.Quotient.mk_surjective _ x
-  rw [← hz]
-  -- Both sides should reduce to Quotient.mk of composed mapCocycles
-  rfl
+  simpa [mapCohomology, comp] using
+    congrArg (fun φ => φ.hom x) (HomologicalComplex.homologyMap_comp f.toHom g.toHom n)
 
 /-- Composition of quasi-isomorphisms is a quasi-isomorphism -/
 theorem comp_isQuasiIso {V W U : DGModule R} (g : DGMorphism R W U) (f : DGMorphism R V W)

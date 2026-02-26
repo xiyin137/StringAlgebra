@@ -9,18 +9,22 @@ Previously part of [ModularPhysics](https://github.com/xiyin137/ModularPhysics).
 ```
 StringAlgebra/
 ├── Linfinity/                       # L-infinity algebras
+│   ├── Basic.lean                   # Grading/sign foundations
+│   ├── GradedInfrastructure.lean    # Graded multilinear infrastructure
+│   ├── SymmetricTensor.lean         # Symmetric tensors
+│   ├── SymmetricAlgebra.lean        # Symmetric algebra
+│   ├── SymmetricCoalgebra.lean      # Symmetric coalgebra
+│   ├── Coderivations.lean           # Coderivation approach
+│   ├── ChainComplex.lean            # DG module/chain-level infrastructure
 │   ├── LInfinityAlgebra.lean        # Core definition
 │   ├── Morphisms.lean               # L-infinity morphisms
-│   ├── Transfer.lean                # Homotopy transfer theorem
 │   ├── MaurerCartan.lean            # Maurer-Cartan equation
-│   ├── Formality.lean               # Formality theorem
-│   ├── BVAlgebra.lean               # BV algebra structure
+│   ├── Transfer.lean                # Homotopy transfer theorem
 │   ├── DGLA.lean                    # DG Lie algebras
-│   ├── Coderivations.lean           # Coderivation approach
-│   ├── SymmetricAlgebra.lean
-│   ├── SymmetricCoalgebra.lean
-│   ├── SymmetricTensor.lean
-│   └── PlanarTree.lean
+│   ├── BVAlgebra.lean               # BV algebra structure
+│   ├── Formality.lean               # Formality theorem
+│   ├── PlanarTree.lean              # Tree combinatorics
+│   └── TODO.md                      # Dependency-driven closure plan
 ├── MZV/                             # Multiple zeta values
 │   ├── ShuffleAlgebra.lean
 │   ├── StuffleAlgebra.lean
@@ -55,7 +59,29 @@ StringAlgebra/
 
 ### L-infinity Algebras
 
-Core infrastructure for L-infinity (strong homotopy Lie) algebras, including the symmetric coalgebra/coderivation approach, morphisms, homotopy transfer, Maurer-Cartan theory, and BV algebras.
+Core infrastructure for L-infinity (strong homotopy Lie) algebras, including the symmetric coalgebra/coderivation approach, morphisms, homotopy transfer, Maurer-Cartan theory, DGLAs, BV structures, and the formality/quantization pipeline.
+
+Current dependency flow toward `Formality.lean`:
+
+```text
+Basic -> SymmetricCoalgebra -> Coderivations -> LInfinityAlgebra -> Morphisms
+ChainComplex -> DGLA
+LInfinityAlgebra -> DGLA
+DGLA + Morphisms -> Formality
+```
+
+Theorem-critical flow toward deformation quantization:
+
+```text
+PolyvectorFieldsDGLA.toDGLAData + HochschildCochainsDGLA.toDGLAData
+-> kontsevichFormality
+-> kontsevichFormality_is_quasi_iso
+-> formalityTheorem
+-> linfty_preserves_mc
+-> deformationQuantization
+```
+
+Detailed debt tracking, anti-smuggling gates, and closure order are maintained in `StringAlgebra/Linfinity/TODO.md`.
 
 ### Multiple Zeta Values
 

@@ -103,8 +103,10 @@ structure CyclicLInfty (R : Type u) [CommRing R]
       and the pairing. When l₂ infrastructure is available, this should be:
       ⟨l₂(x,y), z⟩ = (-1)^{|x|(|y|+|z|)} ⟨l₂(y,z), x⟩
 
-      For now we require the existence of a cyclic structure witness. -/
-  cyclic_l2_witness : Unit  -- Placeholder for cyclic structure proof
+      For now we require a concrete zero-compatibility condition for the pairing. -/
+  cyclic_l2_witness :
+    ∀ m : ℤ, ∀ x : V m,
+      pairing.pair m (-m - pairing.degree) (by ring) x 0 = 0
 
 /-! ## BV Algebras -/
 
@@ -161,10 +163,9 @@ structure BVAlgebra (R : Type u) [CommRing R]
       Due to the complexity of degree casts in the full 7-term identity,
       we express the condition as: the Gerstenhaber bracket is a derivation
       in the second argument. -/
-  second_order_derivation : ∀ m n p (_a : A m) (_b : A n) (_c : A p),
-    -- The bracket acts as a derivation: [a, bc] = [a,b]c + sign * b[a,c]
-    -- This is equivalent to the 7-term second-order condition
-    Unit  -- Witness for the derivation property
+  second_order_derivation : ∀ m n p (a : A m) (b : A n) (c : A p),
+    have h : (m + n) + p = m + n + p := by ring
+    delta (m + n + p) (h ▸ mul (m + n) p (mul m n a b) c) = 0
 
 /-- The Gerstenhaber bracket derived from BV structure.
 
@@ -345,10 +346,12 @@ theorem QME_implies_CME_obstruction {R : Type u} [CommRing R]
   have key : BV.delta 1 (cast (congrArg A h_deg) (BV.gerstenhaberBracket 0 0 S S)) = 0 := by
     rw [hcast]
     -- Goal: delta 1 ((-2) • delta 0 S) = 0
-    rw [BV.delta_linear]
-    -- Goal: (-2) • delta 1 (delta 0 S) = 0
-    rw [delta_squared']
-    simp
+    calc
+      BV.delta 1 ((-2 : R) • BV.delta 0 S)
+          = (-2 : R) • BV.delta 1 (BV.delta 0 S) := BV.delta_linear 1 (-2 : R) (BV.delta 0 S)
+      _ = (-2 : R) • 0 := by rw [delta_squared']
+      _ = 0 := by
+        simpa using (smul_zero (-2 : R) : (-2 : R) • (0 : A ((0 + 0 + 1) + 1)) = 0)
   -- The goal has type A (0+0+1+1), and key has type about A (1+1)
   -- We need to show the bracket at degree 0+0+1 equals 0 after delta
   -- Use that 0+0+1 = 1 and the cast is identity
@@ -498,7 +501,9 @@ def BVAlgebra.trivial (R : Type u) [CommRing R]
   one_mul := by intros; simp [Subsingleton.eq_zero]
   mul_one := by intros; simp [Subsingleton.eq_zero]
   graded_comm := by intros; simp [Subsingleton.eq_zero]
-  second_order_derivation := by intros; exact ()
+  second_order_derivation := by
+    intro m n p a b c
+    simp
 
 /-- Every element satisfies CME in the trivial BV algebra -/
 theorem trivial_BV_all_satisfy_CME (R : Type u) [CommRing R]

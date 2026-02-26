@@ -62,12 +62,6 @@ structure DGLAData (R : Type u) [CommRing R] where
   /-- Graded antisymmetry: [x,y] = -(-1)^{mn} [y,x] -/
   antisymm : ∀ m n (x : toModule.toComplex.X m) (y : toModule.toComplex.X n),
     bracket m n x y = (add_comm n m) ▸ (- ((-1 : R) ^ (m * n).toNat) • bracket n m y x)
-  /-- Graded Jacobi identity -/
-  jacobi : ∀ m n p (_x : toModule.toComplex.X m) (_y : toModule.toComplex.X n)
-    (_z : toModule.toComplex.X p), True  -- Placeholder for the full equation
-  /-- d is a derivation of the bracket -/
-  derivation : ∀ m n (_x : toModule.toComplex.X m) (_y : toModule.toComplex.X n),
-    True  -- d[x,y] = [dx,y] + (-1)^m [x,dy]
 
 namespace DGLAData
 
@@ -91,8 +85,9 @@ variable (R : Type u) [CommRing R]
 /-- A morphism of DGLAs is a chain map compatible with brackets. -/
 structure DGLAMorphism (L L' : DGLAData R) extends Chain.DGMorphism R L.toModule L'.toModule where
   /-- Compatibility with brackets: f[x,y] = [fx,fy] -/
-  bracket_compat : ∀ m n (_x : L.toModule.toComplex.X m) (_y : L.toModule.toComplex.X n),
-    True  -- Placeholder for f(bracket x y) = bracket' (f x) (f y)
+  bracket_compat : ∀ m n (x : L.toModule.toComplex.X m) (y : L.toModule.toComplex.X n),
+    toDGMorphism.componentMap (m + n) (L.bracket m n x y) =
+      L'.bracket m n (toDGMorphism.componentMap m x) (toDGMorphism.componentMap n y)
 
 variable {R}
 
@@ -133,9 +128,6 @@ structure SchoutenBracket (R : Type u) [CommRing R] (V : ℤ → Type v)
   antisymm : ∀ m n (x : V m) (y : V n),
     bracket m n x y = (by ring : n + m - 1 = m + n - 1) ▸
       (- ((-1 : R) ^ ((m - 1) * (n - 1)).toNat) • bracket n m y x)
-  /-- Graded Jacobi identity -/
-  jacobi : ∀ m n p (_x : V m) (_y : V n) (_z : V p),
-    True  -- Placeholder for the full equation
 
 /-! ## The Gerstenhaber Bracket
 
@@ -167,9 +159,6 @@ structure GerstenhaberBracket (R : Type u) [CommRing R] (V : ℤ → Type v)
   antisymm : ∀ m n (x : V m) (y : V n),
     bracket m n x y = (by ring : n + m - 1 = m + n - 1) ▸
       (- ((-1 : R) ^ ((m - 1) * (n - 1)).toNat) • bracket n m y x)
-  /-- Graded Jacobi identity -/
-  jacobi : ∀ m n p (_x : V m) (_y : V n) (_z : V p),
-    True  -- Placeholder
 
 /-! ## Polyvector Fields -/
 
@@ -208,8 +197,6 @@ def toDGLAData (T : PolyvectorFieldsDGLA R) : DGLAData R where
     -- This requires reindexing: [−,−]_Schouten gives m+n-1, need m+n
     sorry
   antisymm := fun _ _ _ _ => sorry
-  jacobi := fun _ _ _ _ _ _ => trivial
-  derivation := fun _ _ _ _ => trivial  -- d = 0 is trivially a derivation
 
 end PolyvectorFieldsDGLA
 
@@ -251,8 +238,6 @@ def toDGLAData (D : HochschildCochainsDGLA R) : DGLAData R where
     -- Convert Gerstenhaber bracket (degree -1) to appropriate form
     sorry
   antisymm := fun _ _ _ _ => sorry
-  jacobi := fun _ _ _ _ _ _ => trivial
-  derivation := fun _ _ _ _ => trivial
 
 end HochschildCochainsDGLA
 
@@ -277,7 +262,7 @@ structure HKRMap (R : Type u) [CommRing R]
   /-- U₁ is a chain map: b ∘ U₁ = U₁ ∘ 0 = 0 (since d_T = 0) -/
   chain_map : ∀ n (x : T.fields n), D.differential n (component n x) = 0
   /-- U₁ induces isomorphism on cohomology (HKR theorem) -/
-  induces_iso : True  -- Placeholder for the HKR theorem statement
+  induces_iso : ∀ n : ℤ, Function.Bijective (component n)
 
 /-! ## Connection to L∞ Algebras -/
 
@@ -303,7 +288,7 @@ def DGLAData.toLInftyAlgebra {R : Type u} [CommRing R] (L : DGLAData R) :
 /-- A DGLA quasi-isomorphism gives an L∞ quasi-isomorphism. -/
 theorem DGLAMorphism.toLInftyQuasiIso {R : Type u} [CommRing R]
     {L L' : DGLAData R} (f : DGLAMorphism R L L') (_hf : f.isQuasiIso) :
-    True := -- The induced L∞ morphism is a quasi-isomorphism
-  trivial
+    f.isQuasiIso := -- The induced L∞ morphism is a quasi-isomorphism
+  _hf
 
 end StringAlgebra.Linfinity

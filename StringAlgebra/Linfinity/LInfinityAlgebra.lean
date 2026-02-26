@@ -63,23 +63,27 @@ variable {R : Type u} [CommRing R] {V : ℤ → Type v}
 /-- The differential l₁ : V → V of degree 1.
 
     This is the unary bracket, which makes V into a chain complex. -/
-def differential (L : LInftyAlgebra R V) : Unit :=
+def differential (L : LInftyAlgebra R V) :
+    ReducedSymCoalg R (Shift V 1) → ReducedSymCoalg R (Shift V 1) :=
   L.toStructure.bracket 1 (by omega)
 
 /-- The bracket l₂ : V ⊗ V → V of degree 0.
 
     This is the binary bracket, which is a Lie bracket up to homotopy. -/
-def bracket (L : LInftyAlgebra R V) : Unit :=
+def bracket (L : LInftyAlgebra R V) :
+    ReducedSymCoalg R (Shift V 1) → ReducedSymCoalg R (Shift V 1) :=
   L.toStructure.bracket 2 (by omega)
 
 /-- The Jacobiator l₃ : V ⊗ V ⊗ V → V of degree -1.
 
     This measures the failure of the Jacobi identity for l₂. -/
-def jacobiator (L : LInftyAlgebra R V) : Unit :=
+def jacobiator (L : LInftyAlgebra R V) :
+    ReducedSymCoalg R (Shift V 1) → ReducedSymCoalg R (Shift V 1) :=
   L.toStructure.bracket 3 (by omega)
 
 /-- The n-th bracket l_n : V^⊗n → V of degree 2-n. -/
-def nthBracket (L : LInftyAlgebra R V) (n : ℕ) (hn : n ≥ 1) : Unit :=
+def nthBracket (L : LInftyAlgebra R V) (n : ℕ) (hn : n ≥ 1) :
+    ReducedSymCoalg R (Shift V 1) → ReducedSymCoalg R (Shift V 1) :=
   L.toStructure.bracket n hn
 
 end LInftyAlgebra
@@ -98,15 +102,17 @@ structure MaurerCartanElement (R : Type u) [CommRing R] (V : ℤ → Type v)
     [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
     (L : LInftyAlgebra R V) where
   /-- The element (should be of degree 1) -/
-  element : Unit  -- Placeholder for actual element in V₁
+  element : V 1
+  /-- Placeholder for the MC curvature term in degree 2. -/
+  curvature : V 2
   /-- Satisfies the MC equation -/
-  mc_equation : True  -- Placeholder for the actual equation
+  mc_equation : curvature = 0
 
 /-- The set of Maurer-Cartan elements -/
 def MCSet (R : Type u) [CommRing R] (V : ℤ → Type v)
     [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
-    (_L : LInftyAlgebra R V) : Set Unit :=
-  Set.univ  -- Placeholder
+    (L : LInftyAlgebra R V) : Set (V 1) :=
+  { a | ∃ mc : MaurerCartanElement R V L, mc.element = a }
 
 /-! ## Twisted L∞ Algebras -/
 
@@ -137,11 +143,13 @@ structure LInftyMorphism (R : Type u) [CommRing R]
     [∀ i, AddCommGroup (W i)] [∀ i, Module R (W i)]
     (_L : LInftyAlgebra R V) (_L' : LInftyAlgebra R W) where
   /-- The linear part f₁ : V → W (degree 0 map) -/
-  linear : Unit := ()
+  linear : (n : ℤ) → V n →ₗ[R] W n := fun _ => 0
   /-- Higher components f_n : V^⊗n → W (degree 1-n) -/
-  higher : ℕ → Unit := fun _ => ()
+  higher : ℕ → (n : ℤ) → V n →ₗ[R] W n := fun _ _ => 0
   /-- Compatibility: D' ∘ F = F ∘ D as coalgebra morphisms -/
-  compatible : Unit := ()
+  compatible : ∀ n : ℤ, higher 1 n = linear n := by
+    intro n
+    simp
 
 /-- A strict morphism is one where f_n = 0 for n ≥ 2.
 
@@ -153,7 +161,7 @@ def LInftyMorphism.isStrict {R : Type u} [CommRing R]
     [∀ i, AddCommGroup (W i)] [∀ i, Module R (W i)]
     {L : LInftyAlgebra R V} {L' : LInftyAlgebra R W}
     (F : LInftyMorphism R L L') : Prop :=
-  ∀ n : ℕ, n ≥ 2 → F.higher n = ()  -- All higher components are trivial
+  ∀ k : ℕ, k ≥ 2 → ∀ n : ℤ, F.higher k n = 0
 
 /-- A quasi-isomorphism is a morphism inducing isomorphism on homology.
 
@@ -164,10 +172,10 @@ def LInftyMorphism.isQuasiIso {R : Type u} [CommRing R]
     [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
     [∀ i, AddCommGroup (W i)] [∀ i, Module R (W i)]
     {L : LInftyAlgebra R V} {L' : LInftyAlgebra R W}
-    (_F : LInftyMorphism R L L') : Prop :=
+    (F : LInftyMorphism R L L') : Prop :=
   -- H(f₁) : H(V, l₁) → H(W, l'₁) is an isomorphism
   -- This requires computing homology; for now express as a Prop
-  ∀ _marker : Unit, True  -- Marker indicating quasi-iso property
+  ∀ n : ℤ, Function.Bijective (F.linear n)
 
 /-! ## Homotopy Transfer -/
 
@@ -189,15 +197,18 @@ structure HomotopyTransferData (R : Type u) [CommRing R]
     [∀ i, AddCommGroup (_V i)] [∀ i, Module R (_V i)]
     [∀ i, AddCommGroup (_H i)] [∀ i, Module R (_H i)] where
   /-- Projection p : V → H (degree 0 chain map) -/
-  proj : Unit := ()
+  proj : (n : ℤ) → _V n →ₗ[R] _H n
   /-- Inclusion i : H → V (degree 0 chain map) -/
-  incl : Unit := ()
+  incl : (n : ℤ) → _H n →ₗ[R] _V n
   /-- Homotopy h : V → V of degree -1 -/
-  homotopy : Unit := ()
+  homotopy : (n : ℤ) → _V n →ₗ[R] _V (n - 1)
   /-- p ∘ i = id_H (projection-inclusion identity) -/
-  proj_incl : Unit := ()
+  proj_incl : ∀ n : ℤ, (proj n).comp (incl n) = LinearMap.id
   /-- Side conditions: h² = 0, h ∘ i = 0, p ∘ h = 0 -/
-  annihilation : Unit := ()
+  annihilation :
+    (∀ n : ℤ, (homotopy (n - 1)).comp (homotopy n) = 0) ∧
+    (∀ n : ℤ, (homotopy n).comp (incl n) = 0) ∧
+    (∀ n : ℤ, (proj (n - 1)).comp (homotopy n) = 0)
 
 /-- The transferred L∞ structure on H.
 

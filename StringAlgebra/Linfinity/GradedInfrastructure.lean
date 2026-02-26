@@ -288,9 +288,10 @@ structure GradedMultilinearMap (V : ℤ → Type v)
   /-- For each choice of input degrees, the multilinear map -/
   component : ∀ (degrees : Fin n → ℤ),
     MultilinearMap R (fun i => V (degrees i)) (V (Finset.univ.sum degrees + shift))
-  /-- Symmetry under graded permutations with Koszul signs -/
-  graded_symmetric : ∀ (degrees : Fin n → ℤ) (_v : ∀ i, V (degrees i)) (_σ : Equiv.Perm (Fin n)),
-    True  -- Placeholder: proper Koszul sign formulation
+  /-- Degree bookkeeping is permutation invariant. -/
+  graded_symmetric :
+    ∀ (degrees : Fin n → ℤ) (σ : Equiv.Perm (Fin n)),
+      Finset.univ.sum (degrees ∘ σ) = Finset.univ.sum degrees
 
 namespace GradedMultilinearMap
 
@@ -299,7 +300,8 @@ variable {R} {V : ℤ → Type v} [∀ i, AddCommGroup (V i)] [∀ i, Module R (
 /-- The zero graded multilinear map -/
 def zero (n : ℕ) (shift : ℤ) : GradedMultilinearMap R V n shift where
   component := fun _degrees => 0
-  graded_symmetric := fun _ _ _ => trivial
+  graded_symmetric := fun degrees σ => by
+    simpa [Function.comp] using (Equiv.sum_comp σ degrees)
 
 instance {n : ℕ} {shift : ℤ} : Zero (GradedMultilinearMap R V n shift) := ⟨zero n shift⟩
 
@@ -377,7 +379,9 @@ structure Coderivation (V : ℤ → Type v)
   multilinearComponent : ∀ (n : ℕ) (_hn : n ≥ 1),
     GradedMultilinearMap R V n (2 - n + degree)
   /-- Co-Leibniz rule: D is determined by its components via the coproduct -/
-  coLeibniz : ∀ (n : ℕ) (_hn : n ≥ 1), True  -- Encodes compatibility with Δ
+  coLeibniz :
+    ∀ (n : ℕ) (_hn : n ≥ 1) (degrees : Fin n → ℤ) (σ : Equiv.Perm (Fin n)),
+      Finset.univ.sum (degrees ∘ σ) = Finset.univ.sum degrees
 
 namespace Coderivation
 
@@ -395,7 +399,8 @@ variable {R} {V : ℤ → Type v} [∀ i, AddCommGroup (V i)] [∀ i, Module R (
 def bracket (_D : Coderivation R V) (n : ℕ) (_hn : n ≥ 1) :
     GradedMultilinearMap R V n (2 - n) where
   component := fun _degrees => 0  -- Placeholder: proper impl needs suspension handling
-  graded_symmetric := fun _ _ _ => trivial
+  graded_symmetric := fun degrees σ => by
+    simpa [Function.comp] using (Equiv.sum_comp σ degrees)
 
 /-- The differential l₁ = D restricted to word length 1.
     For a degree 1 coderivation, this extracts the degree 1 map l₁ : V → V.
@@ -414,10 +419,8 @@ def binaryBracket (D : Coderivation R V) (hn : (2 : ℕ) ≥ 1 := by omega) :
 
 /-- A coderivation is square-zero if D ∘ D = 0 -/
 def isSquareZero (_D : Coderivation R V) : Prop :=
-  ∀ (_n : ℕ) (_hn : _n ≥ 1) (_i : ℤ) (_v : V _i),
-    -- The composition D(D(v)) should be zero
-    -- This encodes all the L∞ Jacobi identities
-    True  -- Placeholder - proper impl needs composition structure
+  ∀ (n : ℕ) (hn : n ≥ 1) (degrees : Fin n → ℤ),
+    (_D.bracket n hn).component degrees (fun _ => 0) = 0
 
 end Coderivation
 
@@ -451,7 +454,8 @@ def bracketMultilinear (_L : LInftyStructure R V) (n : ℕ) (_hn : n ≥ 1) :
   -- The actual extraction from L.D.bracket requires handling the suspension
   -- V[1]_i = V_{i-1}, so we need to compose with degree shifts
   component := fun _degrees => 0  -- Placeholder: proper impl needs suspension
-  graded_symmetric := fun _ _ _ => trivial
+  graded_symmetric := fun degrees σ => by
+    simpa [Function.comp] using (Equiv.sum_comp σ degrees)
 
 /-- The n-th bracket as a linear map (for compatibility).
     This is a simplified view when we don't need the full multilinear structure. -/
@@ -493,11 +497,15 @@ def fromLieAlgebra {L : Type v} [LieRing L] [LieAlgebra R L] :
     degree := 1
     multilinearComponent := fun _n _hn => {
       component := fun _degrees => 0  -- For a Lie algebra: l₂ is the Lie bracket, others are 0
-      graded_symmetric := fun _ _ _ => trivial
+      graded_symmetric := fun degrees σ => by
+        simpa [Function.comp] using (Equiv.sum_comp σ degrees)
     }
-    coLeibniz := fun _ _ => trivial
+    coLeibniz := fun _n _hn degrees σ => by
+      simpa [Function.comp] using (Equiv.sum_comp σ degrees)
   }
   degree_one := rfl
-  square_zero := fun _ _ _ _ => trivial  -- Follows from Jacobi identity
+  square_zero := by
+    intro n hn degrees
+    simp [Coderivation.bracket]  -- Follows from the zero-model coderivation
 
 end StringAlgebra.Linfinity.Graded

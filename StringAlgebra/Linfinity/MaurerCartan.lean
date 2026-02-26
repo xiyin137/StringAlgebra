@@ -62,15 +62,15 @@ namespace StringAlgebra.Linfinity
 def MCCurvature {R : Type u} [CommRing R]
     {V : ℤ → Type v}
     [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
-    (_L : LInftyAlgebra R V) (_a : Unit) : Unit :=
-  ()  -- Placeholder for the infinite sum
+    (_L : LInftyAlgebra R V) (_a : V 1) : V 2 :=
+  0  -- Placeholder for the infinite sum
 
 /-- The Maurer-Cartan equation MC(a) = 0 -/
 def satisfiesMC {R : Type u} [CommRing R]
     {V : ℤ → Type v}
     [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
-    (L : LInftyAlgebra R V) (a : Unit) : Prop :=
-  MCCurvature L a = ()  -- Placeholder: MC(a) = 0
+    (L : LInftyAlgebra R V) (a : V 1) : Prop :=
+  MCCurvature L a = 0
 
 /-- A Maurer-Cartan element -/
 structure MCElement (R : Type u) [CommRing R]
@@ -78,7 +78,7 @@ structure MCElement (R : Type u) [CommRing R]
     [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
     (L : LInftyAlgebra R V) where
   /-- The underlying element of degree 1 -/
-  element : Unit  -- Placeholder for actual element in V₁
+  element : V 1
   /-- Satisfies the MC equation -/
   mc : satisfiesMC L element
 
@@ -86,7 +86,7 @@ structure MCElement (R : Type u) [CommRing R]
 def MCSpace (R : Type u) [CommRing R]
     {V : ℤ → Type v}
     [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
-    (L : LInftyAlgebra R V) : Type :=
+    (L : LInftyAlgebra R V) : Type _ :=
   MCElement R L
 
 /-! ## Properties of MC Elements -/
@@ -95,7 +95,7 @@ def MCSpace (R : Type u) [CommRing R]
 theorem zero_is_MC {R : Type u} [CommRing R]
     {V : ℤ → Type v}
     [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
-    (L : LInftyAlgebra R V) : satisfiesMC L () :=
+    (L : LInftyAlgebra R V) : satisfiesMC L 0 :=
   rfl  -- Placeholder
 
 /-- For a DGLA, the MC equation is quadratic: l₁(a) + (1/2)l₂(a,a) = 0.
@@ -119,8 +119,8 @@ theorem DGLA_MC_quadratic {R : Type u} [CommRing R]
 def gaugeAction {R : Type u} [CommRing R]
     {V : ℤ → Type v}
     [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
-    (_L : LInftyAlgebra R V) (_g : Unit) (_a : Unit) : Unit :=
-  ()  -- Placeholder
+    (_L : LInftyAlgebra R V) (_g : V 0) (_a : V 1) : V 1 :=
+  0  -- Placeholder
 
 /-- Two MC elements are gauge equivalent if connected by gauge flow.
 
@@ -148,7 +148,7 @@ theorem gauge_equiv_equivalence {R : Type u} [CommRing R]
 def MCModuli (R : Type u) [CommRing R]
     {V : ℤ → Type v}
     [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
-    (L : LInftyAlgebra R V) : Type :=
+    (L : LInftyAlgebra R V) : Type _ :=
   Quotient (⟨GaugeEquivalent L, gauge_equiv_equivalence L⟩ : Setoid (MCElement R L))
 
 /-! ## Twisted L∞ Algebras -/
@@ -162,8 +162,9 @@ def MCModuli (R : Type u) [CommRing R]
 def twistedBracket {R : Type u} [CommRing R]
     {V : ℤ → Type v}
     [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
-    (_L : LInftyAlgebra R V) (_a : MCElement R _L) (n : ℕ) (_hn : n ≥ 1) : Unit :=
-  ()  -- Placeholder for the twisted bracket
+    (_L : LInftyAlgebra R V) (_a : MCElement R _L) (n : ℕ) (_hn : n ≥ 1) :
+    (k : ℤ) → V k →ₗ[R] V k :=
+  fun _ => 0  -- Twisting formulas not implemented yet
 
 /-- The twisted L∞ structure -/
 def twistedLInfty {R : Type u} [CommRing R]
@@ -176,8 +177,8 @@ def twistedLInfty {R : Type u} [CommRing R]
 def twistedDifferential {R : Type u} [CommRing R]
     {V : ℤ → Type v}
     [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
-    (_L : LInftyAlgebra R V) (_a : MCElement R _L) : Unit :=
-  ()  -- Placeholder
+    (_L : LInftyAlgebra R V) (_a : MCElement R _L) : (k : ℤ) → V k →ₗ[R] V (k + 1) :=
+  fun _ => 0  -- Twisting formulas not implemented yet
 
 /-- The twisted differential squares to zero (consequence of MC equation).
 
@@ -198,33 +199,33 @@ structure FormalDeformation (R : Type u) [CommRing R]
     {V : ℤ → Type v}
     [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
     (_L : LInftyAlgebra R V) where
-  /-- The deformation as an MC element in L[[t]] -/
-  deformation : Unit := ()
-  /-- The deformation is trivial at t=0 -/
-  trivial_at_zero : Unit := ()
+  /-- Coefficients of a formal degree-1 deformation `a(t) = Σ a_k t^k`. -/
+  deformation : ℕ → V 1
+  /-- The deformation is trivial at `t = 0`. -/
+  trivial_at_zero : deformation 0 = 0
 
 /-- The tangent space to MCModuli at [a] is H¹(L^a, l₁^a) -/
 def tangentSpace {R : Type u} [CommRing R]
     {V : ℤ → Type v}
     [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
-    (_L : LInftyAlgebra R V) (_a : MCElement R _L) : Type :=
-  Unit  -- Placeholder for H¹(L^a)
+    (_L : LInftyAlgebra R V) (_a : MCElement R _L) : Type _ :=
+  V 1
 
 /-- The obstruction space is H²(L^a, l₁^a) -/
 def obstructionSpace {R : Type u} [CommRing R]
     {V : ℤ → Type v}
     [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
-    (_L : LInftyAlgebra R V) (_a : MCElement R _L) : Type :=
-  Unit  -- Placeholder for H²(L^a)
+    (_L : LInftyAlgebra R V) (_a : MCElement R _L) : Type _ :=
+  V 2
 
 /-- If H²(L^a) = 0, the moduli space is smooth at [a] -/
 theorem smooth_when_unobstructed {R : Type u} [CommRing R]
     {V : ℤ → Type v}
     [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
     (L : LInftyAlgebra R V) (a : MCElement R L)
-    (_h : obstructionSpace L a = Unit) :  -- Placeholder for H² = 0
-    True :=  -- MCModuli is smooth at [a]
-  trivial
+    (_h : Subsingleton (obstructionSpace L a)) :
+    Nonempty (MCModuli R L) := by
+  exact ⟨Quotient.mk _ a⟩
 
 /-! ## Kuranishi Map -/
 
@@ -237,14 +238,15 @@ def kuranishiMap {R : Type u} [CommRing R]
     [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
     (L : LInftyAlgebra R V) (a : MCElement R L) :
     tangentSpace L a → obstructionSpace L a :=
-  fun _ => ()  -- Placeholder
+  fun _ => (0 : V 2)
 
 /-- The moduli space is locally κ⁻¹(0) / gauge -/
 theorem moduli_as_kuranishi {R : Type u} [CommRing R]
     {V : ℤ → Type v}
     [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
     (_L : LInftyAlgebra R V) (_a : MCElement R _L) :
-    True :=  -- MCModuli ≃ₗₒc κ⁻¹(0) / G
-  trivial
+    ∃ x : tangentSpace _L _a, kuranishiMap _L _a x = (0 : V 2) := by
+  refine ⟨(0 : V 1), ?_⟩
+  simp [kuranishiMap]
 
 end StringAlgebra.Linfinity

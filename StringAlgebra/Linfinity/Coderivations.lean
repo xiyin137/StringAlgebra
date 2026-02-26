@@ -154,8 +154,8 @@ structure LInfinityStructure (R : Type u) [CommRing R] (V : ℤ → Type v)
     D_n : Sym^n(V) → V
     obtained by composing D|_{Sym^n(V)} with projection to V = Sym^1(V). -/
 def coderivationComponent (_D : ReducedCoderivation R V) (n : ℕ) (_hn : n ≥ 1) :
-    Unit :=  -- Placeholder for Sym^n(V) → V
-  ()
+    ReducedSymCoalg R V → ReducedSymCoalg R V :=
+  _D.map
 
 /-- The n-th L∞ bracket l_n : V^⊗n → V.
 
@@ -165,8 +165,8 @@ def coderivationComponent (_D : ReducedCoderivation R V) (n : ℕ) (_hn : n ≥ 
 
     The degree of l_n is 2 - n. -/
 def LInfinityStructure.bracket (_L : LInfinityStructure R V) (n : ℕ) (_hn : n ≥ 1) :
-    Unit :=  -- Placeholder for the actual bracket type
-  ()
+    ReducedSymCoalg R (Shift V 1) → ReducedSymCoalg R (Shift V 1) :=
+  coderivationComponent _L.D n _hn
 
 /-! ## Key Properties -/
 
