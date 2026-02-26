@@ -147,6 +147,20 @@ theorem rational_iff_positive_definite (V : LatticeVOA R)
     C.rational ↔ positiveDefinite V :=
   C.iff_positive_definite
 
+/-- Rationality implies positive definiteness under explicit criterion data. -/
+theorem positiveDefinite_of_rational (V : LatticeVOA R)
+    (C : RationalityCriterion (R := R) V)
+    (hRat : C.rational) :
+    positiveDefinite V :=
+  (C.iff_positive_definite.mp hRat)
+
+/-- Positive definiteness implies rationality under explicit criterion data. -/
+theorem rational_of_positiveDefinite (V : LatticeVOA R)
+    (C : RationalityCriterion (R := R) V)
+    (hPos : positiveDefinite V) :
+    C.rational :=
+  (C.iff_positive_definite.mpr hPos)
+
 end LatticeVOA
 
 /-! ## The Moonshine Module V♮

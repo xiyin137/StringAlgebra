@@ -103,6 +103,55 @@ def DGLAMorphism.isQuasiIso {L L' : DGLAData R} (f : DGLAMorphism R L L') : Prop
 def DGLAMorphism.isLinearQuasiIso {L L' : DGLAData R} (f : DGLAMorphism R L L') : Prop :=
   ∀ n : ℤ, Function.Bijective (f.toDGMorphism.componentMap n)
 
+namespace DGLAMorphism
+
+variable {R : Type u} [CommRing R]
+variable {L L' L'' : DGLAData R}
+
+/-- Identity DGLA morphism. -/
+def id (L : DGLAData R) : DGLAMorphism R L L where
+  toDGMorphism := Chain.DGMorphism.id L.toModule
+  bracket_compat := by
+    intro m n x y
+    simp [Chain.DGMorphism.componentMap, Chain.DGMorphism.id]
+
+/-- Composition of DGLA morphisms. -/
+def comp (g : DGLAMorphism R L' L'') (f : DGLAMorphism R L L') :
+    DGLAMorphism R L L'' where
+  toDGMorphism := Chain.DGMorphism.comp g.toDGMorphism f.toDGMorphism
+  bracket_compat := by
+    intro m n x y
+    change g.toDGMorphism.componentMap (m + n)
+        (f.toDGMorphism.componentMap (m + n) (L.bracket m n x y)) =
+      L''.bracket m n
+        (g.toDGMorphism.componentMap m (f.toDGMorphism.componentMap m x))
+        (g.toDGMorphism.componentMap n (f.toDGMorphism.componentMap n y))
+    rw [f.bracket_compat]
+    exact g.bracket_compat m n
+      (f.toDGMorphism.componentMap m x)
+      (f.toDGMorphism.componentMap n y)
+
+/-- Identity morphisms are degreewise-linear quasi-isomorphisms. -/
+theorem id_isLinearQuasiIso (L : DGLAData R) : (id (R := R) L).isLinearQuasiIso := by
+  intro n
+  simpa [id, Chain.DGMorphism.componentMap, Chain.DGMorphism.id] using
+    (show Function.Bijective (LinearMap.id : L.toModule.toComplex.X n →ₗ[R] L.toModule.toComplex.X n)
+      from Function.bijective_id)
+
+/-- Degreewise-linear quasi-isomorphisms are closed under composition. -/
+theorem comp_isLinearQuasiIso
+    (g : DGLAMorphism R L' L'') (f : DGLAMorphism R L L')
+    (hg : g.isLinearQuasiIso) (hf : f.isLinearQuasiIso) :
+    (comp g f).isLinearQuasiIso := by
+  intro n
+  have hcomp :
+      Function.Bijective (fun x : L.toModule.toComplex.X n =>
+        g.toDGMorphism.componentMap n (f.toDGMorphism.componentMap n x)) :=
+    (hg n).comp (hf n)
+  simpa [comp, Chain.DGMorphism.comp, Chain.DGMorphism.componentMap] using hcomp
+
+end DGLAMorphism
+
 /-! ## The Schouten Bracket
 
 The Schouten bracket on polyvector fields T_poly(M) = Γ(∧*TM).
@@ -318,6 +367,23 @@ def DGLAMorphism.toLInftyMorphism {R : Type u} [CommRing R]
     intro n
     simp
 
+/-- Explicit composition data for canonical DGLA-to-L∞ lifts. -/
+def DGLAMorphism.toLInftyCompositionData {R : Type u} [CommRing R]
+    {L L' L'' : DGLAData R}
+    (g : DGLAMorphism R L' L'') (f : DGLAMorphism R L L') :
+    LInftyMorphism.CompositionData g.toLInftyMorphism f.toLInftyMorphism where
+  composite := (DGLAMorphism.comp g f).toLInftyMorphism
+  linear_spec := by
+    intro n
+    simp [DGLAMorphism.toLInftyMorphism, DGLAMorphism.comp, Chain.DGMorphism.comp,
+      Chain.DGMorphism.componentMap]
+
+@[simp] theorem DGLAMorphism.toLInftyMorphism_comp {R : Type u} [CommRing R]
+    {L L' L'' : DGLAData R}
+    (g : DGLAMorphism R L' L'') (f : DGLAMorphism R L L') :
+    (g.toLInftyMorphism).comp (f.toLInftyMorphism) (DGLAMorphism.toLInftyCompositionData g f) =
+      (DGLAMorphism.comp g f).toLInftyMorphism := rfl
+
 /-- Canonical explicit lift package associated to `toLInftyMorphism`. -/
 def DGLAMorphism.canonicalLInftyLift {R : Type u} [CommRing R]
     {L L' : DGLAData R} (f : DGLAMorphism R L L') :
@@ -335,6 +401,20 @@ theorem DGLAMorphism.toLInftyMorphism_isQuasiIso {R : Type u} [CommRing R]
     (f.toLInftyMorphism).isQuasiIso := by
   intro n
   simpa [LInftyMorphism.isQuasiIso, DGLAMorphism.toLInftyMorphism] using hf n
+
+/-- Quasi-isomorphism transport for the canonical lift is stable under
+    DGLA morphism composition. -/
+theorem DGLAMorphism.comp_toLInftyMorphism_isQuasiIso {R : Type u} [CommRing R]
+    {L L' L'' : DGLAData R}
+    (g : DGLAMorphism R L' L'') (f : DGLAMorphism R L L')
+    (hg : g.isLinearQuasiIso) (hf : f.isLinearQuasiIso) :
+    ((DGLAMorphism.comp g f).toLInftyMorphism).isQuasiIso := by
+  have hg' : g.toLInftyMorphism.isQuasiIso := g.toLInftyMorphism_isQuasiIso hg
+  have hf' : f.toLInftyMorphism.isQuasiIso := f.toLInftyMorphism_isQuasiIso hf
+  simpa [DGLAMorphism.toLInftyMorphism_comp] using
+    (LInftyMorphism.quasiIso_comp
+      (G := g.toLInftyMorphism) (F := f.toLInftyMorphism)
+      (C := DGLAMorphism.toLInftyCompositionData g f) hg' hf')
 
 /-- A degreewise-linear DGLA quasi-isomorphism lift gives an L∞ quasi-isomorphism. -/
 theorem DGLAMorphism.toLInftyQuasiIso {R : Type u} [CommRing R]
