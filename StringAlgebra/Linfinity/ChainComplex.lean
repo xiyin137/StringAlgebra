@@ -254,8 +254,9 @@ theorem id_mapCocycles_eq (V : DGModule R) (n : ℤ) (z : V.cocycles n) :
 /-- The mapCohomology of id is the identity -/
 theorem id_mapCohomology_eq (V : DGModule R) (n : ℤ) (x : V.cohomology n) :
     (id V).mapCohomology n x = x := by
-  simpa [mapCohomology, id] using
-    congrArg (fun φ => φ.hom x) (HomologicalComplex.homologyMap_id V.toComplex n)
+  change (HomologicalComplex.homologyMap (𝟙 V.toComplex) n).hom x = x
+  have h := congrArg (fun φ => φ.hom x) (HomologicalComplex.homologyMap_id V.toComplex n)
+  exact h.trans rfl
 
 /-- Identity is a quasi-isomorphism -/
 theorem id_isQuasiIso (V : DGModule R) : (id V).isQuasiIso := by
