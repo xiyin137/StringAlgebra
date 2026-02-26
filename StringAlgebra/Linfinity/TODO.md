@@ -22,6 +22,7 @@ This file tracks formal soundness debt for `StringAlgebra/Linfinity` under `agen
    - `Formality.lean`: strengthened MC transport to explicit element-level output (`linfty_preserves_mc`) with an existence wrapper lemma, and added reflexive/symmetric/transitive gauge-equivalence infrastructure with a `Setoid` instance on star products.
    - `Basic.lean`: removed tautological Jacobi fields; now carries explicit law interfaces.
    - `LInfinityAlgebra.lean`: removed fake twisted/Lie conversion fallbacks and synthetic transfer morphism defaults; transfer morphisms are now explicit witness fields, and core `LInftyMorphism` composition now uses explicit composition data with canonical identity instances.
+   - `LInfinityAlgebra.lean`: homotopy-transfer witness package now includes explicit quasi-isomorphism certification of the lifted inclusion, with derived transfer linear/quasi-iso lemmas.
    - `GradedInfrastructure.lean`: removed `Classical.epsilon` degree selector; degree extraction now requires a homogeneity witness.
    - `Morphisms.lean`: quasi-isomorphism criterion strengthened to degreewise bijectivity; composition now uses explicit `CompositionData`, with derived canonical instances for identity and strict-morphism composition.
    - `Morphisms.lean`: added explicit conversion bridges between bundled `LInftyHom` data and core `LInftyMorphism`, including composition-data transport.
@@ -80,7 +81,7 @@ PolyvectorFieldsDGLA.toDGLAData
 6. `Coderivations.lean`: medium-high risk. Core interfaces hardened; constructive co-Leibniz/component derivation remains pending.
 7. `GradedInfrastructure.lean`: medium-high risk. Extraction interfaces are explicit; internal constructive realization still pending.
 8. `ChainComplex.lean`: low risk.
-9. `LInfinityAlgebra.lean`: medium-high risk. Core object definitions compile and transfer morphisms are explicit witnesses; semantically nontrivial constructions still depend on supplied transfer/twisting data.
+9. `LInfinityAlgebra.lean`: medium risk. Core object definitions compile and transfer morphisms now carry explicit linear and quasi-isomorphism certification in the homotopy-transfer interface; semantically nontrivial constructions still depend on supplied transfer/twisting data.
 10. `Morphisms.lean`: medium risk. Composition/quasi-isomorphism interfaces are explicit and include canonical strict/identity composition data; first-order homotopy-equation semantics now exist with explicit symmetry/transitivity constructors, while higher coherence equations and homology-level semantics remain pending.
 11. `DGLA.lean`: medium risk. Tautological bridge shells removed and canonical lift/compose wiring exists; full bracket-sensitive constructive bridge from DGLA structure to higher L∞ components is still pending.
 12. `MaurerCartan.lean`: medium risk. MC/gauge/twisting operations are explicit interface data, and Kuranishi outputs are no longer fabricated; canonical constructive formulas and cohomological quotient realization remain pending.
