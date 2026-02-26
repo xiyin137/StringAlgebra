@@ -16,14 +16,11 @@ This file tracks formal soundness debt for `StringAlgebra/Linfinity` under `agen
 3. `rg` scans show no `axiom`, `admit`, `Classical.choose`, or placeholder markers in Linfinity Lean files.
 4. Recent hardening completed:
    - `Transfer.lean`: removed fabricated transfer outputs and `Classical.choose` inversion; now uses explicit transfer witness packages.
-   - `Transfer.lean`: tightened `minimal_model_unique` output from bare `Nonempty` to an explicit quasi-isomorphic comparison witness that is returned identically (no hidden witness substitution).
-   - `Transfer.lean`: added `minimal_model_unique_iff_isQuasiIso`, making the witness-return formulation of minimal-model uniqueness explicitly equivalent to quasi-isomorphism of the supplied comparison map.
-   - `Transfer.lean`: added strengthened minimal-model uniqueness packaging with explicit arity-1 bijectivity (`minimal_model_unique_with_linear_bijectivity`) and its conservativity iff theorem (`minimal_model_unique_with_linear_bijectivity_iff_isQuasiIso`).
-   - `Transfer.lean`: added base-vs-strengthened uniqueness bridge (`minimal_model_unique_with_linear_bijectivity_iff_minimal_model_unique`) and derived arity-1 bijectivity extraction from base uniqueness witnesses (`minimal_model_unique_linear_isBijective_of_unique`).
+   - `Transfer.lean`: removed tautological minimal-model "uniqueness" wrappers that merely restated provided comparison-map assumptions.
    - `Transfer.lean`: added unpacked formality interface (`isFormal_unpacked`/`isFormal_of_unpacked`/`isFormal_iff_unpacked`) exposing explicit minimal-model and quasi-isomorphism data from/to `isFormal`.
    - `Transfer.lean`: added canonical accessor morphisms (`minimalModelMorphism`, `formalityMorphism`) with explicit quasi-isomorphism theorems and routed `minimal_model_exists` through these accessors.
    - `Transfer.lean`: strengthened `TransferResult` with explicit linear-consistency constraint (`inclusion_linear`) tying the lifted inclusion's arity-1 component to the underlying SDR inclusion map; added exported theorem `transferInclusion_linear`.
-   - `Transfer.lean`: strengthened both `MinimalModelResult` and `FormalityResult` with explicit linear-part fields tied to the arity-1 quasi-isomorphism components (`linear_spec`), and added derived degreewise bijectivity theorems (`minimalModelLinear_isBijective`, `formalityLinear_isBijective`).
+   - `Transfer.lean`: strengthened both `MinimalModelResult` and `FormalityResult` with explicit linear-part fields tied to the arity-1 comparison-morphism components (`linear_spec`), and added derived degreewise bijectivity theorems (`minimalModelLinear_isBijective`, `formalityLinear_isBijective`).
    - `Transfer.lean`: added `transferInclusionLinear_isBijective`, deriving degreewise bijectivity of `data.incl` from `transfer_is_quasiIso` via the exported arity-1 coherence theorem `transferInclusion_linear`.
    - `Transfer.lean`: removed proof-carrying fields `TransferResult.inclusion_isQuasiIso`, `MinimalModelResult.quasiIso_property`, and `FormalityResult.quasiIso_property`; corresponding quasi-isomorphism claims are now explicit theorem-level gaps (`transfer_is_quasiIso`, `minimalModelMorphism_isQuasiIso`, `formalityMorphism_isQuasiIso`).
    - `Transfer.lean`: added canonical accessor linear-bridge theorems (`minimalModelMorphism_linear_isBijective`, `formalityMorphism_linear_isBijective`) and simp equalities (`minimalModelMorphism_linear_eq`, `formalityMorphism_linear_eq`), so package-level linear bijectivity now explicitly factors through canonical accessor morphisms.
@@ -136,18 +133,6 @@ minimal_model_exists_with_linear_bijectivity
 isFormal_unpacked_with_linear_bijectivity
 <-> unpacked_with_linear_bijectivity_iff_unpacked
 
-minimal_model_unique
-<-> minimal_model_unique_iff_isQuasiIso
-
-minimal_model_unique_with_linear_bijectivity
-<-> minimal_model_unique_with_linear_bijectivity_iff_isQuasiIso
-
-minimal_model_unique_with_linear_bijectivity
-<-> minimal_model_unique_with_linear_bijectivity_iff_minimal_model_unique
-
-minimal_model_unique
--> minimal_model_unique_linear_isBijective_of_unique
-
 isFormal_of_unpacked_with_linear_bijectivity
 -> isFormal
 
@@ -204,7 +189,7 @@ StarProductClassificationByGauge
 10. `Morphisms.lean`: medium risk. Composition/quasi-isomorphism interfaces are explicit and include canonical strict/identity composition data, component records now enforce arity-indexed degree consistency, bridge conversions now have explicit higher-component round-trip guarantees, and first-order homotopy-equation semantics exist with explicit symmetry/transitivity constructors; higher coherence equations and homology-level semantics remain pending.
 11. `DGLA.lean`: medium risk. Tautological bridge shells removed, canonical lift/compose wiring has bidirectional quasi-isomorphism criterion equivalence, arbitrary explicit lift packages now also carry bidirectional quasi-isomorphism criteria plus derived linear-vs-unary coherence, and lift witnesses explicitly constrain higher-component shape; full bracket-sensitive constructive bridge from DGLA structure to higher L∞ components is still pending.
 12. `MaurerCartan.lean`: medium risk. MC/gauge/twisting operations are explicit interface data with witness-aligned theorem/docs, gauge action is explicitly tied to gauge-equivalence and MC preservation (including canonical action on `MCElement` and moduli-class invariance under that action), and Kuranishi outputs are no longer fabricated; canonical constructive formulas and cohomological quotient realization remain pending.
-13. `Transfer.lean`: high risk. Fabricated outputs removed, witness-return theorems now preserve supplied comparison data explicitly, lifted transfer inclusions carry explicit arity-1 agreement with SDR inclusion maps, and minimal/formality witness packages expose linear views tied to arity-1 components while quasi-isomorphism claims are explicit theorem-level gaps (`transfer_is_quasiIso`, `minimalModelMorphism_isQuasiIso`, `formalityMorphism_isQuasiIso`); transferred brackets/structures are still witness-driven and not yet constructed from trees internally.
+13. `Transfer.lean`: high risk. Fabricated outputs and tautological uniqueness wrappers removed, lifted transfer inclusions carry explicit arity-1 agreement with SDR inclusion maps, and minimal/formality witness packages expose linear views tied to arity-1 components while quasi-isomorphism claims are explicit theorem-level gaps (`transfer_is_quasiIso`, `minimalModelMorphism_isQuasiIso`, `formalityMorphism_isQuasiIso`); transferred brackets/structures are still witness-driven and not yet constructed from trees internally.
 14. `Formality.lean`: high risk. Placeholder outputs removed; `KontsevichGraph.ordering` now records explicit ground-target bounds (no tautological ground branch), formality components now enforce arity-indexed degree consistency, `FormalityMorphism` enforces arity-wise component consistency with bundled L∞ data and explicit HKR normalization at arity 1, MC-preservation data now enforces element-level arity-1 linear compatibility with the chosen L∞ morphism, gauge-equivalence/gauge-class interfaces are explicit, theorem naming now reflects witness-level semantics, and gauge-transformation normalization/composition are data-preserving, while the theorem-level bridge still remains witness-driven and awaits constructive graph-weight/operator machinery.
 15. `BVAlgebra.lean`: medium risk. No `sorry`; cyclic antibracket interface is explicit, `Δ`-closure is tracked via an explicit trilinear vanishing witness (`triple_delta_zero`), and key BV-to-Gerstenhaber/CME derivations still rely on explicit assumptions pending closure.
 16. `TODO.md`: active audit ledger.

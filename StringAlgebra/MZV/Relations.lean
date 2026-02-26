@@ -214,11 +214,6 @@ def hoffmanCount : ℕ → ℕ
   | 3 => 1  -- Just (3)
   | n + 4 => hoffmanCount (n + 2) + hoffmanCount (n + 1)
 
-/-- Hoffman count satisfies Fibonacci-like recurrence -/
-theorem hoffmanCount_recurrence (n : ℕ) :
-    hoffmanCount (n + 4) = hoffmanCount (n + 2) + hoffmanCount (n + 1) := by
-  rfl
-
 /-- Brown's theorem: Hoffman elements span MZVs -/
 def hoffman_basis_theorem : Prop :=
   ∀ w : ℕ, w ≥ 2 → ∃ s : Composition, s.weight = w ∧ isHoffman s
@@ -232,12 +227,6 @@ def bkDimension : ℕ → ℕ
   | 1 => 0
   | 2 => 0
   | n + 3 => bkDimension (n + 1) + bkDimension n
-
-/-- BK dimensions: 1, 0, 0, 1, 0, 1, 1, 1, 1, 2, 2, 3, ... -/
-theorem bk_values :
-    bkDimension 0 = 1 ∧ bkDimension 1 = 0 ∧ bkDimension 2 = 0 ∧
-    bkDimension 3 = 1 ∧ bkDimension 4 = 0 ∧ bkDimension 5 = 1 := by
-  simp only [bkDimension, and_self]
 
 /-! ## Small Weight Relations -/
 

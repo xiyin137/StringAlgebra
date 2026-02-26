@@ -133,10 +133,6 @@ def zeta3 : MotivicMZV := ofComposition [⟨3, by omega⟩]
 /-- ζ^m(2,1) -/
 def zeta21 : MotivicMZV := ofComposition [⟨2, by omega⟩, ⟨1, by omega⟩]
 
-/-- Motivic relation: ζ^m(2,1) = ζ^m(3) -/
-theorem motivic_zeta21_eq_zeta3 : zeta21.weight = zeta3.weight := by
-  rfl
-
 end MotivicMZV
 
 /-! ## The Motivic Coaction -/
@@ -275,20 +271,6 @@ def smul (c : ℚ) (m : FMonomial) : FMonomial where
   allValid := m.allValid
 
 end FMonomial
-
-/-- ζ^m(3) = f₃ (the simplest relation) -/
-theorem zeta3_eq_f3 : MotivicMZV.zeta3.weight = FGenerator.weight f3 := by
-  rfl
-
-/-- ζ^m(5) = f₅ (no depth reduction at weight 5) -/
-theorem zeta5_eq_f5 :
-    (MotivicMZV.ofComposition [⟨5, by omega⟩]).weight = FGenerator.weight f5 := by
-  rfl
-
-/-- At weight 8: ζ^m(3,5) + ζ^m(5,3) involves f₃f₅ -/
-theorem weight8_relation :
-    (MotivicMZV.ofComposition [⟨3, by omega⟩, ⟨5, by omega⟩]).weight = 8 := by
-  rfl
 
 /-! ## The Period Map -/
 

@@ -300,12 +300,12 @@ structure MinimalModelResult {R : Type u} [CommRing R]
   model : LInftyAlgebra R H
   /-- Minimality certificate. -/
   minimal : isMinimal model
-  /-- Quasi-isomorphism from minimal model to the original algebra. -/
-  quasiIso : LInftyHom R model L
-  /-- Explicit linear part of the quasi-isomorphism. -/
+  /-- Candidate comparison morphism from minimal model to the original algebra. -/
+  morphism : LInftyHom R model L
+  /-- Explicit linear part of the comparison morphism. -/
   linear : (n : ℤ) → H n →ₗ[R] V n
-  /-- The linear part agrees with the arity-1 component of `quasiIso`. -/
-  linear_spec : ∀ n : ℤ, ((quasiIso.components 1 (by omega)).map n) = linear n
+  /-- The linear part agrees with the arity-1 component of `morphism`. -/
+  linear_spec : ∀ n : ℤ, ((morphism.components 1 (by omega)).map n) = linear n
 
 attribute [instance] MinimalModelResult.instAddCommGroup
 attribute [instance] MinimalModelResult.instModule
@@ -316,7 +316,7 @@ def minimalModelMorphism {R : Type u} [CommRing R]
     [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
     {L : LInftyAlgebra R V} (M : MinimalModelResult L) :
     LInftyHom R M.model L :=
-  M.quasiIso
+  M.morphism
 
 theorem minimalModelMorphism_isQuasiIso {R : Type u} [CommRing R]
     {V : ℤ → Type v}
@@ -401,143 +401,6 @@ theorem minimal_model_exists_with_linear_bijectivity_iff {R : Type u} [CommRing 
     rcases h with ⟨F, hq⟩
     exact ⟨F, hq, hq⟩
 
-/-- Conditional minimal-model comparison packaging.
-
-    If a quasi-isomorphic comparison morphism between two candidate minimal
-    models is provided, this theorem returns that exact witness. -/
-theorem minimal_model_unique {R : Type u} [CommRing R]
-    {V H H' : ℤ → Type v}
-    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
-    [∀ i, AddCommGroup (H i)] [∀ i, Module R (H i)]
-    [∀ i, AddCommGroup (H' i)] [∀ i, Module R (H' i)]
-    (L : LInftyAlgebra R V) (L_H : LInftyAlgebra R H) (L_H' : LInftyAlgebra R H')
-    (_hH : isMinimal L_H) (_hH' : isMinimal L_H')
-    (_f : LInftyHom R L_H L) (_f' : LInftyHom R L_H' L)
-    (_hf : _f.isQuasiIso) (_hf' : _f'.isQuasiIso)
-    (comparison : LInftyHom R L_H L_H')
-    (hcomparison : comparison.isQuasiIso) :
-    ∃ comparison' : LInftyHom R L_H L_H',
-      comparison'.isQuasiIso ∧ comparison' = comparison :=
-  ⟨comparison, hcomparison, rfl⟩
-
-/-- Conservativity of `minimal_model_unique`: returning a comparison witness
-    equal to the supplied map is equivalent to quasi-isomorphism of that map. -/
-theorem minimal_model_unique_iff_isQuasiIso {R : Type u} [CommRing R]
-    {V H H' : ℤ → Type v}
-    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
-    [∀ i, AddCommGroup (H i)] [∀ i, Module R (H i)]
-    [∀ i, AddCommGroup (H' i)] [∀ i, Module R (H' i)]
-    (L : LInftyAlgebra R V) (L_H : LInftyAlgebra R H) (L_H' : LInftyAlgebra R H')
-    (_hH : isMinimal L_H) (_hH' : isMinimal L_H')
-    (_f : LInftyHom R L_H L) (_f' : LInftyHom R L_H' L)
-    (_hf : _f.isQuasiIso) (_hf' : _f'.isQuasiIso)
-    (comparison : LInftyHom R L_H L_H') :
-    (∃ comparison' : LInftyHom R L_H L_H',
-      comparison'.isQuasiIso ∧ comparison' = comparison) ↔
-      comparison.isQuasiIso := by
-  constructor
-  · intro h
-    rcases h with ⟨comparison', hq, hEq⟩
-    simpa [hEq] using hq
-  · intro hcomparison
-    exact minimal_model_unique L L_H L_H' _hH _hH' _f _f' _hf _hf' comparison hcomparison
-
-/-- Strengthened minimal-model comparison packaging with explicit degreewise
-    bijectivity of the arity-1 component on the returned witness. -/
-theorem minimal_model_unique_with_linear_bijectivity {R : Type u} [CommRing R]
-    {V H H' : ℤ → Type v}
-    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
-    [∀ i, AddCommGroup (H i)] [∀ i, Module R (H i)]
-    [∀ i, AddCommGroup (H' i)] [∀ i, Module R (H' i)]
-    (L : LInftyAlgebra R V) (L_H : LInftyAlgebra R H) (L_H' : LInftyAlgebra R H')
-    (_hH : isMinimal L_H) (_hH' : isMinimal L_H')
-    (_f : LInftyHom R L_H L) (_f' : LInftyHom R L_H' L)
-    (_hf : _f.isQuasiIso) (_hf' : _f'.isQuasiIso)
-    (comparison : LInftyHom R L_H L_H')
-    (hcomparison : comparison.isQuasiIso) :
-    ∃ comparison' : LInftyHom R L_H L_H',
-      comparison'.isQuasiIso ∧
-      comparison' = comparison ∧
-      (∀ n : ℤ, Function.Bijective (((comparison'.components 1 (by omega)).map n))) := by
-  refine ⟨comparison, hcomparison, rfl, ?_⟩
-  intro n
-  simpa using hcomparison n
-
-/-- Conservativity of the strengthened uniqueness package:
-    adding explicit arity-1 bijectivity does not change the criterion. -/
-theorem minimal_model_unique_with_linear_bijectivity_iff_isQuasiIso {R : Type u} [CommRing R]
-    {V H H' : ℤ → Type v}
-    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
-    [∀ i, AddCommGroup (H i)] [∀ i, Module R (H i)]
-    [∀ i, AddCommGroup (H' i)] [∀ i, Module R (H' i)]
-    (L : LInftyAlgebra R V) (L_H : LInftyAlgebra R H) (L_H' : LInftyAlgebra R H')
-    (_hH : isMinimal L_H) (_hH' : isMinimal L_H')
-    (_f : LInftyHom R L_H L) (_f' : LInftyHom R L_H' L)
-    (_hf : _f.isQuasiIso) (_hf' : _f'.isQuasiIso)
-    (comparison : LInftyHom R L_H L_H') :
-    (∃ comparison' : LInftyHom R L_H L_H',
-      comparison'.isQuasiIso ∧
-      comparison' = comparison ∧
-      (∀ n : ℤ, Function.Bijective (((comparison'.components 1 (by omega)).map n)))) ↔
-      comparison.isQuasiIso := by
-  constructor
-  · intro h
-    rcases h with ⟨comparison', hq, hEq, _hlin⟩
-    simpa [hEq] using hq
-  · intro hcomparison
-    exact minimal_model_unique_with_linear_bijectivity
-      L L_H L_H' _hH _hH' _f _f' _hf _hf' comparison hcomparison
-
-/-- Conservativity of the strengthened uniqueness package relative to the
-    base witness-return package. -/
-theorem minimal_model_unique_with_linear_bijectivity_iff_minimal_model_unique
-    {R : Type u} [CommRing R]
-    {V H H' : ℤ → Type v}
-    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
-    [∀ i, AddCommGroup (H i)] [∀ i, Module R (H i)]
-    [∀ i, AddCommGroup (H' i)] [∀ i, Module R (H' i)]
-    (L : LInftyAlgebra R V) (L_H : LInftyAlgebra R H) (L_H' : LInftyAlgebra R H')
-    (_hH : isMinimal L_H) (_hH' : isMinimal L_H')
-    (_f : LInftyHom R L_H L) (_f' : LInftyHom R L_H' L)
-    (_hf : _f.isQuasiIso) (_hf' : _f'.isQuasiIso)
-    (comparison : LInftyHom R L_H L_H') :
-    (∃ comparison' : LInftyHom R L_H L_H',
-      comparison'.isQuasiIso ∧
-      comparison' = comparison ∧
-      (∀ n : ℤ, Function.Bijective (((comparison'.components 1 (by omega)).map n)))) ↔
-    (∃ comparison' : LInftyHom R L_H L_H',
-      comparison'.isQuasiIso ∧ comparison' = comparison) := by
-  constructor
-  · intro h
-    rcases h with ⟨comparison', hq, hEq, _hlin⟩
-    exact ⟨comparison', hq, hEq⟩
-  · intro h
-    rcases h with ⟨comparison', hq, hEq⟩
-    refine ⟨comparison', hq, hEq, ?_⟩
-    intro n
-    simpa using hq n
-
-/-- Any base uniqueness witness implies degreewise bijectivity of the
-    supplied comparison map on arity-1 components. -/
-theorem minimal_model_unique_linear_isBijective_of_unique
-    {R : Type u} [CommRing R]
-    {V H H' : ℤ → Type v}
-    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
-    [∀ i, AddCommGroup (H i)] [∀ i, Module R (H i)]
-    [∀ i, AddCommGroup (H' i)] [∀ i, Module R (H' i)]
-    (L : LInftyAlgebra R V) (L_H : LInftyAlgebra R H) (L_H' : LInftyAlgebra R H')
-    (_hH : isMinimal L_H) (_hH' : isMinimal L_H')
-    (_f : LInftyHom R L_H L) (_f' : LInftyHom R L_H' L)
-    (_hf : _f.isQuasiIso) (_hf' : _f'.isQuasiIso)
-    (comparison : LInftyHom R L_H L_H')
-    (hunique :
-      ∃ comparison' : LInftyHom R L_H L_H',
-        comparison'.isQuasiIso ∧ comparison' = comparison) :
-    ∀ n : ℤ, Function.Bijective (((comparison.components 1 (by omega)).map n)) := by
-  intro n
-  rcases hunique with ⟨comparison', hq, hEq⟩
-  simpa [hEq] using (hq n)
-
 /-! ## Formality -/
 
 /-- Witness package for formality via an explicit minimal-model style target. -/
@@ -555,12 +418,12 @@ structure FormalityResult {R : Type u} [CommRing R]
   model : LInftyAlgebra R H
   /-- Minimality/strictness property required by the chosen formality setup. -/
   minimal : isMinimal model
-  /-- Quasi-isomorphism exhibiting formality. -/
-  quasiIso : LInftyHom R model L
-  /-- Explicit linear part of the quasi-isomorphism. -/
+  /-- Candidate comparison morphism used in the formality witness package. -/
+  morphism : LInftyHom R model L
+  /-- Explicit linear part of the comparison morphism. -/
   linear : (n : ℤ) → H n →ₗ[R] V n
-  /-- The linear part agrees with the arity-1 component of `quasiIso`. -/
-  linear_spec : ∀ n : ℤ, ((quasiIso.components 1 (by omega)).map n) = linear n
+  /-- The linear part agrees with the arity-1 component of `morphism`. -/
+  linear_spec : ∀ n : ℤ, ((morphism.components 1 (by omega)).map n) = linear n
 
 attribute [instance] FormalityResult.instAddCommGroup
 attribute [instance] FormalityResult.instModule
@@ -571,7 +434,7 @@ def formalityMorphism {R : Type u} [CommRing R]
     [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
     {L : LInftyAlgebra R V} (F : FormalityResult L) :
     LInftyHom R F.model L :=
-  F.quasiIso
+  F.morphism
 
 theorem formalityMorphism_isQuasiIso {R : Type u} [CommRing R]
     {V : ℤ → Type v}
@@ -611,6 +474,11 @@ theorem formalityLinear_isBijective {R : Type u} [CommRing R]
     formalityMorphism_linear_eq F n
   simpa [hlin] using hq
 
+/-- Witness-level formality predicate.
+
+    This records the existence of a `FormalityResult` package. The quasi-isomorphism
+    obligation for the stored comparison morphism is tracked explicitly at theorem
+    level via `formalityMorphism_isQuasiIso` (currently an explicit proof gap). -/
 def isFormal {R : Type u} [CommRing R]
     {V : ℤ → Type v}
     [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
@@ -629,7 +497,7 @@ theorem isFormal_unpacked {R : Type u} [CommRing R]
       ∃ (_minimal : isMinimal model),
       ∃ (q : LInftyHom R model L), q.isQuasiIso := by
   rcases h with ⟨F⟩
-  exact ⟨F.H, F.instAddCommGroup, F.instModule, F.model, F.minimal, F.quasiIso,
+  exact ⟨F.H, F.instAddCommGroup, F.instModule, F.model, F.minimal, F.morphism,
     by simpa [formalityMorphism] using formalityMorphism_isQuasiIso F⟩
 
 /-- Unpack formality into explicit model/quasi-isomorphism data together with
@@ -709,7 +577,7 @@ theorem isFormal_of_unpacked {R : Type u} [CommRing R]
     instModule := instModule
     model := model
     minimal := minimal
-    quasiIso := q
+    morphism := q
     linear := fun n => ((q.components 1 (by omega)).map n)
     linear_spec := by
       intro n

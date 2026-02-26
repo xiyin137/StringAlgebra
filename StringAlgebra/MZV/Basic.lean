@@ -263,10 +263,6 @@ def zeta3 : Composition := riemannZeta 3 (by omega)
 /-- ζ(2,1) composition (related to ζ(3) by shuffle relation) -/
 def zeta21 : Composition := [⟨2, by omega⟩, ⟨1, by omega⟩]
 
-/-- ζ(2,1) has weight 3 -/
-theorem zeta21_weight : zeta21.weight = 3 := by
-  simp [zeta21, Composition.weight]
-
 /-! ## Hoffman Basis
 
 Following Brown "Mixed Tate Motives over Z" (Annals of Math 2012), every MZV

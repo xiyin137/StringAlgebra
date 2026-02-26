@@ -245,31 +245,6 @@ def DoubleShuffleRelation.of (s t : Composition) : DoubleShuffleRelation where
 
 /-! ## Key Examples -/
 
-/-- The simplest double shuffle relation: ζ(2)·ζ(1) computed two ways.
-
-    **Shuffle**: ζ(2) ш ζ(1) involves words in {0,1}
-      Word for ζ(2) = 10, Word for ζ(1) = 1
-      10 ш 1 = 110 + 110 + 101 = 2·ζ(2,1) + ζ(1,2)
-
-    **Stuffle**: ζ(2) * ζ(1) = ζ(2,1) + ζ(1,2) + ζ(3)
-
-    Equating: 2·ζ(2,1) + ζ(1,2) = ζ(2,1) + ζ(1,2) + ζ(3)
-    Therefore: ζ(2,1) = ζ(3) -/
-theorem zeta21_eq_zeta3 : Composition.weight zeta21 = Composition.weight zeta3 := by
-  rfl
-
-/-- Weight 4 relations from double shuffle.
-
-    From ζ(2)·ζ(2), ζ(3)·ζ(1), etc., one derives:
-    - ζ(3,1) = ζ(4)/4
-    - ζ(2,2) = ζ(4)/4 · 3
-    - ζ(2,1,1) = ζ(4)/4 -/
-theorem weight4_relations :
-    Composition.weight [⟨3, by omega⟩, ⟨1, by omega⟩] = 4 ∧
-    Composition.weight [⟨2, by omega⟩, ⟨2, by omega⟩] = 4 ∧
-    Composition.weight [⟨2, by omega⟩, ⟨1, by omega⟩, ⟨1, by omega⟩] = 4 := by
-  simp [Composition.weight]
-
 /-! ## Regularization -/
 
 /-- Shuffle regularization for non-admissible compositions.
