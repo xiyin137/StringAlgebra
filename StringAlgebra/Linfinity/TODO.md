@@ -30,6 +30,7 @@ This file tracks formal soundness debt for `StringAlgebra/Linfinity` under `agen
    - `Formality.lean`: strengthened MC transport to explicit element-level output (`linfty_preserves_mc`) with an existence wrapper lemma, and added reflexive/symmetric/transitive gauge-equivalence infrastructure with a `Setoid` instance on star products.
    - `Formality.lean`: added explicit star-product gauge-class quotient interface (`StarProductGaugeClass`, projection, and exact equality↔gauge-equivalence bridge lemmas).
    - `Formality.lean`: added classification bridge theorem on quotient classes (`starProductClassification_toGaugeClass`) to consume assumptions directly at the `toGaugeClass` level.
+   - `Formality.lean`: added converse and iff classification bridges (`starProductClassification_of_toGaugeClass`, `starProductClassification_iff_toGaugeClass`) so gauge-equivalence and quotient-class formulations are explicitly inter-derivable.
    - `Formality.lean`: gauge transformations are now identity-normalized (`T₀ = 0`) and composition/symmetry preserve and combine explicit transformation data instead of discarding components; the local `ConfigurationSpace` model also enforces collision-freeness via injectivity.
    - `Formality.lean`: strengthened `KontsevichGraph.ordering` by replacing the tautological ground-target branch with an explicit finite-index bound (`j.val < groundVertices`).
    - `Formality.lean`: strengthened `FormalityComponent` with explicit degree-consistency proof (`degree_spec`) and exported simp lemma (`FormalityComponent.degree_eq`), eliminating unconstrained arity/degree metadata.
@@ -139,6 +140,11 @@ isFormal
 
 + QuantizationResult witness
 -> deformationQuantization
+
+starProductClassification
+<-> starProductClassification_iff_toGaugeClass
+-> starProductClassification_toGaugeClass
+-> starProductClassification_of_toGaugeClass
 ```
 
 ## Soundness Audit Matrix (All Linfinity Files)

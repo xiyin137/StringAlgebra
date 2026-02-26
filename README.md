@@ -74,7 +74,8 @@ Current audited status (2026-02-26):
 7. Transfer extraction interfaces now include linear-bijectivity-preserving existence theorems (`minimal_model_exists_with_linear_bijectivity`, `isFormal_unpacked_with_linear_bijectivity`, `isFormal_exists_formalityLinear_isBijective`) so witness unpacking does not lose arity-1 isomorphism data.
 8. Transfer formality extraction now has explicit reverse/iff bridges (`isFormal_of_unpacked_with_linear_bijectivity`, `isFormal_iff_unpacked_with_linear_bijectivity`, `isFormal_iff_exists_formalityLinear_isBijective`) so strengthened unpacked/package-level views are theorem-level equivalent to `isFormal`.
 9. Transfer extraction conservativity is now explicit (`minimal_model_exists_with_linear_bijectivity_iff`, `unpacked_with_linear_bijectivity_iff_unpacked`): strengthened “with linear bijectivity” statements are equivalent to base quasi-isomorphism existence/unpacked statements.
-10. Remaining semantic debt is tracked explicitly in `StringAlgebra/Linfinity/TODO.md`.
+10. Formality classification bridges are now bidirectional (`starProductClassification_toGaugeClass`, `starProductClassification_of_toGaugeClass`) with an explicit equivalence theorem (`starProductClassification_iff_toGaugeClass`) between gauge-equivalence and quotient-class formulations.
+11. Remaining semantic debt is tracked explicitly in `StringAlgebra/Linfinity/TODO.md`.
 
 Current dependency flow toward `Formality.lean`:
 
@@ -108,6 +109,7 @@ minimal_model_exists_with_linear_bijectivity <-> minimal_model_exists_with_linea
 isFormal_unpacked_with_linear_bijectivity <-> unpacked_with_linear_bijectivity_iff_unpacked
 isFormal_of_unpacked_with_linear_bijectivity -> isFormal
 isFormal <-> isFormal_iff_unpacked_with_linear_bijectivity <-> isFormal_iff_exists_formalityLinear_isBijective
+starProductClassification <-> starProductClassification_iff_toGaugeClass -> starProductClassification_toGaugeClass -> starProductClassification_of_toGaugeClass
 -> linfty_preserves_mc (with MCPreservation witness)
 -> MaurerCartan local deformation packaging (explicit KuranishiTheory witness)
 -> deformationQuantization (with QuantizationResult witness)
