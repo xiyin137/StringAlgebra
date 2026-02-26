@@ -424,6 +424,28 @@ theorem minimal_model_unique {R : Type u} [CommRing R]
       comparison'.isQuasiIso ∧ comparison' = comparison :=
   ⟨comparison, hcomparison, rfl⟩
 
+/-- Conservativity of `minimal_model_unique`: returning a comparison witness
+    equal to the supplied map is equivalent to quasi-isomorphism of that map. -/
+theorem minimal_model_unique_iff_isQuasiIso {R : Type u} [CommRing R]
+    {V H H' : ℤ → Type v}
+    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
+    [∀ i, AddCommGroup (H i)] [∀ i, Module R (H i)]
+    [∀ i, AddCommGroup (H' i)] [∀ i, Module R (H' i)]
+    (L : LInftyAlgebra R V) (L_H : LInftyAlgebra R H) (L_H' : LInftyAlgebra R H')
+    (_hH : isMinimal L_H) (_hH' : isMinimal L_H')
+    (_f : LInftyHom R L_H L) (_f' : LInftyHom R L_H' L)
+    (_hf : _f.isQuasiIso) (_hf' : _f'.isQuasiIso)
+    (comparison : LInftyHom R L_H L_H') :
+    (∃ comparison' : LInftyHom R L_H L_H',
+      comparison'.isQuasiIso ∧ comparison' = comparison) ↔
+      comparison.isQuasiIso := by
+  constructor
+  · intro h
+    rcases h with ⟨comparison', hq, hEq⟩
+    simpa [hEq] using hq
+  · intro hcomparison
+    exact minimal_model_unique L L_H L_H' _hH _hH' _f _f' _hf _hf' comparison hcomparison
+
 /-! ## Formality -/
 
 /-- Witness package for formality via an explicit minimal-model style target. -/
