@@ -12,7 +12,7 @@ This file tracks semantic and proof debt for `StringAlgebra/MZV` under `agent.md
 4. Placeholder `True := trivial` stubs have been removed from the main MZV interfaces.
 5. `DoubleShuffle.lean` end-stage contracts were tightened: coaction/motivic compatibility are explicit map-parameterized properties, finite-generation is phrased via finite bases, and the implemented Ihara derivation now has explicit additive and basic structural lemmas.
 6. Redundant tautological endpoint shells were removed from `DoubleShuffle.lean` (direct `Iff.rfl` theorem wrappers of definitions).
-7. Additional unused tautological example equalities were removed from `Basic.lean`, `Motivic.lean`, and `Polylogarithm.lean` to reduce non-semantic surface area.
+7. Additional unused tautological example equalities were removed from `Basic.lean`, `Relations.lean`, `Motivic.lean`, and `Polylogarithm.lean` to reduce non-semantic surface area.
 
 ## MZV Dependency Graph
 

@@ -241,29 +241,6 @@ theorem bk_values :
 
 /-! ## Small Weight Relations -/
 
-/-- Weight 2: dim = 1, basis {ζ(2)} -/
-theorem weight2_basis : hoffmanCount 2 = 1 := by rfl
-
-/-- Weight 3: dim = 1, basis {ζ(3)}, with ζ(2,1) = ζ(3) -/
-theorem weight3_relations : hoffmanCount 3 = 1 := by rfl
-
-/-- Weight 4: dim = 1, basis {ζ(4)}
-    Relations: ζ(3,1) = ζ(4)/4, ζ(2,2) = 3ζ(4)/4, ζ(2,1,1) = ζ(4)/4 -/
-theorem weight4_dim : hoffmanCount 4 = 1 := by rfl
-
-/-- Weight 5: dim = 2, basis {ζ(5), ζ(2)ζ(3)}
-    Relations: ζ(4,1) = ζ(5) - ζ(2)ζ(3), etc. -/
-theorem weight5_dim : hoffmanCount 5 = 2 := by rfl
-
-/-- Weight 6: dim = 2, basis {ζ(6), ζ(3)²} -/
-theorem weight6_dim : hoffmanCount 6 = 2 := by rfl
-
-/-- Weight 7: dim = 3, first weight with 3 basis elements -/
-theorem weight7_dim : hoffmanCount 7 = 3 := by rfl
-
-/-- Weight 8: dim = 4, includes the first depth-4 irreducible element -/
-theorem weight8_dim : hoffmanCount 8 = 4 := by rfl
-
 /-! ## Euler's Relation -/
 
 /-- Euler proved: ζ(2n) = (-1)^{n+1} B_{2n} (2π)^{2n} / (2(2n)!)
