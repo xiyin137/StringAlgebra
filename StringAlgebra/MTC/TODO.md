@@ -38,6 +38,10 @@
   (`verlinde_formula` via orthogonality/modular inversion + denominator nonvanishing,
   `sMatrix_diagonalizes_fusion` via Verlinde substitution + sum exchange +
   orthogonality evaluation), with theorem-local `sorry` only.
+- Remaining `FusionPF` theorem gaps now also carry explicit closure-route comments
+  (`fpDimCandidate_pos` via Perron-Frobenius positivity extraction,
+  `fpDimCandidate_fusion` via PF eigencharacter/fusion-operator identification),
+  with theorem-local `sorry` only.
 
 ## Proof-Gap Inventory (16)
 
