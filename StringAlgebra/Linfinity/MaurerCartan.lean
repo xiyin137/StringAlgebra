@@ -263,6 +263,16 @@ theorem smooth_when_unobstructed {R : Type u} [CommRing R]
 
 /-! ## Kuranishi Map -/
 
+/-- Explicit Kuranishi data at an MC point. -/
+structure KuranishiTheory {R : Type u} [CommRing R]
+    {V : ℤ → Type v}
+    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
+    {L : LInftyAlgebra R V} (T : MCTheory R L) (a : MCElement R T) where
+  /-- The Kuranishi map `κ : H¹(L^a) → H²(L^a)`. -/
+  map : tangentSpace T a → obstructionSpace T a
+  /-- Base-point normalization `κ(0) = 0`. -/
+  map_zero : map (0 : V 1) = (0 : V 2)
+
 /-- The Kuranishi map κ : H¹(L^a) → H²(L^a).
 
     This is the obstruction to extending infinitesimal deformations.
@@ -270,17 +280,19 @@ theorem smooth_when_unobstructed {R : Type u} [CommRing R]
 def kuranishiMap {R : Type u} [CommRing R]
     {V : ℤ → Type v}
     [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
-    {L : LInftyAlgebra R V} (T : MCTheory R L) (a : MCElement R T) :
+    {L : LInftyAlgebra R V} (T : MCTheory R L) (a : MCElement R T)
+    (K : KuranishiTheory T a) :
     tangentSpace T a → obstructionSpace T a :=
-  fun _ => (0 : V 2)
+  K.map
 
 /-- The moduli space is locally κ⁻¹(0) / gauge -/
 theorem moduli_as_kuranishi {R : Type u} [CommRing R]
     {V : ℤ → Type v}
     [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
-    {L : LInftyAlgebra R V} (T : MCTheory R L) (a : MCElement R T) :
-    ∃ x : tangentSpace T a, kuranishiMap T a x = (0 : V 2) := by
+    {L : LInftyAlgebra R V} (T : MCTheory R L) (a : MCElement R T)
+    (K : KuranishiTheory T a) :
+    ∃ x : tangentSpace T a, kuranishiMap T a K x = (0 : V 2) := by
   refine ⟨(0 : V 1), ?_⟩
-  simp [kuranishiMap]
+  simpa [kuranishiMap] using K.map_zero
 
 end StringAlgebra.Linfinity

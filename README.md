@@ -68,7 +68,7 @@ Current audited status (2026-02-26):
 1. `lake build StringAlgebra.Linfinity` passes.
 2. `StringAlgebra/Linfinity` is currently `sorry`-free.
 3. No `axiom`/`admit`/`Classical.choose`/`Classical.epsilon` usage in Linfinity Lean files.
-4. Recent hardening removed fabricated transfer/formality/BV outputs and tautological bridge shells; nontrivial constructions now require explicit witness data rather than hidden defaults, both `LInftyHom` and core `LInftyMorphism` composition have explicit identity/derived composition data, and DGLA-to-L∞ transport plus `LInftyHom`/core-morphism conversion now have explicit bridge infrastructure.
+4. Recent hardening removed fabricated transfer/formality/BV outputs and tautological bridge shells; nontrivial constructions now require explicit witness data rather than hidden defaults, both `LInftyHom` and core `LInftyMorphism` composition have explicit identity/derived composition data, DGLA-to-L∞ transport plus `LInftyHom`/core-morphism conversion now have explicit bridge infrastructure, and Maurer-Cartan Kuranishi local models now require explicit `KuranishiTheory` data (no hardcoded zero map).
 5. Remaining semantic debt is tracked explicitly in `StringAlgebra/Linfinity/TODO.md`.
 
 Current dependency flow toward `Formality.lean`:
@@ -95,6 +95,7 @@ PolyvectorFieldsDGLA.toDGLAData + HochschildCochainsDGLA.toDGLAData + HKRMap + F
 -> kontsevichFormality_is_quasi_iso
 -> formalityTheorem
 -> linfty_preserves_mc (with MCPreservation witness)
+-> MaurerCartan local deformation packaging (explicit KuranishiTheory witness)
 -> deformationQuantization (with QuantizationResult witness)
 ```
 

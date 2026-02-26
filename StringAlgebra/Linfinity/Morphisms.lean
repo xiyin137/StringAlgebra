@@ -172,6 +172,17 @@ def ofCoreMorphism {L : LInftyAlgebra R V} {L' : LInftyAlgebra R W}
     (F : LInftyHom R L L') (i : ℤ) :
     (toCoreMorphism F).linear i = ((F.components 1 (by omega)).map i) := rfl
 
+@[simp] theorem toCoreMorphism_ofCore_linear {L : LInftyAlgebra R V} {L' : LInftyAlgebra R W}
+    (F : LInftyMorphism R L L') (i : ℤ) :
+    (toCoreMorphism (ofCoreMorphism F)).linear i = F.linear i := by
+  simp [toCoreMorphism]
+
+@[simp] theorem ofCoreMorphism_toCore_linear {L : LInftyAlgebra R V} {L' : LInftyAlgebra R W}
+    (F : LInftyHom R L L') (i : ℤ) :
+    ((ofCoreMorphism (toCoreMorphism F)).components 1 (by omega)).map i =
+      ((F.components 1 (by omega)).map i) := by
+  simp [ofCoreMorphism, toCoreMorphism]
+
 /-- Transport explicit composition data to the core `LInftyMorphism` layer. -/
 def toCoreCompositionData
     {L : LInftyAlgebra R V} {L' : LInftyAlgebra R W} {L'' : LInftyAlgebra R U}

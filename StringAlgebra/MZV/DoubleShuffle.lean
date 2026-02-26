@@ -365,6 +365,11 @@ def iharaDerivation (n : ℕ) (f : FormalSum) : FormalSum :=
 @[simp] theorem iharaDerivation_nil (n : ℕ) :
     iharaDerivation n [] = [] := rfl
 
+theorem iharaDerivation_single_coeff (n : ℕ) (c : ℚ) (s : Composition) :
+    iharaDerivation n [(c, s)] =
+      (iharaDerivComp n s).map (fun (q, t) => (c * q, t)) := by
+  simp [iharaDerivation]
+
 theorem iharaDerivation_append (n : ℕ) (f g : FormalSum) :
     iharaDerivation n (f ++ g) = iharaDerivation n f ++ iharaDerivation n g := by
   simp [iharaDerivation, List.flatMap_append]
