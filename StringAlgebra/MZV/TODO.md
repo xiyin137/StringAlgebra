@@ -11,6 +11,7 @@ This file tracks semantic and proof debt for `StringAlgebra/MZV` under `agent.md
 3. No `axiom`/`admit`/`Classical.choose`/`Classical.epsilon` usage in MZV Lean files.
 4. Placeholder `True := trivial` stubs have been removed from the main MZV interfaces.
 5. `DoubleShuffle.lean` end-stage contracts were tightened: coaction/motivic compatibility are explicit map-parameterized properties, finite-generation is phrased via finite bases, and the implemented Ihara derivation now has explicit additive and basic structural lemmas.
+6. Redundant tautological endpoint shells were removed from `DoubleShuffle.lean` (direct `Iff.rfl` theorem wrappers of definitions).
 
 ## MZV Dependency Graph
 
@@ -48,7 +49,7 @@ Basic composition/word infrastructure
 7. `Polylogarithm.lean`: medium-high risk. Polylog/HPL interfaces are explicit; analytic continuation and deep functional equations remain pending.
 8. `Motivic.lean`: medium-high risk. Motivic/coaction structure is explicit; full Hopf-algebra and period-isomorphism closure remains pending.
 9. `Associator.lean`: high risk. Associator and GT interfaces are explicit; full pentagon/hexagon derivations from constructed coefficients remain pending.
-10. `DoubleShuffle.lean` now includes derived interface lemmas (`*_iff` and motivic specialization) reducing tautological endpoint contracts.
+10. `DoubleShuffle.lean` keeps explicit finite-generation/motivic interfaces while avoiding tautological endpoint wrappers.
 
 ## Open Work Packages
 

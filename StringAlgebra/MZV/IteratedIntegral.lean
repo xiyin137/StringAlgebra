@@ -320,8 +320,4 @@ def barDifferential (b : BarComplex) : List (Int × FormWord) :=
       let sign : Int := if i % 2 = 0 then 1 else -1
       (sign, contracted)
 
-/-- Degree bookkeeping identity in the bar model. -/
-theorem bar_cohomology (b : BarComplex) :
-    b.degree = b.element.length := b.degree_eq
-
 end StringAlgebra.MZV

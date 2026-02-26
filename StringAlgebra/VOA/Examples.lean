@@ -95,11 +95,6 @@ namespace AffineVOA
 
 variable {R : Type*} [CommRing R]
 
-/-- OPE of currents: J^a(z)J^b(w) ~ κ^{ab}k/(z-w)² + f^{abc}J^c(w)/(z-w) -/
-theorem current_OPE (V : AffineVOA R) (_a _b : Fin V.data.dim) :
-    V.data.level + V.data.dualCoxeter ≠ 0 :=
-  V.non_critical
-
 end AffineVOA
 
 /-! ## Lattice VOA
@@ -141,12 +136,6 @@ structure RationalityCriterion (V : LatticeVOA R) where
   /-- Rationality is equivalent to positive definiteness of the lattice form. -/
   iff_positive_definite : rational ↔ positiveDefinite V
 
-/-- Extract the rationality/positivity equivalence from criterion data. -/
-theorem rational_iff_positive_definite (V : LatticeVOA R)
-    (C : RationalityCriterion (R := R) V) :
-    C.rational ↔ positiveDefinite V :=
-  C.iff_positive_definite
-
 /-- Rationality implies positive definiteness under explicit criterion data. -/
 theorem positiveDefinite_of_rational (V : LatticeVOA R)
     (C : RationalityCriterion (R := R) V)
@@ -182,11 +171,6 @@ variable {R : Type*} [CommRing R]
 
 /-- The central charge is c = 24 -/
 def centralCharge (_V : MoonshineModule R) : R := 24
-
-/-- The Monster group acts as automorphisms of V♮ -/
-theorem monster_acts (V : MoonshineModule R) :
-    V.leechLattice.rank = 24 :=
-  V.leech_rank
 
 /-- McKay-Thompson series are hauptmoduls -/
 theorem mckay_thompson_hauptmodul (V : MoonshineModule R) :
