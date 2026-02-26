@@ -217,24 +217,30 @@ class FusionRuleAxioms (k : Type u₁) [Field k]
     ∀ (i j m : Idx (k := k) (C := C)),
       fusionCoeff (k := k) i j m = fusionCoeff (dualIdx j) (dualIdx i) (dualIdx m)
 
-/-- Placeholder assumption for associativity of fusion coefficients. -/
-theorem fusionCoeff_assoc [FusionRuleAxioms (k := k) (C := C)]
+/-- Associativity of fusion coefficients.
+
+Current status: tracked as an explicit theorem-level proof gap. -/
+theorem fusionCoeff_assoc
     (i j l m : Idx (k := k) (C := C)) :
     ∑ p, fusionCoeff (k := k) i j p * fusionCoeff p l m =
-    ∑ q, fusionCoeff (k := k) j l q * fusionCoeff i q m :=
-  FusionRuleAxioms.fusionCoeff_assoc (k := k) (C := C) i j l m
+    ∑ q, fusionCoeff (k := k) j l q * fusionCoeff i q m := by
+  sorry
 
-/-- Placeholder assumption for Frobenius reciprocity of fusion coefficients. -/
-theorem fusionCoeff_frobenius [FusionRuleAxioms (k := k) (C := C)]
-    (i j m : Idx (k := k) (C := C)) :
-    fusionCoeff (k := k) i j m = fusionCoeff m (dualIdx j) i :=
-  FusionRuleAxioms.fusionCoeff_frobenius (k := k) (C := C) i j m
+/-- Frobenius reciprocity for fusion coefficients.
 
-/-- Placeholder assumption for duality/swap symmetry of fusion coefficients. -/
-theorem fusionCoeff_dual_swap [FusionRuleAxioms (k := k) (C := C)]
+Current status: tracked as an explicit theorem-level proof gap. -/
+theorem fusionCoeff_frobenius
     (i j m : Idx (k := k) (C := C)) :
-    fusionCoeff (k := k) i j m = fusionCoeff (dualIdx j) (dualIdx i) (dualIdx m) :=
-  FusionRuleAxioms.fusionCoeff_dual_swap (k := k) (C := C) i j m
+    fusionCoeff (k := k) i j m = fusionCoeff m (dualIdx j) i := by
+  sorry
+
+/-- Duality/swap symmetry of fusion coefficients.
+
+Current status: tracked as an explicit theorem-level proof gap. -/
+theorem fusionCoeff_dual_swap
+    (i j m : Idx (k := k) (C := C)) :
+    fusionCoeff (k := k) i j m = fusionCoeff (dualIdx j) (dualIdx i) (dualIdx m) := by
+  sorry
 
 end FusionCategory
 

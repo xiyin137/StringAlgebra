@@ -17,10 +17,11 @@ attribute [-instance] CategoryTheory.BraidedCategory.rigidCategoryOfLeftRigidCat
 # Development Harness
 
 This module is a lightweight integration harness for the current
-assumption-bundled development mode.
+theorem-gap development mode.
 
-Given a single `[DevelopmentAssumptions k C]`, it checks that key results
-across foundational, modular, and Verlinde layers are simultaneously usable.
+It checks that key results across foundational, modular, and Verlinde layers
+remain simultaneously usable while proof obligations are tracked explicitly
+at theorem sites.
 -/
 
 namespace StringAlgebra.MTC
@@ -32,29 +33,28 @@ universe v₁ u₁
 
 namespace DevelopmentHarness
 
-variable {k : Type u₁} [Field k] [IsAlgClosed k]
+variable {k : Type u₁} [Field k]
 variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory C] [BraidedCategory C]
 variable [Preadditive C] [Linear k C] [MonoidalPreadditive C]
-variable [HasFiniteBiproducts C] [RigidCategory C] [HasKernels C]
+variable [HasFiniteBiproducts C] [RigidCategory C]
 variable [ModularTensorCategory k C]
-variable [DevelopmentAssumptions (k := k) (C := C)]
 
 theorem has_foundation_assumptions :
-    FoundationAssumptions (k := k) (C := C) := inferInstance
+    FoundationAssumptions (k := k) (C := C) := by
+  sorry
 
-theorem has_modular_assumptions :
-    ModularAssumptions (k := k) (C := C) := inferInstance
-
-theorem qdim_unit :
+theorem qdim_unit [SphericalCategory C] :
     dim (C := C) (𝟙_ C) = 𝟙 (𝟙_ C) :=
   StringAlgebra.MTC.qdim_unit (C := C)
 
 theorem qdim_dual
+    [SphericalCategory C]
     (X : C) :
     dim (C := C) Xᘁ = dim X :=
   StringAlgebra.MTC.qdim_dual (C := C) X
 
 theorem qdim_tensor
+    [SphericalCategory C]
     (X Y : C) :
     dim (C := C) (X ⊗ Y) = dim X ≫ dim Y :=
   StringAlgebra.MTC.qdim_tensor (C := C) X Y
@@ -120,32 +120,39 @@ theorem fusion_linear_combination_fin_comm
       FusionCategory.leftFusionProductLinearCombinationFin (k := k) (C := C) j i :=
   FusionCategory.leftFusionProductLinearCombinationFin_comm (k := k) (C := C) i j
 
-omit [DevelopmentAssumptions (k := k) (C := C)] in
 theorem fusion_vacuum_kronecker
+    [IsAlgClosed k] [HasKernels C]
     [FusionCategory.CanonicalSimpleIndex (k := k) (C := C)]
     (j m : FusionCategory.Idx (k := k) (C := C)) :
     FusionCategory.fusionCoeff (k := k) FusionCategory.unitIdx j m =
       if j = m then 1 else 0 :=
   FusionCategory.fusionCoeff_vacuum_kronecker (k := k) (C := C) j m
 
-omit [DevelopmentAssumptions (k := k) (C := C)] in
 theorem fusion_matrix_unit
+    [IsAlgClosed k] [HasKernels C]
     [FusionCategory.CanonicalSimpleIndex (k := k) (C := C)] :
     FusionCategory.leftFusionMatrix (k := k) (C := C) FusionCategory.unitIdx = 1 :=
   FusionCategory.leftFusionMatrix_unit (k := k) (C := C)
 
-omit [DevelopmentAssumptions (k := k) (C := C)] in
 theorem fusion_matrix_fin_unit
+    [IsAlgClosed k] [HasKernels C]
     [FusionCategory.CanonicalSimpleIndex (k := k) (C := C)] :
     FusionCategory.leftFusionMatrixFin (k := k) (C := C) FusionCategory.unitIdx = 1 :=
   FusionCategory.leftFusionMatrixFin_unit (k := k) (C := C)
 
-omit [IsAlgClosed k] [HasKernels C] [DevelopmentAssumptions (k := k) (C := C)] in
 theorem fin_reindex_roundtrip
     (i : FusionCategory.Idx (k := k) (C := C)) :
     FusionCategory.idxOfFin (k := k) (C := C)
       (FusionCategory.finOfIdx (k := k) (C := C) i) = i := by
   exact FusionCategory.idxOfFin_finOfIdx (k := k) (C := C) i
+
+section ModularLayer
+
+variable [IsAlgClosed k] [HasKernels C]
+
+theorem has_modular_assumptions :
+    ModularAssumptions (k := k) (C := C) := by
+  sorry
 
 theorem sMatrix_symmetric
     (i j : FusionCategory.Idx (k := k) (C := C)) :
@@ -216,31 +223,26 @@ theorem diagonalization
       SMatrix.sMatrix (C := C) j j' :=
   Verlinde.sMatrix_diagonalizes_fusion (C := C) i j j'
 
+end ModularLayer
+
 end DevelopmentHarness
 
 namespace DevelopmentHarnessComplex
 
 variable {C : Type} [Category.{v₁} C] [MonoidalCategory C] [BraidedCategory C]
 variable [Preadditive C] [Linear ℂ C] [MonoidalPreadditive C]
-variable [HasFiniteBiproducts C] [RigidCategory C] [HasKernels C]
+variable [HasFiniteBiproducts C] [RigidCategory C]
 variable [ModularTensorCategory ℂ C]
-variable [DevelopmentAssumptions (k := ℂ) (C := C)]
-variable [FusionCategory.CanonicalSimpleIndex (k := ℂ) (C := C)]
-variable [FusionCategory.PerronFrobeniusPosAxiom (C := C)]
-variable [FusionCategory.PerronFrobeniusFusionAxiom (C := C)]
 
-omit [DevelopmentAssumptions (k := ℂ) (C := C)] in
 theorem fpdim_unit :
     FusionCategory.fpDimCandidate (C := C) FusionCategory.unitIdx = 1 :=
   FusionCategory.fpDimCandidate_unit_of_axioms (C := C)
 
-omit [DevelopmentAssumptions (k := ℂ) (C := C)] in
 theorem fpdim_pos
     (i : FusionCategory.Idx (k := ℂ) (C := C)) :
     0 < FusionCategory.fpDimCandidate (C := C) i :=
   FusionCategory.fpDimCandidate_pos_of_axioms (C := C) i
 
-omit [DevelopmentAssumptions (k := ℂ) (C := C)] in
 theorem fpdim_fusion
     (i j : FusionCategory.Idx (k := ℂ) (C := C)) :
     FusionCategory.fpDimCandidate (C := C) i *
@@ -250,7 +252,6 @@ theorem fpdim_fusion
           FusionCategory.fpDimCandidate (C := C) m :=
   FusionCategory.fpDimCandidate_fusion_of_axioms (C := C) i j
 
-omit [DevelopmentAssumptions (k := ℂ) (C := C)] in
 theorem fpdim_fin_pos
     (i : Fin (FusionCategory.rank (k := ℂ) (C := C))) :
     0 < FusionCategory.fpDimCandidateByFin (C := C) i :=

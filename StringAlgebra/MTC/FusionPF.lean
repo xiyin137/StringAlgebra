@@ -69,47 +69,39 @@ instance perronFrobeniusAxiomsOfPosFusion
   fpDimCandidate_fusion := PerronFrobeniusFusionAxiom.fpDimCandidate_fusion (C := C)
 
 theorem fpDimCandidate_pos_of_posAxiom
-    [PerronFrobeniusPosAxiom (C := C)]
     (i : Idx (k := ℂ) (C := C)) :
-    0 < fpDimCandidate (C := C) i :=
-  PerronFrobeniusPosAxiom.fpDimCandidate_pos (C := C) i
+    0 < fpDimCandidate (C := C) i := by
+  sorry
 
 theorem fpDimCandidate_fusion_of_fusionAxiom
-    [PerronFrobeniusFusionAxiom (C := C)]
     (i j : Idx (k := ℂ) (C := C)) :
     fpDimCandidate (C := C) i * fpDimCandidate (C := C) j =
       ∑ m : Idx (k := ℂ) (C := C),
-        (fusionCoeff (k := ℂ) i j m : ℝ≥0∞) * fpDimCandidate (C := C) m :=
-  PerronFrobeniusFusionAxiom.fpDimCandidate_fusion (C := C) i j
+        (fusionCoeff (k := ℂ) i j m : ℝ≥0∞) * fpDimCandidate (C := C) m := by
+  sorry
 
 theorem fpDimCandidate_unit_of_axioms
-    [PerronFrobeniusAxioms (C := C)] :
-    fpDimCandidate (C := C) unitIdx = 1 :=
-  PerronFrobeniusAxioms.fpDimCandidate_unit (C := C)
+    : fpDimCandidate (C := C) unitIdx = 1 := by
+  sorry
 
 theorem fpDimCandidate_pos_of_axioms
-    [PerronFrobeniusAxioms (C := C)]
     (i : Idx (k := ℂ) (C := C)) :
-    0 < fpDimCandidate (C := C) i :=
-  fpDimCandidate_pos_of_posAxiom (C := C) i
+    0 < fpDimCandidate (C := C) i := by
+  sorry
 
 theorem fpDimCandidate_fusion_of_axioms
-    [PerronFrobeniusAxioms (C := C)]
     (i j : Idx (k := ℂ) (C := C)) :
     fpDimCandidate (C := C) i * fpDimCandidate (C := C) j =
       ∑ m : Idx (k := ℂ) (C := C),
-        (fusionCoeff (k := ℂ) i j m : ℝ≥0∞) * fpDimCandidate (C := C) m :=
-  fpDimCandidate_fusion_of_fusionAxiom (C := C) i j
+        (fusionCoeff (k := ℂ) i j m : ℝ≥0∞) * fpDimCandidate (C := C) m := by
+  sorry
 
 theorem fpDimCandidateByFin_pos
-    [PerronFrobeniusAxioms (C := C)]
     (i : Fin (rank (k := ℂ) (C := C))) :
     0 < fpDimCandidateByFin (C := C) i := by
-  simpa [fpDimCandidateByFin, leftFusionSpectralRadiusByFin_eq] using
-    (fpDimCandidate_pos_of_axioms (C := C) (idxOfFin (k := ℂ) (C := C) i))
+  sorry
 
 theorem fpDimCandidateByFin_fusion
-    [PerronFrobeniusAxioms (C := C)]
     (i j : Fin (rank (k := ℂ) (C := C))) :
     fpDimCandidateByFin (C := C) i * fpDimCandidateByFin (C := C) j =
       ∑ m : Idx (k := ℂ) (C := C),
@@ -118,10 +110,7 @@ theorem fpDimCandidateByFin_fusion
           (idxOfFin (k := ℂ) (C := C) j)
           m : ℝ≥0∞) *
           fpDimCandidate (C := C) m := by
-  simpa [fpDimCandidateByFin, leftFusionSpectralRadiusByFin_eq] using
-    (fpDimCandidate_fusion_of_axioms (C := C)
-      (idxOfFin (k := ℂ) (C := C) i)
-      (idxOfFin (k := ℂ) (C := C) j))
+  sorry
 
 end FusionCategory
 

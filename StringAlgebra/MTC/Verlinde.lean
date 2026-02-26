@@ -77,14 +77,14 @@ class VerlindeAxioms (k : Type u₁) [Field k] [IsAlgClosed k]
     entire fusion ring.
 
     Here m* = dualIdx m is the charge conjugate of m. -/
-theorem verlinde_formula [VerlindeAxioms (k := k) (C := C)]
+theorem verlinde_formula
     (i j m : FusionCategory.Idx (k := k) (C := C)) :
     (FusionCategory.fusionCoeff (k := k) i j m : k) =
     ∑ ℓ : FusionCategory.Idx (k := k) (C := C),
       SMatrix.sMatrix (C := C) i ℓ * SMatrix.sMatrix (C := C) j ℓ *
       SMatrix.sMatrix (C := C) (FusionCategory.dualIdx m) ℓ /
-      SMatrix.sMatrix (C := C) FusionCategory.unitIdx ℓ :=
-  VerlindeAxioms.verlinde_formula (k := k) (C := C) i j m
+      SMatrix.sMatrix (C := C) FusionCategory.unitIdx ℓ := by
+  sorry
 
 /-- The S-matrix diagonalizes the fusion rules.
 
@@ -95,15 +95,14 @@ theorem verlinde_formula [VerlindeAxioms (k := k) (C := C)]
 
     This is equivalent to the Verlinde formula. -/
 theorem sMatrix_diagonalizes_fusion
-    [VerlindeAxioms (k := k) (C := C)]
     (i j j' : FusionCategory.Idx (k := k) (C := C)) :
     ∑ m : FusionCategory.Idx (k := k) (C := C),
       SMatrix.sMatrix (C := C) j m *
       (FusionCategory.fusionCoeff (k := k) i j' m : k) =
     (SMatrix.sMatrix (C := C) i j /
      SMatrix.sMatrix (C := C) FusionCategory.unitIdx j) *
-    SMatrix.sMatrix (C := C) j j' :=
-  VerlindeAxioms.sMatrix_diagonalizes_fusion (k := k) (C := C) i j j'
+    SMatrix.sMatrix (C := C) j j' := by
+  sorry
 
 /-- The dimension of the TQFT vector space associated to a genus-g surface Σ_g:
 

@@ -148,6 +148,7 @@ structure KontsevichGraph (n : ℕ) where
     match edges i k with
     | Sum.inl j => i.val < j.val
     | Sum.inr j => j.val < groundVertices
+deriving DecidableEq
 
 /-- The configuration space of n points in the upper half-plane.
 
@@ -166,10 +167,10 @@ def angleFunction (z w : ℚ) : ℚ := w - z
 /-- External graph-weight assignment for Kontsevich graphs. -/
 structure GraphWeightSystem where
   /-- Weight function assigning `w_Γ` to each admissible graph `Γ`. -/
-  weight : ∀ {n : ℕ}, KontsevichGraph n → ℚ
+  weight : ∀ {n : ℕ}, KontsevichGraph n → R
 
 /-- The weight of a Kontsevich graph from explicit weight data. -/
-def graphWeight (W : GraphWeightSystem) {n : ℕ} (Γ : KontsevichGraph n) : ℚ :=
+def graphWeight (W : GraphWeightSystem (R := R)) {n : ℕ} (Γ : KontsevichGraph n) :=
   W.weight Γ
 
 /-- The bidifferential operator B_Γ associated to a graph.
@@ -253,6 +254,33 @@ structure FormalityMorphism (data : FormalityData R) where
     (data.dPoly.toDGLAData.toLInftyAlgebra)
   /-- The components U_n given by sums over Kontsevich graphs -/
   components : ∀ n : ℕ, (hn : n ≥ 1) → FormalityComponent data n hn
+  /-- Finite graph support for each arity. -/
+  graphSupport : ∀ n : ℕ, Finset (KontsevichGraph n)
+  /-- External graph-weight data used in the expansion formulas. -/
+  graphWeights : GraphWeightSystem (R := R)
+  /-- External graph-operator data used in the expansion formulas. -/
+  graphOperators : GraphOperatorSystem
+  /-- For each graph term, choose the encoded operator coefficient index used
+      in the arity-wise expansion equation. -/
+  graphOperatorIndex :
+    ∀ n : ℕ, ∀ _hn : n ≥ 1, KontsevichGraph n → ℕ
+  /-- Graph-level term in the component expansion. -/
+  graphTerm :
+    ∀ n : ℕ, ∀ _hn : n ≥ 1, (Γ : KontsevichGraph n) → (k : ℤ) →
+      data.tPoly.fields k → data.dPoly.cochains k
+  /-- Each graph term is tied to the chosen operator coefficient and HKR output. -/
+  graphTerm_spec :
+    ∀ n : ℕ, ∀ hn : n ≥ 1, ∀ Γ : KontsevichGraph n, ∀ k : ℤ,
+      ∀ x : data.tPoly.fields k,
+        graphTerm n hn Γ k x =
+          ((graphOperators.operator Γ).op (graphOperatorIndex n hn Γ)) •
+            data.hkr.component k x
+  /-- Each component is an explicit finite weighted graph expansion. -/
+  graph_expansion :
+    ∀ n : ℕ, ∀ hn : n ≥ 1, ∀ k : ℤ, ∀ x : data.tPoly.fields k,
+      (components n hn).graphSum k x =
+        Finset.sum (graphSupport n) (fun Γ =>
+          (graphWeights.weight Γ) • graphTerm n hn Γ k x)
   /-- Component-level consistency with the bundled L∞ morphism data. -/
   component_spec :
     ∀ n : ℕ, ∀ hn : n ≥ 1, ∀ k : ℤ, ∀ x : data.tPoly.fields k,
@@ -261,8 +289,6 @@ structure FormalityMorphism (data : FormalityData R) where
   linear_hkr_spec :
     ∀ k : ℤ, ∀ x : data.tPoly.fields k,
       (components 1 (by omega)).graphSum k x = data.hkr.component k x
-  /-- U is a quasi-isomorphism: U₁ induces iso on cohomology -/
-  is_quasi_iso : morphism.isQuasiIso
 
 /-- The linear part of a formality morphism agrees with the HKR map.
 
@@ -286,6 +312,21 @@ theorem FormalityMorphism.linearIsHKR_of_specs
         = (U.components 1 (by omega)).graphSum n x := by
           simpa using U.component_spec 1 (by omega) n x
     _ = data.hkr.component n x := U.linear_hkr_spec n x
+
+/-- Expanded form of each component as a finite weighted sum of operator-indexed
+    graph terms acting through the recorded HKR-based realization. -/
+theorem FormalityMorphism.graphSum_eq_weighted_operator_hkr
+    (data : FormalityData R) (U : FormalityMorphism data)
+    (n : ℕ) (hn : n ≥ 1) (k : ℤ) (x : data.tPoly.fields k) :
+    (U.components n hn).graphSum k x =
+      Finset.sum (U.graphSupport n) (fun Γ =>
+        (U.graphWeights.weight Γ) •
+          (((U.graphOperators.operator Γ).op (U.graphOperatorIndex n hn Γ)) •
+            data.hkr.component k x)) := by
+  rw [U.graph_expansion n hn k x]
+  refine Finset.sum_congr rfl ?_
+  intro Γ hΓ
+  rw [U.graphTerm_spec n hn Γ k x]
 
 /-! ## The Formality Theorem
 
@@ -333,8 +374,8 @@ theorem kontsevichFormality_is_linfty_morphism (data : FormalityData R) :
     Therefore U is a quasi-isomorphism. -/
 theorem kontsevichFormality_is_quasi_iso
     (data : FormalityData R) (U : FormalityMorphism data) :
-    (kontsevichFormality data U).isQuasiIso :=
-  U.is_quasi_iso
+    (kontsevichFormality data U).isQuasiIso := by
+  sorry
 
 /-- Witness-driven formality statement:
     any supplied `FormalityMorphism` yields a quasi-isomorphism. -/
@@ -448,20 +489,20 @@ structure QuantizationResult (data : FormalityData R)
   /-- First-order compatibility with the Poisson structure. -/
   poisson_spec : star.poissonBracket = data.hkr.component 1 π.bivector
 
-/-- Witness-driven deformation-quantization packaging.
+/-- Deformation-quantization existence statement.
 
-    Given explicit formality and quantization witnesses, produce the
-    corresponding star product with first-order Poisson compatibility. -/
+    Current status: the construction gap is tracked explicitly at theorem level
+    (proof marked with `sorry`) rather than hidden in extra theorem inputs. -/
 theorem deformationQuantization (data : FormalityData R)
-    (_U : FormalityMorphism data)
+    (U : FormalityMorphism data)
     (π : PoissonStructure R data.tPoly)
-    (Q : QuantizationResult (R := R) data π) :
+    :
     -- There exists a star product whose Poisson bracket is π
     ∃ (star : StarProduct R data.dPoly),
       -- The ℏ¹ coefficient of the star product gives the Poisson bracket
       -- star.poissonBracket corresponds to π.bivector under the HKR map
-      star.poissonBracket = data.hkr.component 1 π.bivector :=
-  ⟨Q.star, Q.poisson_spec⟩
+      star.poissonBracket = data.hkr.component 1 π.bivector := by
+  sorry
 
 /-- The Kontsevich star product formula.
 
@@ -663,13 +704,7 @@ def StarProductClassificationByGaugeClass (data : FormalityData R)
     For symplectic manifolds: H²_π(M) ≅ H²_dR(M), so star products
     are classified by elements of ℏ · H²(M)[[ℏ]]. -/
 theorem starProductClassification (data : FormalityData R)
-    (π : PoissonStructure R data.tPoly)
-    (classify :
-      ∀ (star₁ star₂ : StarProduct R data.dPoly),
-        star₁.poissonBracket = data.hkr.component 1 π.bivector →
-        star₂.poissonBracket = data.hkr.component 1 π.bivector →
-        (star₁.gaugeEquivalent star₂ ↔
-          star₁.poissonBracket = star₂.poissonBracket)) :
+    (π : PoissonStructure R data.tPoly) :
     -- Gauge equivalence classes of star products quantizing π
     -- are parametrized by formal deformations of the Poisson structure
     ∀ (star₁ star₂ : StarProduct R data.dPoly),
@@ -680,8 +715,7 @@ theorem starProductClassification (data : FormalityData R)
       (star₁.gaugeEquivalent star₂ ↔
         -- They correspond to the same formal Poisson structure mod diffeos
         star₁.poissonBracket = star₂.poissonBracket) := by
-  intro star₁ star₂ h1 h2
-  exact classify star₁ star₂ h1 h2
+  sorry
 
 theorem starProductClassification_toGaugeClass (data : FormalityData R)
     (π : PoissonStructure R data.tPoly)

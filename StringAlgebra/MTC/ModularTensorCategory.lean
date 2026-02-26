@@ -108,7 +108,7 @@ section ModularData
 variable [IsAlgClosed k] [HasKernels C]
 
 /-- The total quantum dimension squared is nonzero in an MTC. -/
-theorem totalDimSq_pos [SMatrix.SMatrixAxioms (k := k) (C := C)] :
+theorem totalDimSq_pos :
     SMatrix.totalDimSq (C := C) ≠ (0 : k) :=
   SMatrix.totalDimSq_ne_zero
 
@@ -179,20 +179,20 @@ class ModularDataAxioms (k : Type u₁) [Field k]
     where j* = dualIdx j and D² is the total quantum dimension squared.
 
     Equivalently, S² = D² · C where C_{ij} = δ_{i,j*}. -/
-theorem sMatrix_squared [ModularDataAxioms (k := k) (C := C)]
+theorem sMatrix_squared
     (i j : FusionCategory.Idx (k := k) (C := C)) :
     matMul (SMatrix.sMatrix (C := C)) (SMatrix.sMatrix (C := C)) i j =
     if i = FusionCategory.dualIdx j
     then SMatrix.totalDimSq (C := C)
-    else 0 :=
-  ModularDataAxioms.sMatrix_squared (k := k) (C := C) i j
+    else 0 := by
+  sorry
 
 /-- The modular relation: (ST)³ = p₊ · S².
 
     This is the fundamental relation showing that S and T generate a
     projective representation of SL(2,ℤ), the modular group of the torus.
     Stated component-wise. -/
-theorem modular_relation [ModularDataAxioms (k := k) (C := C)]
+theorem modular_relation
     (i j : FusionCategory.Idx (k := k) (C := C)) :
     matMul (matMul (matMul (SMatrix.sMatrix (C := C))
       (RibbonFusionCategory.tMatrix (C := C) (k := k)))
@@ -201,8 +201,8 @@ theorem modular_relation [ModularDataAxioms (k := k) (C := C)]
       (matMul (SMatrix.sMatrix (C := C))
         (RibbonFusionCategory.tMatrix (C := C) (k := k))) i j =
     gaussSum (C := C) *
-      matMul (SMatrix.sMatrix (C := C)) (SMatrix.sMatrix (C := C)) i j :=
-  ModularDataAxioms.modular_relation (k := k) (C := C) i j
+      matMul (SMatrix.sMatrix (C := C)) (SMatrix.sMatrix (C := C)) i j := by
+  sorry
 
 end ModularData
 

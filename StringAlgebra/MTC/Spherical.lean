@@ -74,17 +74,23 @@ class SphericalDimAxioms (C : Type u₁) [Category.{v₁} C] [MonoidalCategory C
   qdim_tensor :
     ∀ (X Y : C), dim (X ⊗ Y) = dim X ≫ dim Y
 
-/-- Placeholder assumption for `qdim_dual`; replace with a proof from trace duality. -/
-theorem qdim_dual [SphericalCategory C] [SphericalDimAxioms C] (X : C) : dim Xᘁ = dim X :=
-  SphericalDimAxioms.qdim_dual (C := C) X
+/-- Quantum-dimension duality.
 
-/-- Placeholder assumption for `qdim_unit`; replace with a proof from pivotal unit identities. -/
-theorem qdim_unit [SphericalCategory C] [SphericalDimAxioms C] : dim (𝟙_ C) = 𝟙 (𝟙_ C) :=
-  SphericalDimAxioms.qdim_unit (C := C)
+Current status: tracked as an explicit theorem-level proof gap. -/
+theorem qdim_dual [SphericalCategory C] (X : C) : dim Xᘁ = dim X := by
+  sorry
 
-/-- Placeholder assumption for `qdim_tensor`; replace with a proof from trace multiplicativity. -/
-theorem qdim_tensor [SphericalCategory C] [SphericalDimAxioms C]
-    (X Y : C) : dim (X ⊗ Y) = dim X ≫ dim Y :=
-  SphericalDimAxioms.qdim_tensor (C := C) X Y
+/-- Quantum-dimension normalization on the tensor unit.
+
+Current status: tracked as an explicit theorem-level proof gap. -/
+theorem qdim_unit [SphericalCategory C] : dim (𝟙_ C) = 𝟙 (𝟙_ C) := by
+  sorry
+
+/-- Tensor multiplicativity of quantum dimension.
+
+Current status: tracked as an explicit theorem-level proof gap. -/
+theorem qdim_tensor [SphericalCategory C]
+    (X Y : C) : dim (X ⊗ Y) = dim X ≫ dim Y := by
+  sorry
 
 end StringAlgebra.MTC

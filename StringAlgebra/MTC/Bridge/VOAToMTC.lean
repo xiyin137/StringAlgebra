@@ -78,12 +78,14 @@ noncomputable def modularTensorCategoryOfHuang [RibbonFusionCategory k RepV]
   mueger_center_trivial := hHuang
 
 /-- Upgrade ribbon fusion data on `RepV` to a modular tensor category
-    from the bundled VOA nondegeneracy contract. -/
+    from explicit nondegeneracy input. -/
 noncomputable def modularTensorCategoryOfAssumptions [RibbonFusionCategory k RepV]
-    [VOANondegeneracyAssumptions (k := k) (RepV := RepV)] :
+    (hHuang :
+      ∀ i : FusionCategory.Idx (k := k) (C := RepV),
+        BraidedFusionCategory.isTransparent (FusionCategory.simpleObj i) →
+        Nonempty (FusionCategory.simpleObj i ≅ 𝟙_ RepV)) :
     ModularTensorCategory k RepV :=
-  modularTensorCategoryOfHuang (k := k) (RepV := RepV)
-    (VOANondegeneracyAssumptions.mueger_center_trivial (k := k) (RepV := RepV))
+  modularTensorCategoryOfHuang (k := k) (RepV := RepV) hHuang
 
 /-! ### Huang's Theorem -/
 
@@ -116,11 +118,10 @@ theorem huang_nondegeneracy [RibbonFusionCategory k RepV]
   hHuang i hTransparent
 
 theorem huang_nondegeneracy_of_assumptions [RibbonFusionCategory k RepV]
-    [VOANondegeneracyAssumptions (k := k) (RepV := RepV)]
     (i : FusionCategory.Idx (k := k) (C := RepV))
     (hTransparent : BraidedFusionCategory.isTransparent (FusionCategory.simpleObj i)) :
-    Nonempty (FusionCategory.simpleObj i ≅ 𝟙_ RepV) :=
-  VOANondegeneracyAssumptions.mueger_center_trivial (k := k) (RepV := RepV) i hTransparent
+    Nonempty (FusionCategory.simpleObj i ≅ 𝟙_ RepV) := by
+  sorry
 
 section TwistRoots
 
@@ -145,29 +146,30 @@ theorem twist_roots_of_unity [RibbonFusionCategory k RepV]
   hTwistRoots i
 
 theorem twist_roots_of_unity_of_assumptions [RibbonFusionCategory k RepV]
-    [VOATwistRootAssumptions (k := k) (RepV := RepV)]
     (i : FusionCategory.Idx (k := k) (C := RepV)) :
     ∃ (n : ℕ) (_ : 0 < n),
-      RibbonFusionCategory.twistValue (C := RepV) i ^ n = (1 : k) :=
-  VOATwistRootAssumptions.twist_roots_of_unity (k := k) (RepV := RepV) i
+      RibbonFusionCategory.twistValue (C := RepV) i ^ n = (1 : k) := by
+  sorry
 
 theorem twist_roots_of_unity_of_bridge_assumptions [RibbonFusionCategory k RepV]
-    [VOABridgeAssumptions (k := k) (RepV := RepV)]
     (i : FusionCategory.Idx (k := k) (C := RepV)) :
     ∃ (n : ℕ) (_ : 0 < n),
-      RibbonFusionCategory.twistValue (C := RepV) i ^ n = (1 : k) :=
-  twist_roots_of_unity_of_assumptions (k := k) (RepV := RepV) i
+      RibbonFusionCategory.twistValue (C := RepV) i ^ n = (1 : k) := by
+  sorry
 
 end TwistRoots
 
 section BundledBridge
 
-variable [IsAlgClosed k] [HasKernels RepV] [RibbonFusionCategory k RepV]
-variable [VOABridgeAssumptions (k := k) (RepV := RepV)]
+variable [RibbonFusionCategory k RepV]
 
 /-- Upgrade ribbon fusion data on `RepV` to a modular tensor category
-    from the full bundled bridge contract. -/
+    from explicit nondegeneracy input. -/
 noncomputable def modularTensorCategoryOfBridgeAssumptions :
+    (hHuang :
+      ∀ i : FusionCategory.Idx (k := k) (C := RepV),
+        BraidedFusionCategory.isTransparent (FusionCategory.simpleObj i) →
+        Nonempty (FusionCategory.simpleObj i ≅ 𝟙_ RepV)) →
     ModularTensorCategory k RepV :=
   modularTensorCategoryOfAssumptions (k := k) (RepV := RepV)
 
@@ -178,6 +180,12 @@ theorem huang_nondegeneracy_of_bridge_assumptions
     Nonempty (FusionCategory.simpleObj i ≅ 𝟙_ RepV) :=
   huang_nondegeneracy_of_assumptions (k := k) (RepV := RepV) i hTransparent
 
+end BundledBridge
+
+section BundledBridgeTwist
+
+variable [IsAlgClosed k] [HasKernels RepV] [RibbonFusionCategory k RepV]
+
 /-- Twist roots-of-unity obtained from the bundled bridge contract. -/
 theorem twist_roots_of_unity_of_bundle
     (i : FusionCategory.Idx (k := k) (C := RepV)) :
@@ -185,7 +193,7 @@ theorem twist_roots_of_unity_of_bundle
       RibbonFusionCategory.twistValue (C := RepV) i ^ n = (1 : k) :=
   twist_roots_of_unity_of_bridge_assumptions (k := k) (RepV := RepV) i
 
-end BundledBridge
+end BundledBridgeTwist
 
 /-- In Rep(V), the fusion coefficients are symmetric: N^m_{ij} = N^m_{ji}.
 

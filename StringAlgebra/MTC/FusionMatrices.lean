@@ -54,7 +54,6 @@ theorem leftFusionMatrix_mul_apply
 
 /-- Associativity of fusion coefficients rewritten as a matrix-entry identity. -/
 theorem leftFusionMatrix_mul_assoc_entry
-    [FusionRuleAxioms (k := k) (C := C)]
     (i j l m : Idx (k := k) (C := C)) :
     (leftFusionMatrix (k := k) (C := C) j *
       leftFusionMatrix (k := k) (C := C) i) l m =
@@ -73,7 +72,6 @@ theorem leftFusionMatrix_mul_assoc_entry
 /-- The linear-combination matrix
 `∑_p N^p_{i,j} N_p` appearing in fusion-matrix product formulas. -/
 noncomputable def leftFusionProductLinearCombination
-    [FusionRuleAxioms (k := k) (C := C)]
     (i j : Idx (k := k) (C := C)) :
     Matrix (Idx (k := k) (C := C)) (Idx (k := k) (C := C)) ℕ :=
   fun l m => ∑ p : Idx (k := k) (C := C),
@@ -82,7 +80,6 @@ noncomputable def leftFusionProductLinearCombination
 /-- Matrix form of fusion associativity:
 `N_j N_i = ∑_p N^p_{i,j} N_p`. -/
 theorem leftFusionMatrix_mul_eq_linearCombination
-    [FusionRuleAxioms (k := k) (C := C)]
     (i j : Idx (k := k) (C := C)) :
     leftFusionMatrix (k := k) (C := C) j *
       leftFusionMatrix (k := k) (C := C) i =
@@ -93,7 +90,7 @@ theorem leftFusionMatrix_mul_eq_linearCombination
 /-- In a braided fusion category, the linear-combination matrix is symmetric
 in `(i,j)`. -/
 theorem leftFusionProductLinearCombination_comm
-    [BraidedCategory C] [FusionRuleAxioms (k := k) (C := C)]
+    [BraidedCategory C]
     (i j : Idx (k := k) (C := C)) :
     leftFusionProductLinearCombination (k := k) (C := C) i j =
       leftFusionProductLinearCombination (k := k) (C := C) j i := by
@@ -112,7 +109,6 @@ theorem leftFusionProductLinearCombination_comm
 section BraidedCommutativity
 
 variable [BraidedCategory C]
-variable [FusionRuleAxioms (k := k) (C := C)]
 
 /-- In a braided fusion category, left fusion matrices commute:
 `N_i N_j = N_j N_i`. -/
@@ -162,7 +158,6 @@ noncomputable def leftFusionMatrixK (i : Idx (k := k) (C := C)) :
 
 /-- Associativity of fusion coefficients in field-valued matrix-entry form. -/
 theorem leftFusionMatrixK_mul_assoc_entry
-    [FusionRuleAxioms (k := k) (C := C)]
     (i j l m : Idx (k := k) (C := C)) :
     (leftFusionMatrixK (k := k) (C := C) j *
       leftFusionMatrixK (k := k) (C := C) i) l m =
@@ -175,7 +170,6 @@ theorem leftFusionMatrixK_mul_assoc_entry
 /-- Field-valued linear-combination matrix
 `∑_p N^p_{i,j} N_p` for `leftFusionMatrixK`. -/
 noncomputable def leftFusionProductLinearCombinationK
-    [FusionRuleAxioms (k := k) (C := C)]
     (i j : Idx (k := k) (C := C)) :
     Matrix (Idx (k := k) (C := C)) (Idx (k := k) (C := C)) k :=
   fun l m => ∑ p : Idx (k := k) (C := C),
@@ -184,7 +178,6 @@ noncomputable def leftFusionProductLinearCombinationK
 /-- Matrix form of fusion associativity over `k`:
 `N_j N_i = ∑_p N^p_{i,j} N_p` for `leftFusionMatrixK`. -/
 theorem leftFusionMatrixK_mul_eq_linearCombination
-    [FusionRuleAxioms (k := k) (C := C)]
     (i j : Idx (k := k) (C := C)) :
     leftFusionMatrixK (k := k) (C := C) j *
       leftFusionMatrixK (k := k) (C := C) i =
@@ -195,7 +188,7 @@ theorem leftFusionMatrixK_mul_eq_linearCombination
 /-- In a braided fusion category, the field-valued linear-combination matrix is
 symmetric in `(i,j)`. -/
 theorem leftFusionProductLinearCombinationK_comm
-    [BraidedCategory C] [FusionRuleAxioms (k := k) (C := C)]
+    [BraidedCategory C]
     (i j : Idx (k := k) (C := C)) :
     leftFusionProductLinearCombinationK (k := k) (C := C) i j =
       leftFusionProductLinearCombinationK (k := k) (C := C) j i := by
@@ -254,7 +247,6 @@ noncomputable def leftFusionMatrixFinNat
 /-- `ℕ`-valued linear-combination matrix
 `∑_p N^p_{i,j} N_p`, reindexed to `Fin rank × Fin rank`. -/
 noncomputable def leftFusionProductLinearCombinationFinNat
-    [FusionRuleAxioms (k := k) (C := C)]
     (i j : Idx (k := k) (C := C)) :
     Matrix (Fin (rank (k := k) (C := C))) (Fin (rank (k := k) (C := C))) ℕ :=
   (leftFusionProductLinearCombination (k := k) (C := C) i j).submatrix
@@ -264,7 +256,6 @@ noncomputable def leftFusionProductLinearCombinationFinNat
 /-- Matrix form of fusion associativity on `Fin rank × Fin rank`
 for `ℕ`-valued fusion matrices. -/
 theorem leftFusionMatrixFinNat_mul_eq_linearCombination
-    [FusionRuleAxioms (k := k) (C := C)]
     (i j : Idx (k := k) (C := C)) :
     leftFusionMatrixFinNat (k := k) (C := C) j *
       leftFusionMatrixFinNat (k := k) (C := C) i =
@@ -297,7 +288,6 @@ noncomputable def leftFusionMatrixFin
 /-- `k`-valued linear-combination matrix
 `∑_p N^p_{i,j} N_p`, reindexed to `Fin rank × Fin rank`. -/
 noncomputable def leftFusionProductLinearCombinationFin
-    [FusionRuleAxioms (k := k) (C := C)]
     (i j : Idx (k := k) (C := C)) :
     Matrix (Fin (rank (k := k) (C := C))) (Fin (rank (k := k) (C := C))) k :=
   (leftFusionProductLinearCombinationK (k := k) (C := C) i j).submatrix
@@ -307,7 +297,6 @@ noncomputable def leftFusionProductLinearCombinationFin
 /-- Matrix form of fusion associativity on `Fin rank × Fin rank`
 for `k`-valued fusion matrices. -/
 theorem leftFusionMatrixFin_mul_eq_linearCombination
-    [FusionRuleAxioms (k := k) (C := C)]
     (i j : Idx (k := k) (C := C)) :
     leftFusionMatrixFin (k := k) (C := C) j *
       leftFusionMatrixFin (k := k) (C := C) i =
@@ -332,7 +321,7 @@ theorem leftFusionMatrixFin_mul_eq_linearCombination
 /-- Reindexed `ℕ`-valued linear-combination matrix is symmetric in `(i,j)` in
 the braided setting. -/
 theorem leftFusionProductLinearCombinationFinNat_comm
-    [BraidedCategory C] [FusionRuleAxioms (k := k) (C := C)]
+    [BraidedCategory C]
     (i j : Idx (k := k) (C := C)) :
     leftFusionProductLinearCombinationFinNat (k := k) (C := C) i j =
       leftFusionProductLinearCombinationFinNat (k := k) (C := C) j i := by
@@ -346,7 +335,7 @@ theorem leftFusionProductLinearCombinationFinNat_comm
 /-- Reindexed `k`-valued linear-combination matrix is symmetric in `(i,j)` in
 the braided setting. -/
 theorem leftFusionProductLinearCombinationFin_comm
-    [BraidedCategory C] [FusionRuleAxioms (k := k) (C := C)]
+    [BraidedCategory C]
     (i j : Idx (k := k) (C := C)) :
     leftFusionProductLinearCombinationFin (k := k) (C := C) i j =
       leftFusionProductLinearCombinationFin (k := k) (C := C) j i := by
@@ -372,7 +361,6 @@ noncomputable def leftFusionMatrixByFin
 section BraidedCommutativityFin
 
 variable [BraidedCategory C]
-variable [FusionRuleAxioms (k := k) (C := C)]
 
 /-- In a braided fusion category, the field-valued left fusion matrices commute:
 `N_i N_j = N_j N_i`. -/
