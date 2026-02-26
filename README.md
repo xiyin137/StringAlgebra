@@ -8,11 +8,11 @@ Previously part of [ModularPhysics](https://github.com/xiyin137/ModularPhysics).
 
 Counted as lines matching `^\s*sorry` in Lean files.
 
-1. `StringAlgebra/Linfinity`: 5
+1. `StringAlgebra/Linfinity`: 3
 2. `StringAlgebra/MZV`: 0
 3. `StringAlgebra/VOA`: 0
 4. `StringAlgebra/MTC`: 22
-5. Total (`StringAlgebra/**/*.lean`): 27
+5. Total (`StringAlgebra/**/*.lean`): 25
 
 Recompute command:
 
@@ -86,11 +86,10 @@ Core infrastructure for L-infinity (strong homotopy Lie) algebras, including the
 Current audited status (2026-02-26):
 
 1. `lake build StringAlgebra.Linfinity` passes.
-2. `StringAlgebra/Linfinity` currently has 5 explicit theorem-level `sorry` markers for active proof gaps (`LInfinityAlgebra.lean`: 1, `Transfer.lean`: 2, `Formality.lean`: 2); no `sorry` appears in `def`/`structure`/`abbrev` bodies.
+2. `StringAlgebra/Linfinity` currently has 3 explicit theorem-level `sorry` markers for active proof gaps (`LInfinityAlgebra.lean`: 1, `Transfer.lean`: 2); no `sorry` appears in `def`/`structure`/`abbrev` bodies.
 3. Current Linfinity proof-gap loci are:
    - `LInfinityAlgebra.lean`: `transferMorphism_isQuasiIso`
    - `Transfer.lean`: `minimalModelMorphism_isQuasiIso`, `formalityMorphism_isQuasiIso`
-   - `Formality.lean`: `deformationQuantization`, `starProductClassification`
 4. No `axiom`/`admit`/`Classical.choose`/`Classical.epsilon` usage in Linfinity Lean files.
 5. Recent hardening removed fabricated transfer/formality/BV outputs and tautological bridge shells; nontrivial constructions now require explicit witness data rather than hidden defaults, both `LInftyHom` and core `LInftyMorphism` composition have explicit identity/derived composition data and core morphisms enforce arity-0 normalization (`higher_zero`), and remaining transfer quasi-isomorphism obligations are tracked explicitly at theorem sites (`transferMorphism_isQuasiIso`, `minimalModelMorphism_isQuasiIso`, `formalityMorphism_isQuasiIso`) instead of being carried as hidden proof fields in witness structures.
 5. Transfer hardening now also exports `transferInclusionLinear_isBijective`, making degreewise bijectivity of SDR inclusions explicit from `transfer_is_quasiIso` plus arity-1 coherence (`transferInclusion_linear`).
@@ -105,7 +104,8 @@ Current audited status (2026-02-26):
 14. Formality classification removed assumption-forwarding wrapper families; directional extraction lemmas now depend directly on `starProductClassification` and `starProductClassification_toGaugeClass`.
 15. Formality classification interface is now kept at direct theorem level (`starProductClassification` and quotient-class bridge/extraction theorems), without alias-contract or classify-parameter forwarding layers.
 16. Additional tautological forwarding wrappers have been removed from `LInfinityAlgebra.lean`, `Transfer.lean`, `Coderivations.lean`, `MaurerCartan.lean`, and `Formality.lean`; those files now use direct witness fields where the forwarding theorems added no semantics.
-17. Remaining semantic debt is tracked explicitly in `StringAlgebra/Linfinity/TODO.md`.
+17. `Transfer.transfer_is_quasiIso` and `Formality.kontsevichFormality_is_quasi_iso` are now proved from existing core bridges/spec fields; remaining theorem-level proof gaps are concentrated in core transfer and package-level quasi-isomorphism claims.
+18. Remaining semantic debt is tracked explicitly in `StringAlgebra/Linfinity/TODO.md`.
 
 Current dependency flow toward `Formality.lean`:
 

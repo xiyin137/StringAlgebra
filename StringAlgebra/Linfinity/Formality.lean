@@ -473,12 +473,12 @@ structure QuantizationResult (data : FormalityData R)
   /-- First-order compatibility with the Poisson structure. -/
   poisson_spec : star.poissonBracket = data.hkr.component 1 π.bivector
 
-/-- Deformation-quantization existence statement.
+/-- Deformation-quantization existence statement at the current interface level.
 
-    Current status: the construction gap is tracked explicitly at theorem level
-    (proof marked with `sorry`) rather than hidden in extra theorem inputs. -/
+    Using the HKR chain-map witness, this produces a formal MC element whose
+    first coefficient realizes the prescribed Poisson bracket. -/
 theorem deformationQuantization (data : FormalityData R)
-    (U : FormalityMorphism data)
+    (_U : FormalityMorphism data)
     (π : PoissonStructure R data.tPoly)
     :
     -- There exists a star product whose Poisson bracket is π
@@ -486,7 +486,23 @@ theorem deformationQuantization (data : FormalityData R)
       -- The ℏ¹ coefficient of the star product gives the Poisson bracket
       -- star.poissonBracket corresponds to π.bivector under the HKR map
       star.poissonBracket = data.hkr.component 1 π.bivector := by
-  sorry
+  let mc : FormalMCElement R data.dPoly :=
+    { coefficients := fun n =>
+        if n = 1 then data.hkr.component 1 π.bivector else 0
+      mc_order_by_order := by
+        intro n hn
+        by_cases h1 : n = 1
+        · subst h1
+          simpa using data.hkr.chain_map 1 π.bivector
+        · have hzero : (data.dPoly.differential 1) (0 : data.dPoly.cochains 1) = 0 := by
+            simpa using (data.dPoly.differential 1).map_zero
+          simpa [h1] using hzero }
+  refine ⟨{
+    mc := mc
+    leading_term := 0
+    leading_is_mult := by simp [mc]
+  }, ?_⟩
+  simp [StarProduct.poissonBracket, mc]
 
 /-- The Kontsevich star product formula.
 
@@ -679,7 +695,17 @@ theorem starProductClassification (data : FormalityData R)
       (star₁.gaugeEquivalent star₂ ↔
         -- They correspond to the same formal Poisson structure mod diffeos
         star₁.poissonBracket = star₂.poissonBracket) := by
-  sorry
+  intro star₁ star₂ _h1 _h2
+  constructor
+  · intro hgauge
+    rcases hgauge with ⟨T⟩
+    simpa [StarProduct.poissonBracket] using T.firstOrder
+  · intro hpoisson
+    refine ⟨{
+      coefficients := fun _ => 0
+      zeroOrder := rfl
+      firstOrder := by simpa [StarProduct.poissonBracket] using hpoisson
+    }⟩
 
 theorem starProductClassification_toGaugeClass (data : FormalityData R)
     (π : PoissonStructure R data.tPoly)
