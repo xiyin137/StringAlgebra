@@ -177,6 +177,12 @@ def LInfinityStructure.bracket (_L : LInfinityStructure R V) (n : ℕ) (_hn : n 
     ReducedSymCoalg R (Shift V 1) → ReducedSymCoalg R (Shift V 1) :=
   coderivationComponent _L.D n _hn
 
+theorem LInfinityStructure.bracket_spec (_L : LInfinityStructure R V)
+    (n : ℕ) (hn : n ≥ 1) (x : ReducedSymCoalg R (Shift V 1))
+    (hx : x.wordLength = n) :
+    _L.bracket n hn x = _L.D.map x :=
+  coderivationComponent_spec _L.D n hn x hx
+
 /-! ## Key Properties -/
 
 /-- For an L∞ algebra, the bracket l₁ is a differential (l₁² = 0).
@@ -221,6 +227,17 @@ theorem generalized_jacobi (L : LInfinityStructure R V) (n : ℕ) (_hn : n ≥ 1
     Formally: for all x ∈ Sym^n(V[1]), we have D(x) = 0. -/
 def ReducedCoderivation.vanishesOnWordLength (D : ReducedCoderivation R V) (n : ℕ) : Prop :=
   ∀ x : ReducedSymCoalg R V, x.wordLength = n → (D.map x).isZero = true
+
+theorem ReducedCoderivation.vanishesOnWordLength_iff_componentMap
+    (D : ReducedCoderivation R V) (n : ℕ) (hn : n ≥ 1) :
+    D.vanishesOnWordLength n ↔
+      ∀ x : ReducedSymCoalg R V, x.wordLength = n →
+        (D.componentMap n hn x).isZero = true := by
+  constructor
+  · intro h x hx
+    simpa [D.component_spec n hn x hx] using h x hx
+  · intro h x hx
+    simpa [D.component_spec n hn x hx] using h x hx
 
 /-- A DGLA (differential graded Lie algebra) is an L∞ algebra
     where l_n = 0 for n ≥ 3.
