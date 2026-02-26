@@ -326,12 +326,18 @@ structure ReducedSymCoalgElem (V : ℤ → Type v)
   degrees : Fin wordLength → ℤ
   /-- Total degree = sum of factor degrees -/
   totalDegree : ℤ := (Finset.univ.sum degrees)
+  /-- Consistency of the stored total degree with factor degrees. -/
+  totalDegree_eq : totalDegree = Finset.univ.sum degrees
   /-- Elements in each degree (factors) -/
   factors : ∀ (i : Fin wordLength), V (degrees i)
 
 namespace ReducedSymCoalgElem
 
 variable {R} {V : ℤ → Type v} [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
+
+@[simp] theorem totalDegree_eq_sum (x : ReducedSymCoalgElem R V) :
+    x.totalDegree = Finset.univ.sum x.degrees :=
+  x.totalDegree_eq
 
 /-- The total degree of an element -/
 def degree (x : ReducedSymCoalgElem R V) : ℤ :=
@@ -349,6 +355,7 @@ def zero : ReducedSymCoalgElem R V where
   wordLength := 1
   wordLength_pos := le_refl 1
   degrees := fun _ => 0
+  totalDegree_eq := by simp
   factors := fun _ => 0
 
 instance : Zero (ReducedSymCoalgElem R V) := ⟨zero⟩
@@ -358,6 +365,7 @@ def single (d : ℤ) (v : V d) : ReducedSymCoalgElem R V where
   wordLength := 1
   wordLength_pos := le_refl 1
   degrees := fun _ => d
+  totalDegree_eq := by simp
   factors := fun _ => v
 
 end ReducedSymCoalgElem

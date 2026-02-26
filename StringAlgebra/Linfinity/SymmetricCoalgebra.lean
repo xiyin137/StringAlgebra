@@ -146,6 +146,8 @@ structure SymPower (R : Type u) [CommRing R] (V : ℤ → Type v)
   degrees : Fin n → ℤ
   /-- The total degree -/
   totalDegree : ℤ := Finset.univ.sum degrees
+  /-- Consistency of the stored total degree with factor degrees. -/
+  totalDegree_eq : totalDegree = Finset.univ.sum degrees
   /-- Whether this is zero -/
   isZero : Bool := false
 
@@ -154,9 +156,14 @@ namespace SymPower
 variable {R : Type u} [CommRing R] {V : ℤ → Type v}
     [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
 
+@[simp] theorem totalDegree_eq_sum {n : ℕ} (x : SymPower R V n) :
+    x.totalDegree = Finset.univ.sum x.degrees :=
+  x.totalDegree_eq
+
 /-- The zero element in Sym^n(V) -/
 protected def zero (n : ℕ) : SymPower R V n where
   degrees := fun _ => 0
+  totalDegree_eq := by simp
   isZero := true
 
 instance (n : ℕ) : Zero (SymPower R V n) := ⟨SymPower.zero n⟩
