@@ -35,10 +35,9 @@ MC elements parametrize:
 
 ## Gauge Equivalence
 
-Two MC elements a, b are gauge equivalent if there exists
-g ∈ L₀ (degree 0) such that b = e^{ad_g}(a) in an appropriate sense.
-
-The moduli space MC(L)/~ is the space of gauge equivalence classes.
+Classically, two MC elements are gauge equivalent via gauge-flow/exponential
+actions of degree-0 elements. In this file, the relation is supplied
+explicitly by `MCTheory.gaugeEquivalent` together with equivalence proofs.
 
 ## References
 
@@ -148,14 +147,10 @@ def gaugeAction {R : Type u} [CommRing R]
     {L : LInftyAlgebra R V} (T : MCTheory R L) (g : V 0) (a : V 1) : V 1 :=
   T.gaugeAction g a
 
-/-- Two MC elements are gauge equivalent if connected by gauge flow.
+/-- Gauge-equivalence relation on MC elements from explicit `MCTheory` data.
 
-    Formally: a ~ b iff there exists a path γ : [0,1] → MC(L)
-    with γ(0) = a, γ(1) = b, and γ satisfies the gauge flow ODE:
-    dγ/dt = δ_{g(t)}(γ(t)) for some gauge parameter g(t) ∈ L₀.
-
-    In this development stage, gauge-equivalence is supplied by `MCTheory`
-    as explicit model data. -/
+    Classical gauge-flow interpretations motivate this relation, but this
+    definition uses only the relation field supplied by `MCTheory`. -/
 def GaugeEquivalent {R : Type u} [CommRing R]
     {V : ℤ → Type v}
     [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
@@ -283,16 +278,24 @@ def twistedDifferential {R : Type u} [CommRing R]
     (k : ℤ) → V k →ₗ[R] V (k + 1) :=
   T.twistedDifferential a.element
 
-/-- The twisted differential squares to zero (consequence of MC equation).
+/-- Witness-level MC condition for the chosen twisting point.
 
-    The MC equation MC(a) = 0 is exactly the condition that ensures
-    (l₁^a)² = 0, making (V, l₁^a) into a chain complex. -/
-theorem twisted_diff_sq_zero {R : Type u} [CommRing R]
+    This theorem returns the stored Maurer-Cartan witness used to justify
+    square-zero claims for the twisted differential. -/
+theorem twisted_diff_sq_zero_witness {R : Type u} [CommRing R]
     {V : ℤ → Type v}
     [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
     {L : LInftyAlgebra R V} (T : MCTheory R L) (a : MCElement R T) :
     satisfiesMC L T a.element :=  -- The MC condition gives (l₁^a)² = 0
   a.mc
+
+/-- Compatibility alias for historical theorem naming. -/
+theorem twisted_diff_sq_zero {R : Type u} [CommRing R]
+    {V : ℤ → Type v}
+    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
+    {L : LInftyAlgebra R V} (T : MCTheory R L) (a : MCElement R T) :
+    satisfiesMC L T a.element :=
+  twisted_diff_sq_zero_witness T a
 
 /-! ## Deformation Theory -/
 
@@ -307,21 +310,26 @@ structure FormalDeformation (R : Type u) [CommRing R]
   /-- The deformation is trivial at `t = 0`. -/
   trivial_at_zero : deformation 0 = 0
 
-/-- The tangent space to MCModuli at [a] is H¹(L^a, l₁^a) -/
+/-- Interface-level tangent model at a moduli point.
+
+    In this stage it is represented directly by the degree-1 piece. -/
 def tangentSpace {R : Type u} [CommRing R]
     {V : ℤ → Type v}
     [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
     {L : LInftyAlgebra R V} (T : MCTheory R L) (_a : MCElement R T) : Type _ :=
   V 1
 
-/-- The obstruction space is H²(L^a, l₁^a) -/
+/-- Interface-level obstruction model at a moduli point.
+
+    In this stage it is represented directly by the degree-2 piece. -/
 def obstructionSpace {R : Type u} [CommRing R]
     {V : ℤ → Type v}
     [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
     {L : LInftyAlgebra R V} (T : MCTheory R L) (_a : MCElement R T) : Type _ :=
   V 2
 
-/-- If H²(L^a) = 0, the moduli space is smooth at [a] -/
+/-- Construct a moduli point from an explicit unobstructedness witness
+    in the current obstruction model. -/
 def smoothPoint_when_unobstructed {R : Type u} [CommRing R]
     {V : ℤ → Type v}
     [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
@@ -330,7 +338,7 @@ def smoothPoint_when_unobstructed {R : Type u} [CommRing R]
     MCModuli R T :=
   Quotient.mk _ a
 
-/-- If H²(L^a) = 0, the moduli space is smooth at [a]. -/
+/-- Nonempty-form of `smoothPoint_when_unobstructed`. -/
 theorem smooth_when_unobstructed {R : Type u} [CommRing R]
     {V : ℤ → Type v}
     [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
