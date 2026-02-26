@@ -9,6 +9,12 @@
 - `FusionCategory.lean` now includes both-sided vacuum normalization infrastructure
   (`fusionCoeff_vacuum_*`, `fusionCoeff_right_vacuum_*` including Kronecker forms),
   so downstream S-matrix/modular proofs can rewrite vacuum legs without extra ad-hoc lemmas.
+- `FusionCategory.lean` now also includes explicit rigid-adjunction infrastructure
+  (`homTensorAdjointEquiv`, `homTensorAdjointDualIdxEquiv`) and a `MonoidalLinear`-gated
+  finrank transport layer (`homTensorAdjointLinearEquiv`,
+  `finrank_hom_tensor_eq_finrank_hom_tensor_rightDual`,
+  `finrank_hom_tensor_eq_finrank_hom_tensor_dualIdx`) to support future closure of
+  `fusionCoeff_frobenius` without assumption bundles.
 
 ## Proof-Gap Inventory (16)
 

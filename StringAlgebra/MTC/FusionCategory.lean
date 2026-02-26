@@ -135,6 +135,90 @@ theorem dual_simple (i : Idx (k := k) (C := C)) : Simple (simpleObj i)ᘁ := by
   haveI := simpleObj_simple (k := k) (C := C) (dualIdx i)
   exact Simple.of_iso (dualIdx_iso i)
 
+/-- Right-adjoint Hom equivalence used in Frobenius-style rewrites:
+    `Hom(Xᵢ ⊗ Xⱼ, Xₘ) ≃ Hom(Xᵢ, Xₘ ⊗ Xⱼᘁ)`. -/
+noncomputable def homTensorAdjointEquiv
+    (i j m : Idx (k := k) (C := C)) :
+    (simpleObj i ⊗ simpleObj j ⟶ simpleObj m) ≃
+      (simpleObj i ⟶ simpleObj m ⊗ (simpleObj j)ᘁ) :=
+  tensorRightHomEquiv (simpleObj i) (simpleObj j) ((simpleObj j)ᘁ) (simpleObj m)
+
+/-- `homTensorAdjointEquiv` rewritten through the chosen dual index representative. -/
+noncomputable def homTensorAdjointDualIdxEquiv
+    (i j m : Idx (k := k) (C := C)) :
+    (simpleObj i ⊗ simpleObj j ⟶ simpleObj m) ≃
+      (simpleObj i ⟶ simpleObj m ⊗ simpleObj (dualIdx j)) := by
+  let e0 :
+      (simpleObj i ⊗ simpleObj j ⟶ simpleObj m) ≃
+        (simpleObj i ⟶ simpleObj m ⊗ (simpleObj j)ᘁ) :=
+    homTensorAdjointEquiv (k := k) (C := C) i j m
+  let e1 : simpleObj m ⊗ (simpleObj j)ᘁ ≅ simpleObj m ⊗ simpleObj (dualIdx j) :=
+    whiskerLeftIso (simpleObj m) (dualIdx_iso (k := k) (C := C) j)
+  refine
+    { toFun := fun f => e0 f ≫ e1.hom
+      invFun := fun g => e0.symm (g ≫ e1.inv)
+      left_inv := ?_
+      right_inv := ?_ }
+  · intro f
+    simp [e0, e1]
+  · intro g
+    simp [e0, e1]
+
+section LinearAdjunction
+
+variable [CategoryTheory.MonoidalLinear k C]
+
+/-- Linearization of `homTensorAdjointEquiv` (requires `MonoidalLinear`). -/
+noncomputable def homTensorAdjointLinearEquiv
+    (i j m : Idx (k := k) (C := C)) :
+    (simpleObj i ⊗ simpleObj j ⟶ simpleObj m) ≃ₗ[k]
+      (simpleObj i ⟶ simpleObj m ⊗ (simpleObj j)ᘁ) where
+  toFun := homTensorAdjointEquiv (k := k) (C := C) i j m
+  invFun := (homTensorAdjointEquiv (k := k) (C := C) i j m).symm
+  left_inv := by
+    intro f
+    exact (homTensorAdjointEquiv (k := k) (C := C) i j m).left_inv f
+  right_inv := by
+    intro f
+    exact (homTensorAdjointEquiv (k := k) (C := C) i j m).right_inv f
+  map_add' := by
+    intro f g
+    change (ρ_ _).inv ≫ _ ◁ η_ _ _ ≫ (α_ _ _ _).inv ≫ (f + g) ▷ _ =
+      ((ρ_ _).inv ≫ _ ◁ η_ _ _ ≫ (α_ _ _ _).inv ≫ f ▷ _) +
+      ((ρ_ _).inv ≫ _ ◁ η_ _ _ ≫ (α_ _ _ _).inv ≫ g ▷ _)
+    simp
+  map_smul' := by
+    intro r f
+    change (ρ_ _).inv ≫ _ ◁ η_ _ _ ≫ (α_ _ _ _).inv ≫ (r • f) ▷ _ =
+      r • ((ρ_ _).inv ≫ _ ◁ η_ _ _ ≫ (α_ _ _ _).inv ≫ f ▷ _)
+    simp
+
+/-- Finrank form of right-adjoint Hom transport:
+    `dim Hom(Xᵢ ⊗ Xⱼ, Xₘ) = dim Hom(Xᵢ, Xₘ ⊗ Xⱼᘁ)`. -/
+theorem finrank_hom_tensor_eq_finrank_hom_tensor_rightDual
+    (i j m : Idx (k := k) (C := C)) :
+    Module.finrank k (simpleObj i ⊗ simpleObj j ⟶ simpleObj m) =
+      Module.finrank k (simpleObj i ⟶ simpleObj m ⊗ (simpleObj j)ᘁ) := by
+  exact LinearEquiv.finrank_eq
+    (homTensorAdjointLinearEquiv (k := k) (C := C) i j m)
+
+/-- Finrank form of right-adjoint Hom transport rewritten through `dualIdx`. -/
+theorem finrank_hom_tensor_eq_finrank_hom_tensor_dualIdx
+    (i j m : Idx (k := k) (C := C)) :
+    Module.finrank k (simpleObj i ⊗ simpleObj j ⟶ simpleObj m) =
+      Module.finrank k (simpleObj i ⟶ simpleObj m ⊗ simpleObj (dualIdx j)) := by
+  calc
+    Module.finrank k (simpleObj i ⊗ simpleObj j ⟶ simpleObj m)
+        = Module.finrank k (simpleObj i ⟶ simpleObj m ⊗ (simpleObj j)ᘁ) := by
+          exact finrank_hom_tensor_eq_finrank_hom_tensor_rightDual
+            (k := k) (C := C) i j m
+    _ = Module.finrank k (simpleObj i ⟶ simpleObj m ⊗ simpleObj (dualIdx j)) := by
+        exact LinearEquiv.finrank_eq
+          (Linear.homCongr k (Iso.refl (simpleObj i))
+            (whiskerLeftIso (simpleObj m) (dualIdx_iso (k := k) (C := C) j)))
+
+end LinearAdjunction
+
 section FusionVacuum
 
 variable [IsAlgClosed k] [HasKernels C]
