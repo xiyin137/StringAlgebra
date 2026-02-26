@@ -217,6 +217,16 @@ theorem finrank_hom_tensor_eq_finrank_hom_tensor_dualIdx
           (Linear.homCongr k (Iso.refl (simpleObj i))
             (whiskerLeftIso (simpleObj m) (dualIdx_iso (k := k) (C := C) j)))
 
+/-- Frobenius-adjunction rewrite of `fusionCoeff` through `dualIdx` on the right
+    tensor factor (requires `MonoidalLinear`). -/
+theorem fusionCoeff_eq_finrank_hom_tensor_dualIdx
+    (i j m : Idx (k := k) (C := C)) :
+    fusionCoeff (k := k) i j m =
+      Module.finrank k (simpleObj i ⟶ simpleObj m ⊗ simpleObj (dualIdx j)) := by
+  unfold fusionCoeff
+  exact finrank_hom_tensor_eq_finrank_hom_tensor_dualIdx
+    (k := k) (C := C) i j m
+
 end LinearAdjunction
 
 section FusionVacuum

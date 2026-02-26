@@ -13,7 +13,8 @@
   (`homTensorAdjointEquiv`, `homTensorAdjointDualIdxEquiv`) and a `MonoidalLinear`-gated
   finrank transport layer (`homTensorAdjointLinearEquiv`,
   `finrank_hom_tensor_eq_finrank_hom_tensor_rightDual`,
-  `finrank_hom_tensor_eq_finrank_hom_tensor_dualIdx`) to support future closure of
+  `finrank_hom_tensor_eq_finrank_hom_tensor_dualIdx`,
+  `fusionCoeff_eq_finrank_hom_tensor_dualIdx`) to support future closure of
   `fusionCoeff_frobenius` without assumption bundles.
 
 ## Proof-Gap Inventory (16)
