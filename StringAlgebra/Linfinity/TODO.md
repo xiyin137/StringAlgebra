@@ -18,6 +18,7 @@ This file tracks formal soundness debt for `StringAlgebra/Linfinity` under `agen
    - `Transfer.lean`: removed fabricated transfer outputs and `Classical.choose` inversion; now uses explicit transfer witness packages.
    - `Transfer.lean`: tightened `minimal_model_unique` output from bare `Nonempty` to an explicit quasi-isomorphic comparison witness.
    - `Transfer.lean`: added unpacked formality interface (`isFormal_unpacked`/`isFormal_of_unpacked`/`isFormal_iff_unpacked`) exposing explicit minimal-model and quasi-isomorphism data from/to `isFormal`.
+   - `Transfer.lean`: added canonical accessor morphisms (`minimalModelMorphism`, `formalityMorphism`) with explicit quasi-isomorphism theorems and routed `minimal_model_exists` through these accessors.
    - `Formality.lean`: removed hardcoded zero graph/quantization outputs; now requires explicit witness data for formality, MC transport, and quantization outputs.
    - `Formality.lean`: strengthened MC transport to explicit element-level output (`linfty_preserves_mc`) with an existence wrapper lemma, and added reflexive/symmetric/transitive gauge-equivalence infrastructure with a `Setoid` instance on star products.
    - `Formality.lean`: added explicit star-product gauge-class quotient interface (`StarProductGaugeClass`, projection, and exact equality↔gauge-equivalence bridge lemmas).

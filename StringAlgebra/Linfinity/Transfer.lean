@@ -280,6 +280,21 @@ structure MinimalModelResult {R : Type u} [CommRing R]
 attribute [instance] MinimalModelResult.instAddCommGroup
 attribute [instance] MinimalModelResult.instModule
 
+/-- Canonical quasi-isomorphism from a minimal model package. -/
+def minimalModelMorphism {R : Type u} [CommRing R]
+    {V : ℤ → Type v}
+    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
+    {L : LInftyAlgebra R V} (M : MinimalModelResult L) :
+    LInftyHom R M.model L :=
+  M.quasiIso
+
+theorem minimalModelMorphism_isQuasiIso {R : Type u} [CommRing R]
+    {V : ℤ → Type v}
+    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
+    {L : LInftyAlgebra R V} (M : MinimalModelResult L) :
+    (minimalModelMorphism M).isQuasiIso :=
+  M.quasiIso_property
+
 /-- The minimal model is obtained by transfer to homology.
 
     If H = H(V, l₁) is the homology, then the transferred structure
@@ -290,7 +305,7 @@ theorem minimal_model_exists {R : Type u} [CommRing R]
     (L : LInftyAlgebra R V)
     (M : MinimalModelResult L) :
     ∃ F : LInftyHom R M.model L, F.isQuasiIso :=
-  ⟨M.quasiIso, M.quasiIso_property⟩
+  ⟨minimalModelMorphism M, minimalModelMorphism_isQuasiIso M⟩
 
 /-- Minimal models are unique up to isomorphism -/
 theorem minimal_model_unique {R : Type u} [CommRing R]
@@ -331,6 +346,21 @@ structure FormalityResult {R : Type u} [CommRing R]
 
 attribute [instance] FormalityResult.instAddCommGroup
 attribute [instance] FormalityResult.instModule
+
+/-- Canonical quasi-isomorphism from a formality witness package. -/
+def formalityMorphism {R : Type u} [CommRing R]
+    {V : ℤ → Type v}
+    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
+    {L : LInftyAlgebra R V} (F : FormalityResult L) :
+    LInftyHom R F.model L :=
+  F.quasiIso
+
+theorem formalityMorphism_isQuasiIso {R : Type u} [CommRing R]
+    {V : ℤ → Type v}
+    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
+    {L : LInftyAlgebra R V} (F : FormalityResult L) :
+    (formalityMorphism F).isQuasiIso :=
+  F.quasiIso_property
 
 def isFormal {R : Type u} [CommRing R]
     {V : ℤ → Type v}
