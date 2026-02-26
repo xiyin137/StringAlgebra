@@ -342,7 +342,19 @@ structure MCPreservation
 
 /-- L∞ morphisms preserve Maurer-Cartan elements when equipped with explicit
     MC-preservation data. -/
-theorem linfty_preserves_mc
+def linfty_preserves_mc
+    {V W : ℤ → Type v}
+    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
+    [∀ i, AddCommGroup (W i)] [∀ i, Module R (W i)]
+    (L : LInftyAlgebra R V) (L' : LInftyAlgebra R W)
+    (F : LInftyHom R L L')
+    (a : MaurerCartanElement R V L)
+    (H : MCPreservation (R := R) L L' F) :
+    MaurerCartanElement R W L' :=
+  H.map a
+
+/-- Nonempty-form of `linfty_preserves_mc` for existence-style consumers. -/
+theorem linfty_preserves_mc_nonempty
     {V W : ℤ → Type v}
     [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
     [∀ i, AddCommGroup (W i)] [∀ i, Module R (W i)]
@@ -351,7 +363,7 @@ theorem linfty_preserves_mc
     (a : MaurerCartanElement R V L)
     (H : MCPreservation (R := R) L L' F) :
     Nonempty (MaurerCartanElement R W L') :=
-  ⟨H.map a⟩
+  ⟨linfty_preserves_mc (R := R) L L' F a H⟩
 
 /-! ## Deformation Quantization
 
@@ -479,9 +491,74 @@ structure StarProduct.GaugeTransformation {R : Type u} [CommRing R]
   firstOrder :
     star₁.mc.coefficients 1 = star₂.mc.coefficients 1
 
+namespace StarProduct.GaugeTransformation
+
+/-- Identity gauge transformation on a star product. -/
+def refl {R : Type u} [CommRing R] {D : HochschildCochainsDGLA R}
+    (star : StarProduct R D) : StarProduct.GaugeTransformation star star where
+  coefficients := fun _ => 0
+  firstOrder := rfl
+
+/-- Reverse a gauge transformation. -/
+def symm {R : Type u} [CommRing R] {D : HochschildCochainsDGLA R}
+    {star₁ star₂ : StarProduct R D}
+    (T : StarProduct.GaugeTransformation star₁ star₂) :
+    StarProduct.GaugeTransformation star₂ star₁ where
+  coefficients := T.coefficients
+  firstOrder := T.firstOrder.symm
+
+/-- Compose gauge transformations. -/
+def trans {R : Type u} [CommRing R] {D : HochschildCochainsDGLA R}
+    {star₁ star₂ star₃ : StarProduct R D}
+    (T₁₂ : StarProduct.GaugeTransformation star₁ star₂)
+    (T₂₃ : StarProduct.GaugeTransformation star₂ star₃) :
+    StarProduct.GaugeTransformation star₁ star₃ where
+  coefficients := T₁₂.coefficients
+  firstOrder := Eq.trans T₁₂.firstOrder T₂₃.firstOrder
+
+end StarProduct.GaugeTransformation
+
 def StarProduct.gaugeEquivalent {R : Type u} [CommRing R] {D : HochschildCochainsDGLA R}
     (star₁ star₂ : StarProduct R D) : Prop :=
   Nonempty (StarProduct.GaugeTransformation star₁ star₂)
+
+theorem StarProduct.gaugeEquivalent_refl {R : Type u} [CommRing R]
+    {D : HochschildCochainsDGLA R} (star : StarProduct R D) :
+    star.gaugeEquivalent star :=
+  ⟨StarProduct.GaugeTransformation.refl star⟩
+
+theorem StarProduct.gaugeEquivalent_symm {R : Type u} [CommRing R]
+    {D : HochschildCochainsDGLA R} {star₁ star₂ : StarProduct R D}
+    (h : star₁.gaugeEquivalent star₂) :
+    star₂.gaugeEquivalent star₁ := by
+  rcases h with ⟨T⟩
+  exact ⟨T.symm⟩
+
+theorem StarProduct.gaugeEquivalent_trans {R : Type u} [CommRing R]
+    {D : HochschildCochainsDGLA R}
+    {star₁ star₂ star₃ : StarProduct R D}
+    (h₁₂ : star₁.gaugeEquivalent star₂)
+    (h₂₃ : star₂.gaugeEquivalent star₃) :
+    star₁.gaugeEquivalent star₃ := by
+  rcases h₁₂ with ⟨T₁₂⟩
+  rcases h₂₃ with ⟨T₂₃⟩
+  exact ⟨T₁₂.trans T₂₃⟩
+
+theorem StarProduct.gaugeEquivalent_equivalence {R : Type u} [CommRing R]
+    {D : HochschildCochainsDGLA R} :
+    Equivalence (StarProduct.gaugeEquivalent (R := R) (D := D)) := by
+  refine ⟨?_, ?_, ?_⟩
+  · intro star
+    exact StarProduct.gaugeEquivalent_refl (R := R) star
+  · intro star₁ star₂ h
+    exact StarProduct.gaugeEquivalent_symm (R := R) h
+  · intro star₁ star₂ star₃ h₁₂ h₂₃
+    exact StarProduct.gaugeEquivalent_trans (R := R) h₁₂ h₂₃
+
+instance StarProduct.gaugeEquivalentSetoid {R : Type u} [CommRing R]
+    {D : HochschildCochainsDGLA R} : Setoid (StarProduct R D) where
+  r := StarProduct.gaugeEquivalent
+  iseqv := StarProduct.gaugeEquivalent_equivalence (R := R)
 
 /-- Classification of star products.
 
