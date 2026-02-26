@@ -79,12 +79,17 @@ def BoundedLaurentSeries (R : Type*) [CommRing R] : Submodule R (FormalLaurentSe
     obtain ⟨Nf, hNf⟩ := hf
     obtain ⟨Ng, hNg⟩ := hg
     exact ⟨min Nf Ng, fun n hn => by
-      rw [Pi.add_apply, hNf n (lt_of_lt_of_le hn (min_le_left _ _)),
-          hNg n (lt_of_lt_of_le hn (min_le_right _ _)), add_zero]⟩
+      have hf0 : f n = 0 := hNf n (lt_of_lt_of_le hn (min_le_left _ _))
+      have hg0 : g n = 0 := hNg n (lt_of_lt_of_le hn (min_le_right _ _))
+      change f n + g n = 0
+      simp [hf0, hg0]⟩
   zero_mem' := ⟨0, fun _ _ => rfl⟩
   smul_mem' := fun r f hf => by
     obtain ⟨N, hN⟩ := hf
-    exact ⟨N, fun n hn => by rw [Pi.smul_apply, hN n hn, smul_zero]⟩
+    exact ⟨N, fun n hn => by
+      have hf0 : f n = 0 := hN n hn
+      change r • f n = 0
+      simp [hf0]⟩
 
 /-- The zero Laurent series -/
 def zero : FormalLaurentSeries R := fun _ => 0
@@ -209,9 +214,9 @@ def mode (f : EndLaurentSeries R V) (n : ℤ) : Module.End R V :=
 /-- Standard notation: a(z) = ∑_n a(n) z^{-n-1} -/
 theorem mode_expansion (f : EndLaurentSeries R V) :
     f = fun m => f.mode (-m - 1) := by
-  ext m
-  simp only [mode]
-  ring_nf
+  ext m x
+  change (f m) x = (f (-(-m - 1) - 1)) x
+  simp
 
 end EndLaurentSeries
 

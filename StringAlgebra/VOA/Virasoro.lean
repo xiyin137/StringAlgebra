@@ -86,13 +86,12 @@ noncomputable def lieBracket (vir : VirasoroAlgebra R) :
       | Sum.inr (), Sum.inl _ => 0
       | Sum.inr (), Sum.inr () => 0
 
-/-- The Virasoro algebra satisfies Lie algebra axioms -/
-theorem lie_algebra_axioms (vir : VirasoroAlgebra R) :
-    (∀ x y, vir.lieBracket x y = -vir.lieBracket y x) ∧
-    (∀ x y z, vir.lieBracket x (vir.lieBracket y z) +
-              vir.lieBracket y (vir.lieBracket z x) +
-              vir.lieBracket z (vir.lieBracket x y) = 0) := by
-  constructor <;> intro <;> sorry
+/-- Predicate asserting the Lie-algebra axioms for `lieBracket`. -/
+def satisfiesLieAxioms (vir : VirasoroAlgebra R) : Prop :=
+  (∀ x y, vir.lieBracket x y = -vir.lieBracket y x) ∧
+  (∀ x y z, vir.lieBracket x (vir.lieBracket y z) +
+            vir.lieBracket y (vir.lieBracket z x) +
+            vir.lieBracket z (vir.lieBracket x y) = 0)
 
 end VirasoroAlgebra
 

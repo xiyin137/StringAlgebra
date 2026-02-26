@@ -61,7 +61,7 @@ instance adjointModule : VAModule R V V where
   Y_M := VertexAlgebra.Y
   vacuum_axiom := VertexAlgebra.vacuum_axiom
   associativity := fun _ _ _ _ _ _ => trivial
-  lower_truncation := fun a v => ⟨0, fun n _hn => by sorry⟩
+  lower_truncation := fun a v => VertexAlgebra.lower_truncation (R := R) a v
 
 end VAModule
 
@@ -134,7 +134,7 @@ noncomputable def fusionRules
     [AddCommGroup M₁] [Module R M₁] [VAModule R V M₁]
     [AddCommGroup M₂] [Module R M₂] [VAModule R V M₂]
     [AddCommGroup M₃] [Module R M₃] [VAModule R V M₃] : ℕ :=
-  sorry
+  Cardinal.toNat (Cardinal.mk (IntertwiningOperator (R := R) (V := V) (M₁ := M₁) (M₂ := M₂) (M₃ := M₃)))
 
 /-! ## Twisted Modules
 

@@ -98,11 +98,99 @@ theorem weight_cons (x : ℕ+) (xs : Composition) :
     - Inductive case: each of the three terms preserves weight -/
 theorem stuffle_weight_eq (s t : Composition) :
     ∀ r ∈ stuffle s t, Composition.weight r = Composition.weight s + Composition.weight t := by
-  sorry  -- Proof by nested induction, complex due to list membership handling
+  match s, t with
+  | [], t =>
+    simp [stuffle, Composition.weight]
+  | s, [] =>
+    cases s with
+    | nil =>
+      simp [stuffle, Composition.weight]
+    | cons s₁ s' =>
+      simp [stuffle, Composition.weight]
+  | s₁ :: s', t₁ :: t' =>
+    intro r hr
+    simp only [stuffle, List.mem_append, List.mem_map] at hr
+    rcases hr with hr | hr
+    · rcases hr with hr | hr
+      · rcases hr with ⟨r', hr', rfl⟩
+        have ih := stuffle_weight_eq s' (t₁ :: t') r' hr'
+        simp only [weight_cons] at ih ⊢
+        omega
+      · rcases hr with ⟨r', hr', rfl⟩
+        have ih := stuffle_weight_eq (s₁ :: s') t' r' hr'
+        simp only [weight_cons] at ih ⊢
+        omega
+    · rcases hr with ⟨r', hr', rfl⟩
+      have ih := stuffle_weight_eq s' t' r' hr'
+      calc
+        Composition.weight ((s₁ + t₁) :: r') = ((s₁ + t₁ : ℕ+) : ℕ) + Composition.weight r' := by
+          simp [weight_cons]
+        _ = ((s₁ : ℕ) + (t₁ : ℕ)) + Composition.weight r' := by rfl
+        _ = ((s₁ : ℕ) + (t₁ : ℕ)) + (Composition.weight s' + Composition.weight t') := by
+          rw [ih]
+        _ = ((s₁ : ℕ) + Composition.weight s') + ((t₁ : ℕ) + Composition.weight t') := by
+          omega
+        _ = Composition.weight (s₁ :: s') + Composition.weight (t₁ :: t') := by
+          simp [weight_cons]
 
 /-- Stuffle is commutative (as multisets) -/
 theorem stuffle_comm (s t : Composition) : (stuffle s t).Perm (stuffle t s) := by
-  sorry  -- Requires careful induction
+  match s, t with
+  | [], t =>
+    simp [stuffle, stuffle_nil_right]
+  | s, [] =>
+    simp [stuffle_nil_left, stuffle_nil_right]
+  | s₁ :: s', t₁ :: t' =>
+    have h₁ : (stuffle s' (t₁ :: t')).Perm (stuffle (t₁ :: t') s') :=
+      stuffle_comm s' (t₁ :: t')
+    have h₂ : (stuffle (s₁ :: s') t').Perm (stuffle t' (s₁ :: s')) :=
+      stuffle_comm (s₁ :: s') t'
+    have h₃ : (stuffle s' t').Perm (stuffle t' s') :=
+      stuffle_comm s' t'
+    have hA :
+        ((stuffle s' (t₁ :: t')).map (s₁ :: ·)).Perm
+          ((stuffle (t₁ :: t') s').map (s₁ :: ·)) :=
+      List.Perm.map (s₁ :: ·) h₁
+    have hB :
+        ((stuffle (s₁ :: s') t').map (t₁ :: ·)).Perm
+          ((stuffle t' (s₁ :: s')).map (t₁ :: ·)) :=
+      List.Perm.map (t₁ :: ·) h₂
+    have hC :
+        ((stuffle s' t').map ((s₁ + t₁) :: ·)).Perm
+          ((stuffle t' s').map ((s₁ + t₁) :: ·)) :=
+      List.Perm.map ((s₁ + t₁) :: ·) h₃
+    have hAB :
+        (((stuffle s' (t₁ :: t')).map (s₁ :: ·)) ++ ((stuffle (s₁ :: s') t').map (t₁ :: ·))).Perm
+          (((stuffle (t₁ :: t') s').map (s₁ :: ·)) ++ ((stuffle t' (s₁ :: s')).map (t₁ :: ·))) :=
+      List.Perm.append hA hB
+    have hABC :
+        ((((stuffle s' (t₁ :: t')).map (s₁ :: ·)) ++ ((stuffle (s₁ :: s') t').map (t₁ :: ·))) ++
+          ((stuffle s' t').map ((s₁ + t₁) :: ·))).Perm
+          ((((stuffle (t₁ :: t') s').map (s₁ :: ·)) ++ ((stuffle t' (s₁ :: s')).map (t₁ :: ·))) ++
+            ((stuffle t' s').map ((s₁ + t₁) :: ·))) :=
+      List.Perm.append hAB hC
+    have hSwapCore :
+        (((stuffle (t₁ :: t') s').map (s₁ :: ·)) ++ ((stuffle t' (s₁ :: s')).map (t₁ :: ·))).Perm
+          (((stuffle t' (s₁ :: s')).map (t₁ :: ·)) ++ ((stuffle (t₁ :: t') s').map (s₁ :: ·))) :=
+      List.perm_append_comm
+    have hSwap :
+        ((((stuffle (t₁ :: t') s').map (s₁ :: ·)) ++ ((stuffle t' (s₁ :: s')).map (t₁ :: ·))) ++
+          ((stuffle t' s').map ((s₁ + t₁) :: ·))).Perm
+          ((((stuffle t' (s₁ :: s')).map (t₁ :: ·)) ++ ((stuffle (t₁ :: t') s').map (s₁ :: ·))) ++
+            ((stuffle t' s').map ((s₁ + t₁) :: ·))) :=
+      List.Perm.append_right _ hSwapCore
+    have hFinal :
+        ((((stuffle s' (t₁ :: t')).map (s₁ :: ·)) ++ ((stuffle (s₁ :: s') t').map (t₁ :: ·))) ++
+          ((stuffle s' t').map ((s₁ + t₁) :: ·))).Perm
+          ((((stuffle t' (s₁ :: s')).map (t₁ :: ·)) ++ ((stuffle (t₁ :: t') s').map (s₁ :: ·))) ++
+            ((stuffle t' s').map ((s₁ + t₁) :: ·))) :=
+      hABC.trans hSwap
+    have hTail :
+        ((stuffle t' s').map ((s₁ + t₁) :: ·)) =
+          ((stuffle t' s').map ((t₁ + s₁) :: ·)) := by
+      simp [add_comm]
+    rw [hTail] at hFinal
+    simpa [stuffle, List.append_assoc] using hFinal
 
 /-- Stuffle is associative (lifted to formal sums) -/
 theorem stuffle_assoc :

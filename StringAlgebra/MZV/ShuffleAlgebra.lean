@@ -115,13 +115,49 @@ theorem shuffle_length_eq (u v : Word A) :
 /-- The number of shuffles is the binomial coefficient -/
 theorem shuffle_card (u v : Word A) :
     (shuffle u v).length = Nat.choose (u.length + v.length) u.length := by
-  sorry  -- Combinatorial proof by induction
+  match u, v with
+  | [], v =>
+    simp only [shuffle, List.length_singleton, List.length_nil, Nat.zero_add, Nat.choose_zero_right]
+  | u, [] =>
+    cases u <;> simp only [shuffle, List.length_cons, List.length_nil,
+      Nat.add_zero, Nat.choose_self]
+  | a :: u', b :: v' =>
+    simp only [shuffle, List.length_append, List.length_map]
+    rw [shuffle_card u' (b :: v'), shuffle_card (a :: u') v']
+    simpa [Nat.add_assoc, Nat.add_comm, Nat.add_left_comm] using
+      (Nat.choose_succ_succ (u'.length + v'.length + 1) u'.length).symm
 
 /-! ## Properties of Shuffle -/
 
 /-- Shuffle is commutative (as multisets) -/
 theorem shuffle_comm (u v : Word A) : (shuffle u v).Perm (shuffle v u) := by
-  sorry  -- Requires careful induction
+  match u, v with
+  | [], v =>
+    simp [shuffle, shuffle_nil_right]
+  | u, [] =>
+    simp [shuffle_nil_left, shuffle_nil_right]
+  | a :: u', b :: v' =>
+    have h₁ : (shuffle u' (b :: v')).Perm (shuffle (b :: v') u') :=
+      shuffle_comm u' (b :: v')
+    have h₂ : (shuffle (a :: u') v').Perm (shuffle v' (a :: u')) :=
+      shuffle_comm (a :: u') v'
+    have h₁' :
+        ((shuffle u' (b :: v')).map (a :: ·)).Perm
+          ((shuffle (b :: v') u').map (a :: ·)) :=
+      List.Perm.map (a :: ·) h₁
+    have h₂' :
+        ((shuffle (a :: u') v').map (b :: ·)).Perm
+          ((shuffle v' (a :: u')).map (b :: ·)) :=
+      List.Perm.map (b :: ·) h₂
+    have hAppend :
+        (((shuffle u' (b :: v')).map (a :: ·)) ++ ((shuffle (a :: u') v').map (b :: ·))).Perm
+          (((shuffle (b :: v') u').map (a :: ·)) ++ ((shuffle v' (a :: u')).map (b :: ·))) :=
+      List.Perm.append h₁' h₂'
+    have hSwap :
+        (((shuffle (b :: v') u').map (a :: ·)) ++ ((shuffle v' (a :: u')).map (b :: ·))).Perm
+          (((shuffle v' (a :: u')).map (b :: ·)) ++ ((shuffle (b :: v') u').map (a :: ·))) :=
+      List.perm_append_comm
+    simpa [shuffle] using hAppend.trans hSwap
 
 /-- Shuffle is associative (lifted to formal sums) -/
 theorem shuffle_assoc :

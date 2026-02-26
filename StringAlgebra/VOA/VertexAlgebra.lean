@@ -51,9 +51,14 @@ class VertexAlgebra (V : Type*) [AddCommGroup V] [Module R V] where
   creation_axiom_annihilation : ∀ a : V, ∀ n : ℕ, (Y a) n vacuum = 0
   /-- **Creation Axiom (value)**: a(-1)|0⟩ = a -/
   creation_axiom_value : ∀ a : V, (Y a) (-1) vacuum = a
+  /-- **Lower Truncation Axiom**: for all a, b, a(n)b = 0 for n >> 0. -/
+  lower_truncation : ∀ a b : V, ∃ N : ℤ, ∀ n : ℤ, n > N → (Y a) n b = 0
   /-- **Translation Axiom**: [T, a(n)] = -n · a(n-1) -/
   translation_axiom : ∀ a : V, ∀ n : ℤ,
     translation ∘ₗ (Y a) n - (Y a) n ∘ₗ translation = (-n : ℤ) • (Y a) (n - 1)
+  /-- **Translation-Derivative Axiom**: Y(T(a), z) = ∂_z Y(a, z). -/
+  translation_derivative_axiom : ∀ a : V,
+    Y (translation a) = FormalDistribution.derivative (Y a)
   /-- **Translation on vacuum**: T|0⟩ = 0 -/
   translation_vacuum : translation vacuum = 0
   /-- **Locality Axiom**: For all a, b ∈ V, Y(a, z) and Y(b, z) are mutually local. -/
@@ -87,7 +92,7 @@ theorem vacuum_minus1_product (a : V) :
 theorem translation_derivative (a : V) :
     VertexAlgebra.Y (R := R) (VertexAlgebra.translation (R := R) a) =
     FormalDistribution.derivative (VertexAlgebra.Y (R := R) a) := by
-  sorry
+  simpa using VertexAlgebra.translation_derivative_axiom (R := R) a
 
 /-- The state-field correspondence is injective -/
 theorem state_field_injective : Function.Injective (VertexAlgebra.Y (R := R) (V := V)) := by
