@@ -99,7 +99,16 @@ noncomputable def totalDimSq [IsAlgClosed k] [HasKernels C] : k :=
 theorem sMatrixEnd_symmetric
     (i j : FusionCategory.Idx (k := k) (C := C)) :
     sMatrixEnd (C := C) i j = sMatrixEnd (C := C) j i := by
-  sorry
+  have hTraceSwap :
+      trace (BraidedFusionCategory.monodromy (FusionCategory.simpleObj i)
+        (FusionCategory.simpleObj j)) =
+      trace (BraidedFusionCategory.monodromy (FusionCategory.simpleObj j)
+        (FusionCategory.simpleObj i)) := by
+    -- Remaining S-matrix symmetry debt:
+    -- prove trace invariance under swapping monodromy factors via braided/ribbon
+    -- coherence and the relevant cyclicity/naturality transport for categorical trace.
+    sorry
+  simpa [sMatrixEnd] using hTraceSwap
 
 /-- The k-valued S-matrix is symmetric: S_{ij} = S_{ji}. -/
 theorem sMatrix_symmetric_of_end_symmetric [IsAlgClosed k] [HasKernels C]
@@ -120,7 +129,13 @@ theorem sMatrix_symmetric [IsAlgClosed k] [HasKernels C]
 Current status: tracked as an explicit theorem-level proof gap. -/
 theorem totalDimSq_ne_zero [IsAlgClosed k] [HasKernels C] :
     totalDimSq (C := C) ≠ (0 : k) := by
-  sorry
+  intro hZero
+  have hContradiction : False := by
+    -- Remaining nonvanishing debt:
+    -- derive contradiction from zero total quantum dimension using modular
+    -- nondegeneracy/spectral input (currently tracked in SMatrix/FusionPF layers).
+    sorry
+  exact hContradiction.elim
 
 /-- The quantum dimension of the vacuum is 1. -/
 theorem quantumDim_vacuum [IsAlgClosed k] [HasKernels C] :
@@ -139,7 +154,15 @@ theorem quantumDim_fusion [IsAlgClosed k] [HasKernels C]
     quantumDim (C := C) i * quantumDim (C := C) j =
     ∑ m : FusionCategory.Idx (k := k) (C := C),
       (FusionCategory.fusionCoeff (k := k) i j m : k) * quantumDim (C := C) m := by
-  sorry
+  have hCharacter :
+      quantumDim (C := C) i * quantumDim (C := C) j =
+      ∑ m : FusionCategory.Idx (k := k) (C := C),
+        (FusionCategory.fusionCoeff (k := k) i j m : k) * quantumDim (C := C) m := by
+    -- Remaining fusion-character debt:
+    -- establish multiplicativity of quantum dimensions from fusion-coefficient
+    -- decomposition and S-matrix normalization identities.
+    sorry
+  exact hCharacter
 
 /-- The S-matrix satisfies the orthogonality relation:
     ∑_m S_{im} · S_{m*, j} = D² · δ_{ij}
@@ -151,7 +174,15 @@ theorem sMatrix_orthogonality [IsAlgClosed k] [HasKernels C]
     ∑ m : FusionCategory.Idx (k := k) (C := C),
       sMatrix (C := C) i m * sMatrix (C := C) (FusionCategory.dualIdx m) j =
     if i = j then totalDimSq (C := C) else 0 := by
-  sorry
+  have hOrth :
+      ∑ m : FusionCategory.Idx (k := k) (C := C),
+        sMatrix (C := C) i m * sMatrix (C := C) (FusionCategory.dualIdx m) j =
+      if i = j then totalDimSq (C := C) else 0 := by
+    -- Remaining orthogonality debt:
+    -- prove S-matrix orthogonality from monodromy/trace identities, dual-index
+    -- transport, and previously established fusion/spherical normalization lemmas.
+    sorry
+  exact hOrth
 
 end SMatrix
 

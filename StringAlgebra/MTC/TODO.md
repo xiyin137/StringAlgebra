@@ -21,6 +21,11 @@
 - Remaining `FusionCategory` theorem gaps now carry explicit closure-route comments
   (monoidal-linearity derivation + rigid-adjunction finrank transport + dual-index
   involutivity transport), so no hidden design-level assumptions are being introduced.
+- Remaining `SMatrix` theorem gaps now also carry explicit closure-route comments
+  (trace-symmetry transport for monodromy swap, nonvanishing contradiction route
+  for `totalDimSq`, fusion-character identity route for `quantumDim_fusion`, and
+  orthogonality derivation route via trace/dual-index transport), with theorem-local
+  `sorry` only.
 
 ## Proof-Gap Inventory (16)
 
