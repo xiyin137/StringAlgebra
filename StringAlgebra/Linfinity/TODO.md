@@ -16,7 +16,7 @@ This file tracks formal soundness debt for `StringAlgebra/Linfinity` under `agen
 3. `rg` scans show no `axiom`, `admit`, `Classical.choose`, or placeholder markers in Linfinity Lean files.
 4. Recent hardening completed:
    - `Transfer.lean`: removed fabricated transfer outputs and `Classical.choose` inversion; now uses explicit transfer witness packages.
-   - `Transfer.lean`: tightened `minimal_model_unique` output from bare `Nonempty` to an explicit quasi-isomorphic comparison witness.
+   - `Transfer.lean`: tightened `minimal_model_unique` output from bare `Nonempty` to an explicit quasi-isomorphic comparison witness that is returned identically (no hidden witness substitution).
    - `Transfer.lean`: added unpacked formality interface (`isFormal_unpacked`/`isFormal_of_unpacked`/`isFormal_iff_unpacked`) exposing explicit minimal-model and quasi-isomorphism data from/to `isFormal`.
    - `Transfer.lean`: added canonical accessor morphisms (`minimalModelMorphism`, `formalityMorphism`) with explicit quasi-isomorphism theorems and routed `minimal_model_exists` through these accessors.
    - `Formality.lean`: removed hardcoded zero graph/quantization outputs; now requires explicit witness data for formality, MC transport, and quantization outputs.
@@ -93,7 +93,7 @@ PolyvectorFieldsDGLA.toDGLAData
 10. `Morphisms.lean`: medium risk. Composition/quasi-isomorphism interfaces are explicit and include canonical strict/identity composition data; first-order homotopy-equation semantics now exist with explicit symmetry/transitivity constructors, while higher coherence equations and homology-level semantics remain pending.
 11. `DGLA.lean`: medium risk. Tautological bridge shells removed and canonical lift/compose wiring now has bidirectional quasi-isomorphism criterion equivalence; full bracket-sensitive constructive bridge from DGLA structure to higher L∞ components is still pending.
 12. `MaurerCartan.lean`: medium risk. MC/gauge/twisting operations are explicit interface data, and Kuranishi outputs are no longer fabricated; canonical constructive formulas and cohomological quotient realization remain pending.
-13. `Transfer.lean`: high risk. Fabricated outputs removed, but transferred brackets/structures are witness-driven and not yet constructed from trees internally.
+13. `Transfer.lean`: high risk. Fabricated outputs removed, witness-return theorems now preserve supplied comparison data explicitly, but transferred brackets/structures are still witness-driven and not yet constructed from trees internally.
 14. `Formality.lean`: high risk. Placeholder outputs removed; MC transport plus gauge-equivalence/gauge-class interfaces are explicit and gauge-transformation normalization/composition are data-preserving, while the theorem-level bridge still remains witness-driven and awaits constructive graph-weight/operator machinery.
 15. `BVAlgebra.lean`: medium risk. No `sorry`; cyclic antibracket interface is explicit, while key BV-to-Gerstenhaber/CME derivations still rely on explicit assumptions pending closure.
 16. `TODO.md`: active audit ledger.

@@ -295,10 +295,10 @@ theorem minimalModelMorphism_isQuasiIso {R : Type u} [CommRing R]
     (minimalModelMorphism M).isQuasiIso :=
   M.quasiIso_property
 
-/-- The minimal model is obtained by transfer to homology.
+/-- Existence of a minimal-model quasi-isomorphism from explicit witness data.
 
-    If H = H(V, l₁) is the homology, then the transferred structure
-    on H is minimal (the induced l₁^H = 0). -/
+    Given a `MinimalModelResult`, this theorem exposes its canonical
+    quasi-isomorphism as an existential package. -/
 theorem minimal_model_exists {R : Type u} [CommRing R]
     {V : ℤ → Type v}
     [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
@@ -307,7 +307,10 @@ theorem minimal_model_exists {R : Type u} [CommRing R]
     ∃ F : LInftyHom R M.model L, F.isQuasiIso :=
   ⟨minimalModelMorphism M, minimalModelMorphism_isQuasiIso M⟩
 
-/-- Minimal models are unique up to isomorphism -/
+/-- Conditional minimal-model comparison packaging.
+
+    If a quasi-isomorphic comparison morphism between two candidate minimal
+    models is provided, this theorem returns that exact witness. -/
 theorem minimal_model_unique {R : Type u} [CommRing R]
     {V H H' : ℤ → Type v}
     [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
@@ -319,8 +322,9 @@ theorem minimal_model_unique {R : Type u} [CommRing R]
     (_hf : _f.isQuasiIso) (_hf' : _f'.isQuasiIso)
     (comparison : LInftyHom R L_H L_H')
     (hcomparison : comparison.isQuasiIso) :
-    ∃ comparison' : LInftyHom R L_H L_H', comparison'.isQuasiIso :=
-  ⟨comparison, hcomparison⟩
+    ∃ comparison' : LInftyHom R L_H L_H',
+      comparison'.isQuasiIso ∧ comparison' = comparison :=
+  ⟨comparison, hcomparison, rfl⟩
 
 /-! ## Formality -/
 

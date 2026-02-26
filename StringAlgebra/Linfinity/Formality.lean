@@ -14,9 +14,9 @@ This file states Kontsevich's formality theorem and derives deformation quantiza
 
 ## Main Results
 
-* `FormalityMorphism` - The L∞ quasi-isomorphism U : T_poly → D_poly
-* `formalityTheorem` - Existence of the formality morphism
-* `deformationQuantization` - Every Poisson manifold admits a star product
+* `FormalityMorphism` - Explicit witness package for U : T_poly → D_poly
+* `formalityTheorem` - Quasi-isomorphism statement from a supplied formality witness
+* `deformationQuantization` - Star-product existence statement from supplied quantization data
 
 ## Mathematical Background
 
@@ -277,25 +277,12 @@ def kontsevichFormality (data : FormalityData R) (U : FormalityMorphism data) :
       (data.dPoly.toDGLAData.toLInftyAlgebra) :=
   U.morphism
 
-/-- **Kontsevich's Formality Theorem, Part 1 (linear equation)**:
-    the HKR linear component satisfies the chain-map equation.
+/-- Linear HKR chain equation supplied by `FormalityData`.
 
-    The maps U_n satisfy the L∞ morphism compatibility equations:
+    This theorem records only the linear chain-map relation available from
+    the `HKRMap` field of `FormalityData`:
 
-    For all n ≥ 1 and homogeneous γᵢ ∈ T_poly:
-    d(Uₙ(γ₁ ∧ ... ∧ γₙ)) - ∑ᵢ ± Uₙ(γ₁ ∧ ... ∧ dγᵢ ∧ ... ∧ γₙ)
-      = (1/2) ∑_{k+l=n} (1/k!l!) ∑_σ ± [U_k(γ_{σ(1)},...), U_l(γ_{σ(k+1)},...)]
-        + ∑_{i<j} ± U_{n-1}([γᵢ,γⱼ] ∧ γ₁ ∧ ... ∧ γₙ)
-
-    The first two equations are:
-    - n=1: d(U₁(γ)) = U₁(dγ)  [U₁ is a chain map]
-    - n=2: d(U₂(γ₁∧γ₂)) - U₂(dγ₁∧γ₂) ± U₂(γ₁∧dγ₂) = U₁([γ₁,γ₂]) - [U₁(γ₁),U₁(γ₂)]
-
-    **Proof**: Apply Stokes' theorem to the compactified configuration space.
-    The boundary ∂C̄_{n,m} decomposes into strata:
-    - S1: Points cluster in H (gives bracket terms)
-    - S2: Points approach R (gives Hochschild differential terms)
-    The integral over ∂ vanishes by Stokes, giving the L∞ relations. -/
+    `dPoly.differential n (hkr.component n x) = 0`. -/
 theorem kontsevichFormality_is_linfty_morphism (data : FormalityData R) :
     ∀ n : ℤ, ∀ x : data.tPoly.fields n,
       data.dPoly.differential n (data.hkr.component n x) = 0 := by
@@ -317,10 +304,8 @@ theorem kontsevichFormality_is_quasi_iso
     (kontsevichFormality data U).isQuasiIso :=
   U.is_quasi_iso
 
-/-- **Kontsevich's Formality Theorem** (combined statement)
-
-    There is an explicit L∞ quasi-isomorphism U : T_poly → D_poly
-    given by the Kontsevich graph formula, with U₁ = HKR. -/
+/-- Witness-driven formality statement:
+    any supplied `FormalityMorphism` yields a quasi-isomorphism. -/
 theorem formalityTheorem (data : FormalityData R) (U : FormalityMorphism data) :
     -- The Kontsevich construction is a quasi-isomorphism
     (kontsevichFormality data U).isQuasiIso :=
@@ -413,19 +398,10 @@ structure QuantizationResult (data : FormalityData R)
   /-- First-order compatibility with the Poisson structure. -/
   poisson_spec : star.poissonBracket = data.hkr.component 1 π.bivector
 
-/-- **Deformation Quantization Theorem** (Kontsevich)
+/-- Witness-driven deformation-quantization packaging.
 
-    Every Poisson manifold (M, π) admits a star product ⋆ such that
-    {f,g} = (f ⋆ g - g ⋆ f)/ℏ mod ℏ.
-
-    **Proof using formality**:
-    1. π is a Poisson structure ⟹ [π,π]_S = 0, so π is MC in T_poly (since d=0)
-    2. U : T_poly → D_poly[[ℏ]] is an L∞ quasi-isomorphism (formality theorem)
-    3. L∞ morphisms preserve MC elements (linfty_preserves_mc)
-       ⟹ μ := U(ℏπ) = ∑_{n≥1} (ℏⁿ/n!) Uₙ(π,...,π) is MC in D_poly[[ℏ]]
-    4. MC equation b(μ) + (1/2)[μ,μ]_G = 0 encodes associativity of ⋆
-    5. The ℏ¹ coefficient of μ gives the Poisson bracket:
-       μ₁ = U₁(π) which acts as {f,g} = ⟨π, df ∧ dg⟩ -/
+    Given explicit formality and quantization witnesses, produce the
+    corresponding star product with first-order Poisson compatibility. -/
 theorem deformationQuantization (data : FormalityData R)
     (_U : FormalityMorphism data)
     (π : PoissonStructure R data.tPoly)
