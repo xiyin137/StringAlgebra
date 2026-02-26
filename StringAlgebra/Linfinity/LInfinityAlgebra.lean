@@ -396,6 +396,37 @@ def transferMorphism {R : Type u} [CommRing R]
     LInftyMorphism R (transferredStructure T) L :=
   T.inclusion
 
+@[simp] theorem transferMorphism_linear_eq_incl
+    {R : Type u} [CommRing R]
+    {V H : ℤ → Type v}
+    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
+    [∀ i, AddCommGroup (H i)] [∀ i, Module R (H i)]
+    {L : LInftyAlgebra R V}
+    {data : HomotopyTransferData R V H}
+    (T : HomotopyTransferTheory L data) :
+    ∀ n : ℤ, (transferMorphism L data T).linear n = data.incl n :=
+  T.inclusion_linear
+
+/-- The linear part of the transferred inclusion is always injective:
+    `p ∘ i = id` gives a left inverse degreewise. -/
+theorem transferMorphism_linear_injective
+    {R : Type u} [CommRing R]
+    {V H : ℤ → Type v}
+    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
+    [∀ i, AddCommGroup (H i)] [∀ i, Module R (H i)]
+    {L : LInftyAlgebra R V}
+    {data : HomotopyTransferData R V H}
+    (T : HomotopyTransferTheory L data) :
+    ∀ n : ℤ, Function.Injective ((transferMorphism L data T).linear n) := by
+  intro n
+  have hleft : Function.LeftInverse (data.proj n) ((transferMorphism L data T).linear n) := by
+    intro x
+    have hcomp :
+        (data.proj n).comp ((transferMorphism L data T).linear n) = LinearMap.id := by
+      simpa [transferMorphism, T.inclusion_linear n] using data.proj_incl n
+    simpa [LinearMap.comp_apply] using congrArg (fun f : H n →ₗ[R] H n => f x) hcomp
+  exact hleft.injective
+
 theorem transferMorphism_isQuasiIso {R : Type u} [CommRing R]
     {V H : ℤ → Type v}
     [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]

@@ -31,6 +31,8 @@ This file tracks formal soundness debt for `StringAlgebra/Linfinity` under `agen
    - `Transfer.lean`: added reverse/iff bridges for strengthened formality extraction (`isFormal_of_unpacked_with_linear_bijectivity`, `isFormal_iff_unpacked_with_linear_bijectivity`) and package-level linear-bijectivity characterization (`isFormal_iff_exists_formalityLinear_isBijective`).
    - `Transfer.lean`: added conservativity equivalences (`minimal_model_exists_with_linear_bijectivity_iff`, `unpacked_with_linear_bijectivity_iff_unpacked`) showing the strengthened “with linear bijectivity” statements are logically equivalent to their base quasi-isomorphism unpackings.
    - `Transfer.lean`: added direct equivalence bridges from unpacked formality views to package-level linear-bijectivity witnesses (`unpacked_with_linear_bijectivity_iff_exists_formalityLinear_isBijective`, `unpacked_iff_exists_formalityLinear_isBijective`).
+   - `LInfinityAlgebra.lean`: added explicit arity-1 transfer linear bridge/injectivity lemmas (`transferMorphism_linear_eq_incl`, `transferMorphism_linear_injective`) derived from `proj_incl`.
+   - `Transfer.lean`: added SDR-level/transfer-level arity-1 injectivity infrastructure (`sdrInclusion_isInjective`, `transferInclusionLinear_isInjective`) independent of quasi-isomorphism closure.
    - `LInfinityAlgebra.lean`/`Transfer.lean`: removed unused tautological forwarding wrappers (`transferMorphism_linear`, `transfer_l1`, `transfer_l2_DGLA`, `isFormal_of_formalityResult`) so these APIs now consume witness fields directly where needed.
    - `Transfer.lean`: discharged `transfer_is_quasiIso` by explicit conversion to `LInfinityAlgebra.HomotopyTransferTheory` and reuse of the core theorem `transferMorphism_isQuasiIso` via the `LInftyHom`↔`LInftyMorphism` bridge.
    - `Formality.lean`: removed hardcoded zero graph/quantization outputs; now requires explicit witness data for formality, MC transport, and quantization outputs.
@@ -117,6 +119,7 @@ PolyvectorFieldsDGLA.toDGLAData
 
 transfer_is_quasiIso
 + transferInclusion_linear
+-> transferInclusionLinear_isInjective
 -> transferInclusionLinear_isBijective
 
 minimalModelMorphism_isQuasiIso

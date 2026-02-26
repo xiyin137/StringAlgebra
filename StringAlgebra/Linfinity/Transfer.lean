@@ -254,7 +254,42 @@ theorem transfer_is_quasiIso {R : Type u} [CommRing R]
       (F := transferMorphism (L := L) (data := dataCore) (T := theoryCore))
       hcore
   intro n
-  simpa [transferInclusion, dataCore, theoryCore] using hhom n
+  have hq : Function.Bijective (data.incl n) := by
+    simpa [transferInclusion, dataCore, theoryCore] using hhom n
+  have hlin :
+      (((transferInclusion L data T).components 1 (by omega)).map n) = data.incl n :=
+    transferInclusion_linear L data T n
+  simpa [hlin] using hq
+
+/-- The SDR inclusion maps are degreewise injective:
+    `p ∘ i = id` provides a left inverse. -/
+theorem sdrInclusion_isInjective {R : Type u} [CommRing R]
+    {V H : ℤ → Type v}
+    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
+    [∀ i, AddCommGroup (H i)] [∀ i, Module R (H i)]
+    (data : SDR R V H) :
+    ∀ n : ℤ, Function.Injective (data.incl n) := by
+  intro n
+  have hleft : Function.LeftInverse (data.proj n) (data.incl n) := by
+    intro x
+    have hcomp : (data.proj n).comp (data.incl n) = LinearMap.id := data.proj_incl n
+    simpa [LinearMap.comp_apply] using congrArg (fun f : H n →ₗ[R] H n => f x) hcomp
+  exact hleft.injective
+
+/-- The arity-1 component of the transferred inclusion is degreewise injective. -/
+theorem transferInclusionLinear_isInjective {R : Type u} [CommRing R]
+    {V H : ℤ → Type v}
+    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
+    [∀ i, AddCommGroup (H i)] [∀ i, Module R (H i)]
+    (L : LInftyAlgebra R V) (data : SDR R V H)
+    (T : TransferResult L data) :
+    ∀ n : ℤ, Function.Injective (((transferInclusion L data T).components 1 (by omega)).map n) := by
+  intro n
+  have hincl : Function.Injective (data.incl n) := sdrInclusion_isInjective data n
+  have hlin :
+      (((transferInclusion L data T).components 1 (by omega)).map n) = data.incl n :=
+    transferInclusion_linear L data T n
+  simpa [hlin] using hincl
 
 /-- The SDR inclusion maps are degreewise bijective when the transferred
     inclusion is a quasi-isomorphism. -/
