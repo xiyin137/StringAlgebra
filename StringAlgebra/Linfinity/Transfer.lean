@@ -446,6 +446,52 @@ theorem minimal_model_unique_iff_isQuasiIso {R : Type u} [CommRing R]
   · intro hcomparison
     exact minimal_model_unique L L_H L_H' _hH _hH' _f _f' _hf _hf' comparison hcomparison
 
+/-- Strengthened minimal-model comparison packaging with explicit degreewise
+    bijectivity of the arity-1 component on the returned witness. -/
+theorem minimal_model_unique_with_linear_bijectivity {R : Type u} [CommRing R]
+    {V H H' : ℤ → Type v}
+    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
+    [∀ i, AddCommGroup (H i)] [∀ i, Module R (H i)]
+    [∀ i, AddCommGroup (H' i)] [∀ i, Module R (H' i)]
+    (L : LInftyAlgebra R V) (L_H : LInftyAlgebra R H) (L_H' : LInftyAlgebra R H')
+    (_hH : isMinimal L_H) (_hH' : isMinimal L_H')
+    (_f : LInftyHom R L_H L) (_f' : LInftyHom R L_H' L)
+    (_hf : _f.isQuasiIso) (_hf' : _f'.isQuasiIso)
+    (comparison : LInftyHom R L_H L_H')
+    (hcomparison : comparison.isQuasiIso) :
+    ∃ comparison' : LInftyHom R L_H L_H',
+      comparison'.isQuasiIso ∧
+      comparison' = comparison ∧
+      (∀ n : ℤ, Function.Bijective (((comparison'.components 1 (by omega)).map n))) := by
+  refine ⟨comparison, hcomparison, rfl, ?_⟩
+  intro n
+  simpa using hcomparison n
+
+/-- Conservativity of the strengthened uniqueness package:
+    adding explicit arity-1 bijectivity does not change the criterion. -/
+theorem minimal_model_unique_with_linear_bijectivity_iff_isQuasiIso {R : Type u} [CommRing R]
+    {V H H' : ℤ → Type v}
+    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
+    [∀ i, AddCommGroup (H i)] [∀ i, Module R (H i)]
+    [∀ i, AddCommGroup (H' i)] [∀ i, Module R (H' i)]
+    (L : LInftyAlgebra R V) (L_H : LInftyAlgebra R H) (L_H' : LInftyAlgebra R H')
+    (_hH : isMinimal L_H) (_hH' : isMinimal L_H')
+    (_f : LInftyHom R L_H L) (_f' : LInftyHom R L_H' L)
+    (_hf : _f.isQuasiIso) (_hf' : _f'.isQuasiIso)
+    (comparison : LInftyHom R L_H L_H') :
+    (∃ comparison' : LInftyHom R L_H L_H',
+      comparison'.isQuasiIso ∧
+      comparison' = comparison ∧
+      (∀ n : ℤ, Function.Bijective (((comparison'.components 1 (by omega)).map n)))) ↔
+      comparison.isQuasiIso := by
+  constructor
+  · intro h
+    rcases h with ⟨comparison', hq, hEq, _hlin⟩
+    simpa [hEq] using hq
+  · intro hcomparison
+    exact minimal_model_unique_with_linear_bijectivity
+      L L_H L_H' _hH _hH' _f _f' _hf _hf' comparison hcomparison
+
 /-! ## Formality -/
 
 /-- Witness package for formality via an explicit minimal-model style target. -/

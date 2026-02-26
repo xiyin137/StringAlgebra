@@ -76,7 +76,8 @@ Current audited status (2026-02-26):
 9. Transfer extraction conservativity is now explicit (`minimal_model_exists_with_linear_bijectivity_iff`, `unpacked_with_linear_bijectivity_iff_unpacked`): strengthened “with linear bijectivity” statements are equivalent to base quasi-isomorphism existence/unpacked statements.
 10. Formality classification bridges are now bidirectional (`starProductClassification_toGaugeClass`, `starProductClassification_of_toGaugeClass`) with an explicit equivalence theorem (`starProductClassification_iff_toGaugeClass`) between gauge-equivalence and quotient-class formulations.
 11. Transfer minimal-model uniqueness now has an explicit conservativity theorem (`minimal_model_unique_iff_isQuasiIso`) linking witness-return packaging directly to `comparison.isQuasiIso`.
-12. Remaining semantic debt is tracked explicitly in `StringAlgebra/Linfinity/TODO.md`.
+12. Transfer minimal-model uniqueness now also has a strengthened package with explicit arity-1 bijectivity (`minimal_model_unique_with_linear_bijectivity`) and a matching conservativity iff theorem (`minimal_model_unique_with_linear_bijectivity_iff_isQuasiIso`).
+13. Remaining semantic debt is tracked explicitly in `StringAlgebra/Linfinity/TODO.md`.
 
 Current dependency flow toward `Formality.lean`:
 
@@ -109,6 +110,7 @@ isFormal -> isFormal_unpacked_with_linear_bijectivity -> isFormal_exists_formali
 minimal_model_exists_with_linear_bijectivity <-> minimal_model_exists_with_linear_bijectivity_iff
 isFormal_unpacked_with_linear_bijectivity <-> unpacked_with_linear_bijectivity_iff_unpacked
 minimal_model_unique <-> minimal_model_unique_iff_isQuasiIso
+minimal_model_unique_with_linear_bijectivity <-> minimal_model_unique_with_linear_bijectivity_iff_isQuasiIso
 isFormal_of_unpacked_with_linear_bijectivity -> isFormal
 isFormal <-> isFormal_iff_unpacked_with_linear_bijectivity <-> isFormal_iff_exists_formalityLinear_isBijective
 starProductClassification <-> starProductClassification_iff_toGaugeClass -> starProductClassification_toGaugeClass -> starProductClassification_of_toGaugeClass
