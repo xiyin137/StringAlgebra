@@ -39,10 +39,6 @@ variable [Preadditive C] [Linear k C] [MonoidalPreadditive C]
 variable [HasFiniteBiproducts C] [RigidCategory C]
 variable [ModularTensorCategory k C]
 
-theorem has_foundation_assumptions :
-    FoundationAssumptions (k := k) (C := C) := by
-  sorry
-
 theorem qdim_unit [SphericalCategory C] :
     dim (C := C) (𝟙_ C) = 𝟙 (𝟙_ C) :=
   StringAlgebra.MTC.qdim_unit (C := C)
@@ -149,10 +145,6 @@ theorem fin_reindex_roundtrip
 section ModularLayer
 
 variable [IsAlgClosed k] [HasKernels C]
-
-theorem has_modular_assumptions :
-    ModularAssumptions (k := k) (C := C) := by
-  sorry
 
 theorem sMatrix_symmetric
     (i j : FusionCategory.Idx (k := k) (C := C)) :

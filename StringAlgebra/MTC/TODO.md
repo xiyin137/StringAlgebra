@@ -1,8 +1,8 @@
 # MTC Module TODO
 
-## Status (2026-02-25): Core infrastructure compiles; 0 sorrys, 15 placeholders behind explicit assumption classes
+## Status (2026-02-26): Core infrastructure compiles; 24 theorem-level sorrys remain, placeholders are tracked behind explicit assumption classes
 
-All files compile via `lake build StringAlgebra.MTC` with no `sorry` warnings.
+All files compile via `lake build StringAlgebra.MTC`; current proof-gap count is 24 theorem-level `sorry` markers.
 Definitions are mostly sound and non-placeholder.
 `Endomorphism.scalarOfEndo` now uses a canonical linear equivalence
 `k ≃ₗ[k] End(X)` (no `.choose` extraction path remains in `StringAlgebra/MTC`).
@@ -18,6 +18,9 @@ Definitions are mostly sound and non-placeholder.
   from `sorry` to theorem wrappers backed by explicit assumption classes
 
 ## Recent Audit Fixes
+- DevelopmentHarness.lean: removed unused placeholder-assumption theorems
+  (`has_foundation_assumptions`, `has_modular_assumptions`) that were pure
+  `sorry` stubs with no downstream Lean usage.
 - Pivotal.lean: replaced ad-hoc `leftRightDualIso` inverse proofs with
   `pivotalExactPairing` + `leftDualIso`, eliminating 2 sorrys
 - PivotalCategory: added both zigzag identities (pivotalIso_leftDuality,
