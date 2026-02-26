@@ -67,7 +67,7 @@ It is intentionally gate-driven: no split until anti-smuggling and interface sta
 
 ### Phase 1 - Split-Ready Packaging in Monorepo
 
-1. Prepare per-domain `lakefile.toml` templates in `references/` for later extraction.
+1. Prepare per-domain `lakefile.toml` templates in `split/` for later extraction.
 2. Prepare per-domain CI command set:
    - build target
    - `sorry` count
@@ -84,6 +84,30 @@ Implemented artifacts (current monorepo):
 5. `split/templates/lakefile.mtc.toml`
 6. `split/templates/lean-toolchain`
 7. `split/split_audit.sh`
+8. `split/dry_run_extract.sh`
+
+Dry-run extraction status (all domains validated locally in isolated temp repos):
+
+1. `MZV`
+   - build passed (`lake build StringAlgebra.MZV`)
+   - `sorry`: `0`
+   - no assumption-bundle/smuggling scan hits
+   - no cross-domain imports
+2. `VOA`
+   - build passed (`lake build StringAlgebra.VOA`)
+   - `sorry`: `0`
+   - no assumption-bundle/smuggling scan hits
+   - no cross-domain imports
+3. `Linfinity`
+   - build passed (`lake build StringAlgebra.Linfinity`)
+   - `sorry`: `3` (theorem-level only)
+   - no assumption-bundle/smuggling scan hits
+   - no cross-domain imports
+4. `MTC`
+   - build passed (`lake build StringAlgebra.MTC`)
+   - `sorry`: `16` (theorem-level only)
+   - no assumption-bundle/smuggling scan hits
+   - no cross-domain imports
 
 ### Phase 2 - Repository Extraction (One Domain at a Time)
 

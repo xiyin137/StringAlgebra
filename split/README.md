@@ -12,6 +12,7 @@ into domain repositories without changing Lean module names.
 5. `templates/lakefile.mtc.toml`
 6. `templates/lean-toolchain`
 7. `split_audit.sh`
+8. `dry_run_extract.sh`
 
 ## Design Choice
 
@@ -20,3 +21,13 @@ Split repos are expected to keep the existing module path prefix
 
 That means each split repo should still expose a Lean library named
 `StringAlgebra`, but with a domain-specific default target.
+
+## Fast Dry Run
+
+Run a local extraction dry run for one domain:
+
+```bash
+bash split/dry_run_extract.sh MZV
+```
+
+Supported domain arguments are `Linfinity`, `MZV`, `VOA`, `MTC`.

@@ -37,6 +37,9 @@ Detailed staged plan:
 - `SPLIT_REPO_READINESS.md`
 - `split/README.md`
 
+Current Phase-1 status: local isolated dry-run extraction checks pass for all
+four domains via `split/dry_run_extract.sh`.
+
 ## Structure
 
 ```
