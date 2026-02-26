@@ -20,7 +20,7 @@ This file tracks formal soundness debt for `StringAlgebra/Linfinity` under `agen
    - `Basic.lean`: removed tautological Jacobi fields; now carries explicit law interfaces.
    - `LInfinityAlgebra.lean`: removed fake twisted/Lie conversion fallbacks and synthetic transfer morphism defaults; transfer morphisms are now explicit witness fields.
    - `GradedInfrastructure.lean`: removed `Classical.epsilon` degree selector; degree extraction now requires a homogeneity witness.
-   - `Morphisms.lean`: quasi-isomorphism criterion strengthened to degreewise bijectivity; composition now requires explicit `CompositionData` rather than synthetic higher-zero defaults.
+   - `Morphisms.lean`: quasi-isomorphism criterion strengthened to degreewise bijectivity; composition now uses explicit `CompositionData`, with derived canonical instances for identity and strict-morphism composition.
    - `DGLA.lean`: replaced tautological `toLInftyQuasiIso` shell with an explicit `DGLAMorphismLInftyLift` bridge and degreewise linear quasi-isomorphism criterion.
    - `BVAlgebra.lean`: `CyclicLInfty.antibracket` now uses explicit `l2` and cyclicity law instead of a fabricated zero output.
    - `Coderivations.lean`: component extraction no longer aliases the global map; explicit component maps are part of reduced coderivation data.
@@ -72,7 +72,7 @@ PolyvectorFieldsDGLA.toDGLAData
 7. `GradedInfrastructure.lean`: medium-high risk. Extraction interfaces are explicit; internal constructive realization still pending.
 8. `ChainComplex.lean`: low risk.
 9. `LInfinityAlgebra.lean`: medium-high risk. Core object definitions compile and transfer morphisms are explicit witnesses; semantically nontrivial constructions still depend on supplied transfer/twisting data.
-10. `Morphisms.lean`: medium risk. Composition and quasi-isomorphism interfaces are explicit, but full homology-level and homotopy-equation semantics are pending.
+10. `Morphisms.lean`: medium risk. Composition/quasi-isomorphism interfaces are explicit and include canonical strict/identity composition data; full homology-level and homotopy-equation semantics are pending.
 11. `DGLA.lean`: medium risk. Tautological bridge shells removed; canonical constructive bridge from bracket/differential data to L∞ model is still pending.
 12. `MaurerCartan.lean`: medium-high risk. MC/gauge/twisting operations are explicit interface data; canonical constructive formulas remain pending.
 13. `Transfer.lean`: high risk. Fabricated outputs removed, but transferred brackets/structures are witness-driven and not yet constructed from trees internally.
@@ -95,7 +95,7 @@ Targets: `GradedInfrastructure.lean`, `Coderivations.lean`
 Targets: `LInfinityAlgebra.lean`, `Morphisms.lean`
 
 1. Replace fallback/trivial model uses in semantically nontrivial APIs.
-2. Internalize concrete higher-component composition formulas so `CompositionData` can be derived, not externally supplied.
+2. Internalize concrete higher-component composition formulas so general `CompositionData` can be derived (current derived coverage: identity and strict morphisms).
 3. Introduce homology-level quasi-isomorphism interface (or a tightly scoped bridge to chain-level cohomology).
 4. Add nontrivial homotopy-equation semantics for `LInftyHomotopy`.
 

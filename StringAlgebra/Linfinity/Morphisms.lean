@@ -117,6 +117,30 @@ def comp {L : LInftyAlgebra R V} {L' : LInftyAlgebra R W} {L'' : LInftyAlgebra R
     (C : CompositionData G F) : LInftyHom R L L'' :=
   C.composite
 
+/-- Canonical composition data for left identity. -/
+def compData_id_left {L : LInftyAlgebra R V} {L' : LInftyAlgebra R W}
+    (F : LInftyHom R L L') : CompositionData (id L') F where
+  composite := F
+  linear_spec := by
+    intro i
+    simp [id]
+
+/-- Canonical composition data for right identity. -/
+def compData_id_right {L : LInftyAlgebra R V} {L' : LInftyAlgebra R W}
+    (F : LInftyHom R L L') : CompositionData F (id L) where
+  composite := F
+  linear_spec := by
+    intro i
+    simp [id]
+
+@[simp] theorem comp_id_left {L : LInftyAlgebra R V} {L' : LInftyAlgebra R W}
+    (F : LInftyHom R L L') :
+    (id L').comp F (compData_id_left F) = F := rfl
+
+@[simp] theorem comp_id_right {L : LInftyAlgebra R V} {L' : LInftyAlgebra R W}
+    (F : LInftyHom R L L') :
+    F.comp (id L) (compData_id_right F) = F := rfl
+
 end LInftyHom
 
 /-! ## Strict Morphisms -/
@@ -149,6 +173,37 @@ def StrictMorphism.toLInftyHom {R : Type u} [CommRing R]
         simpa using _F.linear i
       · exact 0
   }
+
+namespace StrictMorphism
+
+variable {R : Type u} [CommRing R]
+variable {V W U : ℤ → Type v}
+variable [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
+variable [∀ i, AddCommGroup (W i)] [∀ i, Module R (W i)]
+variable [∀ i, AddCommGroup (U i)] [∀ i, Module R (U i)]
+
+/-- Composition of strict morphisms by linear-part composition. -/
+def comp {L : LInftyAlgebra R V} {L' : LInftyAlgebra R W} {L'' : LInftyAlgebra R U}
+    (G : StrictMorphism R L' L'') (F : StrictMorphism R L L') :
+    StrictMorphism R L L'' where
+  linear := fun i => (G.linear i).comp (F.linear i)
+
+/-- Canonical `LInftyHom.CompositionData` produced by strict morphisms. -/
+def compositionData {L : LInftyAlgebra R V} {L' : LInftyAlgebra R W} {L'' : LInftyAlgebra R U}
+    (G : StrictMorphism R L' L'') (F : StrictMorphism R L L') :
+    LInftyHom.CompositionData (G.toLInftyHom) (F.toLInftyHom) where
+  composite := (comp G F).toLInftyHom
+  linear_spec := by
+    intro i
+    simp [comp, StrictMorphism.toLInftyHom]
+
+@[simp] theorem toLInftyHom_comp
+    {L : LInftyAlgebra R V} {L' : LInftyAlgebra R W} {L'' : LInftyAlgebra R U}
+    (G : StrictMorphism R L' L'') (F : StrictMorphism R L L') :
+    (G.toLInftyHom).comp (F.toLInftyHom) (compositionData G F) =
+      (comp G F).toLInftyHom := rfl
+
+end StrictMorphism
 
 /-! ## Quasi-isomorphisms -/
 
@@ -197,6 +252,20 @@ theorem quasiIso_comp {R : Type u} [CommRing R]
     have hlin : ((C.composite.components 1 (by omega)).map i) = G1.comp F1 := by
       simpa [G1, F1] using C.linear_spec i
     simpa [LInftyHom.comp, G1, F1, hlin] using hcomp
+
+/-- Composition of quasi-isomorphic strict morphisms is quasi-isomorphic. -/
+theorem strict_quasiIso_comp {R : Type u} [CommRing R]
+    {V W U : ℤ → Type v}
+    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
+    [∀ i, AddCommGroup (W i)] [∀ i, Module R (W i)]
+    [∀ i, AddCommGroup (U i)] [∀ i, Module R (U i)]
+    {L : LInftyAlgebra R V} {L' : LInftyAlgebra R W} {L'' : LInftyAlgebra R U}
+    (G : StrictMorphism R L' L'') (F : StrictMorphism R L L')
+    (hG : (G.toLInftyHom).isQuasiIso) (hF : (F.toLInftyHom).isQuasiIso) :
+    ((StrictMorphism.comp G F).toLInftyHom).isQuasiIso := by
+  simpa [StrictMorphism.toLInftyHom_comp] using
+    (quasiIso_comp (G := G.toLInftyHom) (F := F.toLInftyHom)
+      (C := StrictMorphism.compositionData G F) hG hF)
 
 /-! ## L∞ Homotopies -/
 

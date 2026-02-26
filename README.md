@@ -68,7 +68,7 @@ Current audited status (2026-02-26):
 1. `lake build StringAlgebra.Linfinity` passes.
 2. `StringAlgebra/Linfinity` is currently `sorry`-free.
 3. No `axiom`/`admit`/`Classical.choose`/`Classical.epsilon` usage in Linfinity Lean files.
-4. Recent hardening removed fabricated transfer/formality/BV outputs and tautological bridge shells; nontrivial constructions now require explicit witness data rather than hidden defaults.
+4. Recent hardening removed fabricated transfer/formality/BV outputs and tautological bridge shells; nontrivial constructions now require explicit witness data rather than hidden defaults, and morphism composition now has derived strict/identity composition data.
 5. Remaining semantic debt is tracked explicitly in `StringAlgebra/Linfinity/TODO.md`.
 
 Current dependency flow toward `Formality.lean`:
@@ -129,7 +129,7 @@ Current audited status (2026-02-26):
 1. `lake build StringAlgebra.VOA` passes.
 2. `StringAlgebra/VOA` is `sorry`-free.
 3. No `axiom`/`admit`/`Classical.choose`/`Classical.epsilon` usage in VOA Lean files.
-4. Recent hardening removed `Classical.choose`-based conformal-weight extraction and replaced fabricated Dong/antibracket-style outputs with explicit witness-driven contracts.
+4. Recent hardening removed `Classical.choose`-based conformal-weight extraction and replaced fabricated Dong/antibracket-style outputs with explicit witness-driven contracts, including explicit lattice rationality criterion packages.
 5. Remaining semantic/proof debt is tracked in `StringAlgebra/VOA/TODO.md`.
 
 Current dependency flow:

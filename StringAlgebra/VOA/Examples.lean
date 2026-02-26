@@ -134,9 +134,18 @@ def centralCharge (V : LatticeVOA R) : R := V.lattice.rank
 def positiveDefinite (V : LatticeVOA R) : Prop :=
   ∀ i, 0 < V.lattice.bilinearForm i i
 
-/-- Rationality criterion contract for lattice VOAs. -/
-def rational_iff_positive_definite (V : LatticeVOA R) : Prop :=
-  positiveDefinite V
+/-- Explicit rationality criterion package for lattice VOAs. -/
+structure RationalityCriterion (V : LatticeVOA R) where
+  /-- Rationality predicate for the VOA model. -/
+  rational : Prop
+  /-- Rationality is equivalent to positive definiteness of the lattice form. -/
+  iff_positive_definite : rational ↔ positiveDefinite V
+
+/-- Extract the rationality/positivity equivalence from criterion data. -/
+theorem rational_iff_positive_definite (V : LatticeVOA R)
+    (C : RationalityCriterion (R := R) V) :
+    C.rational ↔ positiveDefinite V :=
+  C.iff_positive_definite
 
 end LatticeVOA
 

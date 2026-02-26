@@ -318,8 +318,15 @@ def finiteDoubleShuffle (s t : Composition) : FormalSum :=
 
 /-- The finite double shuffle relations generate all algebraic
     relations between MZVs (conjecturally). -/
+def finiteDoubleShuffleBasis (basis : List (Composition × Composition)) : Prop :=
+  ∀ r : DoubleShuffleRelation, ∃ p ∈ basis,
+    r.relation = finiteDoubleShuffle p.1 p.2
+
+/-- Finite-generation conjecture for double-shuffle relations:
+    there exists a finite basis of composition pairs generating all
+    registered double-shuffle relations. -/
 def fds_generates_relations : Prop :=
-  ∀ r : DoubleShuffleRelation, ∃ s t : Composition, r.relation = finiteDoubleShuffle s t
+  ∃ basis : List (Composition × Composition), finiteDoubleShuffleBasis basis
 
 /-! ## Derivations and Ihara Action -/
 
@@ -355,14 +362,16 @@ def ihara_lie_algebra : Prop :=
 
     They arise from the de Rham/Betti comparison for the
     motivic fundamental group of P¹ \ {0, 1, ∞}. -/
-def doubleShuffle_motivic : Prop :=
-  ∀ s t : Composition, doubleShuffleRelation s t = finiteDoubleShuffle s t
+def doubleShuffle_motivic (period : FormalSum → FormalSum) : Prop :=
+  ∀ s t : Composition, period (finiteDoubleShuffle s t) = doubleShuffleRelation s t
 
 /-- The coaction on MZVs is compatible with double shuffle.
 
     Δ(ds relation) = (ds relation) ⊗ 1 + ... -/
-def coaction_respects_doubleShuffle : Prop :=
-  ∀ s t : Composition, (doubleShuffleRelation s t).length = (doubleShuffleRelation s t).length
+def coaction_respects_doubleShuffle
+    (coaction : FormalSum → FormalSum × FormalSum) : Prop :=
+  ∀ s t : Composition,
+    (coaction (doubleShuffleRelation s t)).1 = doubleShuffleRelation s t
 
 /-! ## Dimension Formulas -/
 
@@ -389,6 +398,6 @@ def zagier_generating_function : Prop :=
 /-- Goncharov's conjecture: the double shuffle relations
     give ALL relations between MZVs. -/
 def goncharov_conjecture : Prop :=
-  ∀ r : DoubleShuffleRelation, ∃ n : ℕ, n = r.relation.length
+  fds_generates_relations
 
 end StringAlgebra.MZV
