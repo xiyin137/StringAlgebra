@@ -29,6 +29,7 @@ This file tracks formal soundness debt for `StringAlgebra/Linfinity` under `agen
    - `Transfer.lean`: strengthened extraction-level existence theorems with explicit linear bijectivity packaging (`minimal_model_exists_with_linear_bijectivity`, `isFormal_unpacked_with_linear_bijectivity`, `isFormal_exists_formalityLinear_isBijective`), so witness unpacking now preserves explicit arity-1 isomorphism data.
    - `Transfer.lean`: added reverse/iff bridges for strengthened formality extraction (`isFormal_of_unpacked_with_linear_bijectivity`, `isFormal_iff_unpacked_with_linear_bijectivity`) and package-level linear-bijectivity characterization (`isFormal_iff_exists_formalityLinear_isBijective`).
    - `Transfer.lean`: added conservativity equivalences (`minimal_model_exists_with_linear_bijectivity_iff`, `unpacked_with_linear_bijectivity_iff_unpacked`) showing the strengthened “with linear bijectivity” statements are logically equivalent to their base quasi-isomorphism unpackings.
+   - `Transfer.lean`: added direct equivalence bridges from unpacked formality views to package-level linear-bijectivity witnesses (`unpacked_with_linear_bijectivity_iff_exists_formalityLinear_isBijective`, `unpacked_iff_exists_formalityLinear_isBijective`).
    - `Formality.lean`: removed hardcoded zero graph/quantization outputs; now requires explicit witness data for formality, MC transport, and quantization outputs.
    - `Formality.lean`: strengthened MC transport to explicit element-level output (`linfty_preserves_mc`) with an existence wrapper lemma, and added reflexive/symmetric/transitive gauge-equivalence infrastructure with a `Setoid` instance on star products.
    - `Formality.lean`: added explicit star-product gauge-class quotient interface (`StarProductGaugeClass`, projection, and exact equality↔gauge-equivalence bridge lemmas).
@@ -149,6 +150,12 @@ isFormal_of_unpacked_with_linear_bijectivity
 isFormal
 <-> isFormal_iff_unpacked_with_linear_bijectivity
 <-> isFormal_iff_exists_formalityLinear_isBijective
+
+isFormal_unpacked_with_linear_bijectivity
+<-> unpacked_with_linear_bijectivity_iff_exists_formalityLinear_isBijective
+
+isFormal_unpacked
+<-> unpacked_iff_exists_formalityLinear_isBijective
 
 + MCPreservation witness
 -> linfty_preserves_mc

@@ -78,7 +78,8 @@ Current audited status (2026-02-26):
 11. Transfer minimal-model uniqueness now has an explicit conservativity theorem (`minimal_model_unique_iff_isQuasiIso`) linking witness-return packaging directly to `comparison.isQuasiIso`.
 12. Transfer minimal-model uniqueness now also has a strengthened package with explicit arity-1 bijectivity (`minimal_model_unique_with_linear_bijectivity`) and a matching conservativity iff theorem (`minimal_model_unique_with_linear_bijectivity_iff_isQuasiIso`).
 13. Transfer minimal-model uniqueness now also has a base-vs-strengthened equivalence bridge (`minimal_model_unique_with_linear_bijectivity_iff_minimal_model_unique`) and a derived arity-1 bijectivity extractor from base uniqueness witnesses (`minimal_model_unique_linear_isBijective_of_unique`).
-14. Remaining semantic debt is tracked explicitly in `StringAlgebra/Linfinity/TODO.md`.
+14. Transfer formality extraction now has direct bridges from unpacked data views to package-level linear-bijectivity witnesses (`unpacked_with_linear_bijectivity_iff_exists_formalityLinear_isBijective`, `unpacked_iff_exists_formalityLinear_isBijective`).
+15. Remaining semantic debt is tracked explicitly in `StringAlgebra/Linfinity/TODO.md`.
 
 Current dependency flow toward `Formality.lean`:
 
@@ -116,6 +117,8 @@ minimal_model_unique_with_linear_bijectivity <-> minimal_model_unique_with_linea
 minimal_model_unique -> minimal_model_unique_linear_isBijective_of_unique
 isFormal_of_unpacked_with_linear_bijectivity -> isFormal
 isFormal <-> isFormal_iff_unpacked_with_linear_bijectivity <-> isFormal_iff_exists_formalityLinear_isBijective
+isFormal_unpacked_with_linear_bijectivity <-> unpacked_with_linear_bijectivity_iff_exists_formalityLinear_isBijective
+isFormal_unpacked <-> unpacked_iff_exists_formalityLinear_isBijective
 starProductClassification <-> starProductClassification_iff_toGaugeClass -> starProductClassification_toGaugeClass -> starProductClassification_of_toGaugeClass
 -> linfty_preserves_mc (with MCPreservation witness)
 -> MaurerCartan local deformation packaging (explicit KuranishiTheory witness)

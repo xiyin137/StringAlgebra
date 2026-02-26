@@ -783,6 +783,42 @@ theorem isFormal_iff_exists_formalityLinear_isBijective {R : Type u} [CommRing R
     rcases h with ⟨F, _hlin⟩
     exact ⟨F⟩
 
+/-- The strengthened unpacked formality view is equivalent to the
+    package-level linear-bijectivity view. -/
+theorem unpacked_with_linear_bijectivity_iff_exists_formalityLinear_isBijective
+    {R : Type u} [CommRing R]
+    {V : ℤ → Type v}
+    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
+    {L : LInftyAlgebra R V} :
+    (∃ (H : ℤ → Type v),
+      ∃ (_instAdd : ∀ i, AddCommGroup (H i)),
+      ∃ (_instModule : ∀ i, Module R (H i)),
+      ∃ (model : LInftyAlgebra R H),
+      ∃ (_minimal : isMinimal model),
+      ∃ (q : LInftyHom R model L),
+        q.isQuasiIso ∧
+        (∀ n : ℤ, Function.Bijective (((q.components 1 (by omega)).map n)))) ↔
+    (∃ F : FormalityResult L, ∀ n : ℤ, Function.Bijective (F.linear n)) := by
+  exact (isFormal_iff_unpacked_with_linear_bijectivity (L := L)).symm.trans
+    (isFormal_iff_exists_formalityLinear_isBijective (L := L))
+
+/-- The base unpacked formality view is equivalent to the package-level
+    linear-bijectivity view. -/
+theorem unpacked_iff_exists_formalityLinear_isBijective
+    {R : Type u} [CommRing R]
+    {V : ℤ → Type v}
+    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
+    {L : LInftyAlgebra R V} :
+    (∃ (H : ℤ → Type v),
+      ∃ (_instAdd : ∀ i, AddCommGroup (H i)),
+      ∃ (_instModule : ∀ i, Module R (H i)),
+      ∃ (model : LInftyAlgebra R H),
+      ∃ (_minimal : isMinimal model),
+      ∃ (q : LInftyHom R model L), q.isQuasiIso) ↔
+    (∃ F : FormalityResult L, ∀ n : ℤ, Function.Bijective (F.linear n)) := by
+  exact (isFormal_iff_unpacked (L := L)).symm.trans
+    (isFormal_iff_exists_formalityLinear_isBijective (L := L))
+
 /-- Kontsevich's formality theorem: The DGLA of polyvector fields
     is formal (quasi-isomorphic to the Lie algebra of polyvectors
     with Schouten bracket). -/
