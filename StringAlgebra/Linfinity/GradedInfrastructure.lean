@@ -393,6 +393,13 @@ structure ExtractedBrackets (D : Coderivation R V) where
   bracket : ∀ (n : ℕ) (_hn : n ≥ 1), GradedMultilinearMap R V n (2 - n)
   /-- The extracted unary bracket l₁ of degree 1. -/
   differential : GradedLinMap R V V 1
+  /-- Consistency of the unary extracted differential with the arity-1 multilinear bracket. -/
+  differential_spec :
+    ∀ (k : ℤ) (x : V k),
+      differential.toFun k x =
+        cast (congrArg V (by
+          simp))
+          ((bracket 1 (by omega)).component (fun _ : Fin 1 => k) (fun _ => x))
 
 /-- The extracted bracket l_n from explicit desuspension data. -/
 def bracket (D : Coderivation R V) (E : ExtractedBrackets D) (n : ℕ) (_hn : n ≥ 1) :
@@ -439,6 +446,13 @@ structure ExtractedBrackets (L : LInftyStructure R V) where
   bracketMultilinear : ∀ (n : ℕ) (_hn : n ≥ 1), GradedMultilinearMap R V n (2 - n)
   /-- Linearized view of l_n used by downstream APIs expecting unary graded maps. -/
   bracket : ∀ (n : ℕ) (_hn : n ≥ 1), GradedLinMap R V V (2 - n)
+  /-- Consistency of the linearized unary bracket with arity-1 multilinear data. -/
+  unary_spec :
+    ∀ (k : ℤ) (x : V k),
+      (bracket 1 (by omega)).toFun k x =
+        cast (congrArg V (by
+          simp))
+          ((bracketMultilinear 1 (by omega)).component (fun _ : Fin 1 => k) (fun _ => x))
 
 /-- The n-th bracket l_n : V^⊗n → V of degree 2-n from explicit extraction data. -/
 def bracketMultilinear (L : LInftyStructure R V) (E : ExtractedBrackets L) (n : ℕ) (_hn : n ≥ 1) :
@@ -454,6 +468,14 @@ def bracket (L : LInftyStructure R V) (E : ExtractedBrackets L) (_n : ℕ) (_hn 
     This is a unary bracket, so it's naturally a linear map. -/
 def l₁ (L : LInftyStructure R V) (E : ExtractedBrackets L) : GradedLinMap R V V 1 :=
   L.bracket E 1 (le_refl 1)
+
+theorem l₁_spec_from_multilinear (L : LInftyStructure R V) (E : ExtractedBrackets L)
+    (k : ℤ) (x : V k) :
+    (L.l₁ E).toFun k x =
+      cast (congrArg V (by
+        simp))
+        ((L.bracketMultilinear E 1 (by omega)).component (fun _ : Fin 1 => k) (fun _ => x)) := by
+  simpa [l₁, bracket, bracketMultilinear] using E.unary_spec k x
 
 /-- The binary bracket l₂ : V ⊗ V → V of degree 0 as a bilinear map -/
 def l₂ (L : LInftyStructure R V) (E : ExtractedBrackets L) : GradedMultilinearMap R V 2 0 :=

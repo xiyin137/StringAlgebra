@@ -30,6 +30,7 @@ This file tracks formal soundness debt for `StringAlgebra/Linfinity` under `agen
    - `LInfinityAlgebra.lean`: homotopy-transfer witness package now includes explicit quasi-isomorphism certification of the lifted inclusion, with derived transfer linear/quasi-iso lemmas.
    - `LInfinityAlgebra.lean`: core `LInftyMorphism` now enforces arity-0 normalization via `higher_zero`; canonical constructors and bridge adapters (`Morphisms.lean`, `DGLA.lean`) are updated accordingly.
    - `GradedInfrastructure.lean`: removed `Classical.epsilon` degree selector; degree extraction now requires a homogeneity witness.
+   - `GradedInfrastructure.lean`: strengthened coderivation/L∞ extracted-bracket witness bundles with explicit unary consistency constraints (arity-1 multilinear component must match provided linear differential/bracket views), preventing silent drift between parallel unary interfaces.
    - `Morphisms.lean`: quasi-isomorphism criterion strengthened to degreewise bijectivity; composition now uses explicit `CompositionData`, with derived canonical instances for identity and strict-morphism composition.
    - `Morphisms.lean`: added explicit conversion bridges between bundled `LInftyHom` data and core `LInftyMorphism`, including composition-data transport.
    - `Morphisms.lean`: `LInftyHomotopy` now carries an explicit first-order linear homotopy equation (`linearDelta`, `linear_spec`) and derived symmetry/transitivity constructors.
@@ -92,7 +93,7 @@ PolyvectorFieldsDGLA.toDGLAData
 4. `SymmetricAlgebra.lean`: low risk.
 5. `SymmetricCoalgebra.lean`: medium risk. Uses representational `Bool`-style zero tracking; mathematically usable but non-quotiented semantics remain limited.
 6. `Coderivations.lean`: medium-high risk. Core interfaces hardened; constructive co-Leibniz/component derivation remains pending.
-7. `GradedInfrastructure.lean`: medium-high risk. Extraction interfaces are explicit; internal constructive realization still pending.
+7. `GradedInfrastructure.lean`: medium-high risk. Extraction interfaces are explicit and now enforce unary consistency across multilinear/linear extracted data; internal constructive realization is still pending.
 8. `ChainComplex.lean`: low risk.
 9. `LInfinityAlgebra.lean`: medium risk. Core object definitions compile, morphisms now enforce arity-0 normalization and transfer morphisms carry explicit linear/quasi-isomorphism certification in the homotopy-transfer interface; semantically nontrivial constructions still depend on supplied transfer/twisting data.
 10. `Morphisms.lean`: medium risk. Composition/quasi-isomorphism interfaces are explicit and include canonical strict/identity composition data, bridge conversions now have explicit higher-component round-trip guarantees, and first-order homotopy-equation semantics exist with explicit symmetry/transitivity constructors; higher coherence equations and homology-level semantics remain pending.
