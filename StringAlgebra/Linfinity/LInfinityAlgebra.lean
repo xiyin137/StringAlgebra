@@ -492,6 +492,11 @@ theorem transferMorphism_isQuasiIso {R : Type u} [CommRing R]
     {data : HomotopyTransferData R V H}
     (T : HomotopyTransferTheory L data) :
     (transferMorphism L data T).isQuasiIso := by
+  refine (transferMorphism_isQuasiIso_iff_linear_surjective
+    (L := L) (data := data) T).2 ?_
+  -- Remaining core transfer debt:
+  -- degreewise surjectivity of the SDR inclusion map.
+  intro n
   sorry
 
 /-! ## Special Cases -/

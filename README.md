@@ -108,6 +108,7 @@ Current audited status (2026-02-26):
 18. Remaining semantic debt is tracked explicitly in `StringAlgebra/Linfinity/TODO.md`.
 19. Transfer quasi-isomorphism dependency is now explicit under the current `isQuasiIso` surrogate: `transferMorphism_isQuasiIso ↔ (∀ n, Function.Surjective (incl n))` and `transfer_is_quasiIso ↔ (∀ n, Function.Surjective (incl n))` are available as theorem-level bridges (`transferMorphism_isQuasiIso_iff_linear_surjective`, `transfer_is_quasiIso_iff_incl_surjective`), so unresolved surjectivity debt is formalized rather than implicit.
 20. Minimal-model and formality accessor quasi-isomorphism obligations now also have explicit theorem-level dependency bridges (`minimalModelMorphism_isQuasiIso_iff_linear_bijective`, `formalityMorphism_isQuasiIso_iff_linear_bijective`) to keep unresolved proof debt stated as linear-bijectivity requirements instead of implicit forwarding.
+21. The three remaining Linfinity theorem-level `sorry` proofs are now structurally reduced to these explicit obligations (surjectivity/bijectivity goals) rather than opaque full-theorem placeholders.
 
 Current dependency flow toward `Formality.lean`:
 

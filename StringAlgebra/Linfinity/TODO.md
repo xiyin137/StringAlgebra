@@ -16,6 +16,10 @@ This file tracks formal soundness debt for `StringAlgebra/Linfinity` under `agen
 3. Current Linfinity theorem-level `sorry` loci:
    - `LInfinityAlgebra.lean`: `transferMorphism_isQuasiIso`
    - `Transfer.lean`: `minimalModelMorphism_isQuasiIso`, `formalityMorphism_isQuasiIso`
+   - Each remaining `sorry` is now localized to an explicit linear obligation:
+     `transferMorphism_isQuasiIso` reduces to degreewise surjectivity of `incl`,
+     and the two accessor-level quasi-isomorphism theorems reduce to degreewise
+     bijectivity of packaged `linear` maps.
 4. `rg` scans show no `axiom`, `admit`, `unsafe`, `Classical.choose`, or placeholder markers in Linfinity Lean files.
    - Re-verified on 2026-02-26 with:
      `rg -n '\\baxiom\\b|\\badmit\\b|\\bunsafe\\b|\\bpostulate\\b' StringAlgebra/Linfinity --glob '*.lean'`

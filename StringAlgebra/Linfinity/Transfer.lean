@@ -410,7 +410,15 @@ theorem minimalModelMorphism_isQuasiIso {R : Type u} [CommRing R]
     [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
     {L : LInftyAlgebra R V} (M : MinimalModelResult L) :
     (minimalModelMorphism M).isQuasiIso := by
-  sorry
+  intro n
+  have hlin :
+      (((minimalModelMorphism M).components 1 (by omega)).map n) = M.linear n := by
+    simpa [minimalModelMorphism] using M.linear_spec n
+  -- Remaining minimal-model debt:
+  -- degreewise bijectivity of the packaged linear map.
+  have hbij : Function.Bijective (M.linear n) := by
+    sorry
+  simpa [hlin] using hbij
 
 /-- The canonical minimal-model morphism has degreewise bijective linear part. -/
 theorem minimalModelMorphism_linear_isBijective {R : Type u} [CommRing R]
@@ -558,7 +566,15 @@ theorem formalityMorphism_isQuasiIso {R : Type u} [CommRing R]
     [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
     {L : LInftyAlgebra R V} (F : FormalityResult L) :
     (formalityMorphism F).isQuasiIso := by
-  sorry
+  intro n
+  have hlin :
+      (((formalityMorphism F).components 1 (by omega)).map n) = F.linear n := by
+    simpa [formalityMorphism] using F.linear_spec n
+  -- Remaining formality debt:
+  -- degreewise bijectivity of the packaged linear map.
+  have hbij : Function.Bijective (F.linear n) := by
+    sorry
+  simpa [hlin] using hbij
 
 /-- The canonical formality morphism has degreewise bijective linear part. -/
 theorem formalityMorphism_linear_isBijective {R : Type u} [CommRing R]
