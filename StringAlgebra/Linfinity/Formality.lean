@@ -225,8 +225,16 @@ variable {R}
 structure FormalityComponent (data : FormalityData R) (n : ℕ) (hn : n ≥ 1) where
   /-- The degree of U_n is 1-n -/
   degree : ℤ := 1 - n
+  /-- The stored degree agrees with the arity-indexed formula `1 - n`. -/
+  degree_spec : degree = 1 - n
   /-- The component map (sum over graphs) -/
   graphSum : (k : ℤ) → data.tPoly.fields k → data.dPoly.cochains k
+
+@[simp] theorem FormalityComponent.degree_eq
+    (data : FormalityData R) {n : ℕ} {hn : n ≥ 1}
+    (U : FormalityComponent data n hn) :
+    U.degree = 1 - n :=
+  U.degree_spec
 
 /-- The Kontsevich formality L∞ morphism.
 

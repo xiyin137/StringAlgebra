@@ -53,8 +53,19 @@ structure MorphismComponent (R : Type u) [CommRing R]
     (n : ℕ) (_hn : n ≥ 1) where
   /-- The degree of the component is 1-n -/
   degree : ℤ := 1 - n
+  /-- The stored degree agrees with the arity-indexed formula `1 - n`. -/
+  degree_spec : degree = 1 - n
   /-- Underlying graded-linear data for the n-th component. -/
   map : (i : ℤ) → V i →ₗ[R] W i
+
+@[simp] theorem MorphismComponent.degree_eq {R : Type u} [CommRing R]
+    {V W : ℤ → Type v}
+    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
+    [∀ i, AddCommGroup (W i)] [∀ i, Module R (W i)]
+    {n : ℕ} {hn : n ≥ 1}
+    (F : MorphismComponent R V W n hn) :
+    F.degree = 1 - n :=
+  F.degree_spec
 
 /-- A full L∞ morphism with all components.
 
@@ -90,6 +101,7 @@ def quadratic {L : LInftyAlgebra R V} {L' : LInftyAlgebra R W}
 def id (L : LInftyAlgebra R V) : LInftyHom R L L where
   components := fun n _hn => {
     degree := 1 - n
+    degree_spec := by rfl
     map := fun i => by
       by_cases h1 : n = 1
       · subst h1
@@ -162,6 +174,7 @@ def ofCoreMorphism {L : LInftyAlgebra R V} {L' : LInftyAlgebra R W}
     (F : LInftyMorphism R L L') : LInftyHom R L L' where
   components := fun n _hn => {
     degree := 1 - n
+    degree_spec := by rfl
     map := fun i =>
       if n = 1 then F.linear i else F.higher n i
   }
@@ -252,6 +265,7 @@ def StrictMorphism.toLInftyHom {R : Type u} [CommRing R]
     (_F : StrictMorphism R L L') : LInftyHom R L L' where
   components := fun n _hn => {
     degree := 1 - n
+    degree_spec := by rfl
     map := fun i => by
       by_cases h1 : n = 1
       · subst h1
