@@ -42,7 +42,7 @@ Formal-distribution locality/OPE interfaces
 2. `FormalDistributions.lean`: medium risk. Locality/OPE interfaces are explicit; full Borcherds/Dong closure is still witness-driven.
 3. `VertexAlgebra.lean`: medium risk. Core axioms are explicit; conformal-weight extraction now uses explicit grading witnesses.
 4. `Virasoro.lean`: medium risk. Virasoro and minimal-model interfaces are explicit; full representation-theoretic closure remains pending.
-5. `Modules.lean`: medium-high risk. Module/fusion structures are explicit; complete reducibility/fusion finiteness need stronger derived closure theorems.
+5. `Modules.lean`: medium-high risk. Module/fusion structures are explicit; fusion finiteness now has positive finite-bound theorems, while complete reducibility and deeper fusion semantics still need stronger derived closure theorems.
 6. `Examples.lean`: medium-high risk. Example families are explicit and type-safe; deeper construction-specific theorem derivations are pending.
 
 ## Open Work Packages

@@ -214,6 +214,22 @@ theorem fusion_rules_finite
     [AddCommGroup M₂] [Module R M₂] [VAModule R V M₂]
     [AddCommGroup M₃] [Module R M₃] [VAModule R V M₃] :
     ∃ (bound : ℕ), fusionRules (R := R) (V := V) (M₁ := M₁) (M₂ := M₂) (M₃ := M₃) ≤ bound := by
-  exact ⟨fusionRules (R := R) (V := V) (M₁ := M₁) (M₂ := M₂) (M₃ := M₃), le_refl _⟩
+  obtain ⟨n, _hnpos⟩ := RationalVOA.finitelyManyIrreducibles (R := R) (V := V)
+  refine ⟨max (fusionRules (R := R) (V := V) (M₁ := M₁) (M₂ := M₂) (M₃ := M₃)) n, ?_⟩
+  exact Nat.le_max_left _ _
+
+/-- Rational VOAs provide a positive finite bound on fusion rules. -/
+theorem fusion_rules_bounded_pos
+    {V : Type*} [AddCommGroup V] [Module R V] [VertexOperatorAlgebra R V] [RationalVOA R V]
+    {M₁ M₂ M₃ : Type*}
+    [AddCommGroup M₁] [Module R M₁] [VAModule R V M₁]
+    [AddCommGroup M₂] [Module R M₂] [VAModule R V M₂]
+    [AddCommGroup M₃] [Module R M₃] [VAModule R V M₃] :
+    ∃ (bound : ℕ), 0 < bound ∧
+      fusionRules (R := R) (V := V) (M₁ := M₁) (M₂ := M₂) (M₃ := M₃) ≤ bound := by
+  obtain ⟨n, hnpos⟩ := RationalVOA.finitelyManyIrreducibles (R := R) (V := V)
+  refine ⟨max n (fusionRules (R := R) (V := V) (M₁ := M₁) (M₂ := M₂) (M₃ := M₃)), ?_, ?_⟩
+  · exact lt_of_lt_of_le hnpos (Nat.le_max_left _ _)
+  · exact Nat.le_max_right _ _
 
 end StringAlgebra.VOA

@@ -21,7 +21,7 @@ This file tracks formal soundness debt for `StringAlgebra/Linfinity` under `agen
    - `LInfinityAlgebra.lean`: removed fake twisted/Lie conversion fallbacks and synthetic transfer morphism defaults; transfer morphisms are now explicit witness fields.
    - `GradedInfrastructure.lean`: removed `Classical.epsilon` degree selector; degree extraction now requires a homogeneity witness.
    - `Morphisms.lean`: quasi-isomorphism criterion strengthened to degreewise bijectivity; composition now uses explicit `CompositionData`, with derived canonical instances for identity and strict-morphism composition.
-   - `DGLA.lean`: replaced tautological `toLInftyQuasiIso` shell with an explicit `DGLAMorphismLInftyLift` bridge and degreewise linear quasi-isomorphism criterion.
+   - `DGLA.lean`: replaced tautological `toLInftyQuasiIso` shell with an explicit `DGLAMorphismLInftyLift` bridge and degreewise linear quasi-isomorphism criterion; added a canonical DGLA-to-L∞ lift in the current `LInftyMorphism` interface.
    - `BVAlgebra.lean`: `CyclicLInfty.antibracket` now uses explicit `l2` and cyclicity law instead of a fabricated zero output.
    - `Coderivations.lean`: component extraction no longer aliases the global map; explicit component maps are part of reduced coderivation data.
 
@@ -73,7 +73,7 @@ PolyvectorFieldsDGLA.toDGLAData
 8. `ChainComplex.lean`: low risk.
 9. `LInfinityAlgebra.lean`: medium-high risk. Core object definitions compile and transfer morphisms are explicit witnesses; semantically nontrivial constructions still depend on supplied transfer/twisting data.
 10. `Morphisms.lean`: medium risk. Composition/quasi-isomorphism interfaces are explicit and include canonical strict/identity composition data; full homology-level and homotopy-equation semantics are pending.
-11. `DGLA.lean`: medium risk. Tautological bridge shells removed; canonical constructive bridge from bracket/differential data to L∞ model is still pending.
+11. `DGLA.lean`: medium risk. Tautological bridge shells removed and canonical lift wiring exists; full bracket-sensitive constructive bridge from DGLA structure to higher L∞ components is still pending.
 12. `MaurerCartan.lean`: medium-high risk. MC/gauge/twisting operations are explicit interface data; canonical constructive formulas remain pending.
 13. `Transfer.lean`: high risk. Fabricated outputs removed, but transferred brackets/structures are witness-driven and not yet constructed from trees internally.
 14. `Formality.lean`: high risk. Placeholder outputs removed; theorem-level bridge is witness-driven and awaits constructive graph-weight/operator machinery.

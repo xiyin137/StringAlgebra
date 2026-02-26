@@ -48,6 +48,7 @@ Basic composition/word infrastructure
 7. `Polylogarithm.lean`: medium-high risk. Polylog/HPL interfaces are explicit; analytic continuation and deep functional equations remain pending.
 8. `Motivic.lean`: medium-high risk. Motivic/coaction structure is explicit; full Hopf-algebra and period-isomorphism closure remains pending.
 9. `Associator.lean`: high risk. Associator and GT interfaces are explicit; full pentagon/hexagon derivations from constructed coefficients remain pending.
+10. `DoubleShuffle.lean` now includes derived interface lemmas (`*_iff` and motivic specialization) reducing tautological endpoint contracts.
 
 ## Open Work Packages
 

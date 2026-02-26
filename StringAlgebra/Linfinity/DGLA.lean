@@ -303,6 +303,39 @@ structure DGLAMorphismLInftyLift {R : Type u} [CommRing R]
   /-- Linear component agrees with the underlying DGLA map degreewise. -/
   linear_spec : ∀ n : ℤ, morphism.linear n = f.toDGMorphism.componentMap n
 
+/-- Canonical L∞ morphism associated to a DGLA morphism in the current
+    `LInftyMorphism` interface. -/
+def DGLAMorphism.toLInftyMorphism {R : Type u} [CommRing R]
+    {L L' : DGLAData R} (f : DGLAMorphism R L L') :
+    LInftyMorphism R L.toLInftyAlgebra L'.toLInftyAlgebra where
+  linear := f.toDGMorphism.componentMap
+  higher := fun k n => by
+    by_cases hk : k = 1
+    · subst hk
+      simpa using f.toDGMorphism.componentMap n
+    · exact 0
+  compatible := by
+    intro n
+    simp
+
+/-- Canonical explicit lift package associated to `toLInftyMorphism`. -/
+def DGLAMorphism.canonicalLInftyLift {R : Type u} [CommRing R]
+    {L L' : DGLAData R} (f : DGLAMorphism R L L') :
+    DGLAMorphismLInftyLift f where
+  morphism := f.toLInftyMorphism
+  linear_spec := by
+    intro n
+    rfl
+
+/-- Degreewise-linear DGLA quasi-isomorphisms induce quasi-isomorphisms for the
+    canonical associated L∞ morphism. -/
+theorem DGLAMorphism.toLInftyMorphism_isQuasiIso {R : Type u} [CommRing R]
+    {L L' : DGLAData R} (f : DGLAMorphism R L L')
+    (hf : f.isLinearQuasiIso) :
+    (f.toLInftyMorphism).isQuasiIso := by
+  intro n
+  simpa [LInftyMorphism.isQuasiIso, DGLAMorphism.toLInftyMorphism] using hf n
+
 /-- A degreewise-linear DGLA quasi-isomorphism lift gives an L∞ quasi-isomorphism. -/
 theorem DGLAMorphism.toLInftyQuasiIso {R : Type u} [CommRing R]
     {L L' : DGLAData R} (f : DGLAMorphism R L L')
