@@ -147,7 +147,7 @@ structure KontsevichGraph (n : ℕ) where
   ordering : ∀ i : Fin n, ∀ k : Fin 2,
     match edges i k with
     | Sum.inl j => i.val < j.val
-    | Sum.inr _ => True
+    | Sum.inr j => j.val < groundVertices
 
 /-- The configuration space of n points in the upper half-plane.
 
