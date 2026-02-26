@@ -263,6 +263,15 @@ theorem gaugeAct_zero {R : Type u} [CommRing R]
     (gaugeAct (T := T) 0 a).element = a.element :=
   gaugeAction_zero T a.element
 
+/-- Gauge action on Maurer-Cartan elements preserves gauge equivalence. -/
+theorem gaugeAct_gaugeEquivalent {R : Type u} [CommRing R]
+    {V : ℤ → Type v}
+    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
+    {L : LInftyAlgebra R V} {T : MCTheory R L}
+    (g : V 0) (a : MCElement R T) :
+    GaugeEquivalent T a (gaugeAct (T := T) g a) :=
+  gaugeAction_gaugeEquivalent T g a.element
+
 /-- Projection of an MC element to its moduli class. -/
 def toModuli {R : Type u} [CommRing R]
     {V : ℤ → Type v}
@@ -294,6 +303,15 @@ theorem gaugeEquivalent_of_toModuli_eq {R : Type u} [CommRing R]
     {a b : MCElement R T} (h : a.toModuli = b.toModuli) :
     GaugeEquivalent T a b :=
   (toModuli_eq_iff_gaugeEquivalent a b).1 h
+
+/-- Gauge action does not change the moduli class of an MC element. -/
+theorem toModuli_eq_gaugeAct {R : Type u} [CommRing R]
+    {V : ℤ → Type v}
+    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
+    {L : LInftyAlgebra R V} {T : MCTheory R L}
+    (g : V 0) (a : MCElement R T) :
+    a.toModuli = (gaugeAct (T := T) g a).toModuli :=
+  toModuli_eq_of_gaugeEquivalent (gaugeAct_gaugeEquivalent g a)
 
 end MCElement
 
