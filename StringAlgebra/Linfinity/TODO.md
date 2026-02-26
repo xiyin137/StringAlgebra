@@ -18,7 +18,7 @@ This file tracks formal soundness debt for `StringAlgebra/Linfinity` under `agen
    - `Transfer.lean`: removed fabricated transfer outputs and `Classical.choose` inversion; now uses explicit transfer witness packages.
    - `Formality.lean`: removed hardcoded zero graph/quantization outputs; now requires explicit witness data for formality, MC transport, and quantization outputs.
    - `Basic.lean`: removed tautological Jacobi fields; now carries explicit law interfaces.
-   - `LInfinityAlgebra.lean`: removed fake twisted/Lie conversion fallbacks and synthetic transfer morphism defaults; transfer morphisms are now explicit witness fields.
+   - `LInfinityAlgebra.lean`: removed fake twisted/Lie conversion fallbacks and synthetic transfer morphism defaults; transfer morphisms are now explicit witness fields, and core `LInftyMorphism` composition now uses explicit composition data with canonical identity instances.
    - `GradedInfrastructure.lean`: removed `Classical.epsilon` degree selector; degree extraction now requires a homogeneity witness.
    - `Morphisms.lean`: quasi-isomorphism criterion strengthened to degreewise bijectivity; composition now uses explicit `CompositionData`, with derived canonical instances for identity and strict-morphism composition.
    - `DGLA.lean`: replaced tautological `toLInftyQuasiIso` shell with an explicit `DGLAMorphismLInftyLift` bridge and degreewise linear quasi-isomorphism criterion; added a canonical DGLA-to-L∞ lift in the current `LInftyMorphism` interface.

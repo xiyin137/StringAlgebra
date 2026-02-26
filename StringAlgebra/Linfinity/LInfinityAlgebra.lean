@@ -186,6 +186,68 @@ structure LInftyMorphism (R : Type u) [CommRing R]
   /-- Compatibility: D' ∘ F = F ∘ D as coalgebra morphisms -/
   compatible : ∀ n : ℤ, higher 1 n = linear n
 
+namespace LInftyMorphism
+
+variable {R : Type u} [CommRing R]
+variable {V W U : ℤ → Type v}
+variable [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
+variable [∀ i, AddCommGroup (W i)] [∀ i, Module R (W i)]
+variable [∀ i, AddCommGroup (U i)] [∀ i, Module R (U i)]
+
+/-- Identity L∞ morphism. -/
+def id {L : LInftyAlgebra R V} : LInftyMorphism R L L where
+  linear := fun _ => LinearMap.id
+  higher := fun k _ => by
+    by_cases hk : k = 1
+    · subst hk
+      simpa using (LinearMap.id : V _ →ₗ[R] V _)
+    · exact 0
+  compatible := by
+    intro n
+    simp
+
+/-- Explicit composition data for L∞ morphisms. -/
+structure CompositionData
+    {L : LInftyAlgebra R V} {L' : LInftyAlgebra R W} {L'' : LInftyAlgebra R U}
+    (G : LInftyMorphism R L' L'') (F : LInftyMorphism R L L') where
+  /-- Composite morphism. -/
+  composite : LInftyMorphism R L L''
+  /-- Linear component equals ordinary composition. -/
+  linear_spec :
+    ∀ n : ℤ, composite.linear n = (G.linear n).comp (F.linear n)
+
+/-- Composition using explicit composition data. -/
+def comp {L : LInftyAlgebra R V} {L' : LInftyAlgebra R W} {L'' : LInftyAlgebra R U}
+    (G : LInftyMorphism R L' L'') (F : LInftyMorphism R L L')
+    (C : CompositionData G F) : LInftyMorphism R L L'' :=
+  C.composite
+
+/-- Canonical composition data for left identity. -/
+def compData_id_left {L : LInftyAlgebra R V} {L' : LInftyAlgebra R W}
+    (F : LInftyMorphism R L L') : CompositionData (id (L := L')) F where
+  composite := F
+  linear_spec := by
+    intro n
+    simp [id]
+
+/-- Canonical composition data for right identity. -/
+def compData_id_right {L : LInftyAlgebra R V} {L' : LInftyAlgebra R W}
+    (F : LInftyMorphism R L L') : CompositionData F (id (L := L)) where
+  composite := F
+  linear_spec := by
+    intro n
+    simp [id]
+
+@[simp] theorem comp_id_left {L : LInftyAlgebra R V} {L' : LInftyAlgebra R W}
+    (F : LInftyMorphism R L L') :
+    (id (L := L')).comp F (compData_id_left F) = F := rfl
+
+@[simp] theorem comp_id_right {L : LInftyAlgebra R V} {L' : LInftyAlgebra R W}
+    (F : LInftyMorphism R L L') :
+    F.comp (id (L := L)) (compData_id_right F) = F := rfl
+
+end LInftyMorphism
+
 /-- A strict morphism is one where f_n = 0 for n ≥ 2.
 
     Strict morphisms are ordinary chain maps compatible with brackets.
@@ -210,6 +272,35 @@ def LInftyMorphism.isQuasiIso {R : Type u} [CommRing R]
     (F : LInftyMorphism R L L') : Prop :=
   -- Surrogate at this stage: degreewise bijectivity of the linear component.
   ∀ n : ℤ, Function.Bijective (F.linear n)
+
+namespace LInftyMorphism
+
+variable {R : Type u} [CommRing R]
+variable {V W U : ℤ → Type v}
+variable [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
+variable [∀ i, AddCommGroup (W i)] [∀ i, Module R (W i)]
+variable [∀ i, AddCommGroup (U i)] [∀ i, Module R (U i)]
+
+/-- Identity morphisms are quasi-isomorphisms. -/
+theorem id_isQuasiIso {L : LInftyAlgebra R V} :
+    (id (L := L)).isQuasiIso := by
+  intro n
+  simpa [id] using
+    (show Function.Bijective (LinearMap.id : V n →ₗ[R] V n) from Function.bijective_id)
+
+/-- Quasi-isomorphisms are closed under composition with explicit composition data. -/
+theorem quasiIso_comp
+    {L : LInftyAlgebra R V} {L' : LInftyAlgebra R W} {L'' : LInftyAlgebra R U}
+    (G : LInftyMorphism R L' L'') (F : LInftyMorphism R L L')
+    (C : CompositionData G F)
+    (hG : G.isQuasiIso) (hF : F.isQuasiIso) :
+    (G.comp F C).isQuasiIso := by
+  intro n
+  have hcomp : Function.Bijective (fun x : V n => G.linear n (F.linear n x)) := (hG n).comp (hF n)
+  have hlin : C.composite.linear n = (G.linear n).comp (F.linear n) := C.linear_spec n
+  simpa [LInftyMorphism.comp, hlin] using hcomp
+
+end LInftyMorphism
 
 /-! ## Homotopy Transfer -/
 

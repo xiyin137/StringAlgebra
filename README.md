@@ -68,7 +68,7 @@ Current audited status (2026-02-26):
 1. `lake build StringAlgebra.Linfinity` passes.
 2. `StringAlgebra/Linfinity` is currently `sorry`-free.
 3. No `axiom`/`admit`/`Classical.choose`/`Classical.epsilon` usage in Linfinity Lean files.
-4. Recent hardening removed fabricated transfer/formality/BV outputs and tautological bridge shells; nontrivial constructions now require explicit witness data rather than hidden defaults, morphism composition has derived strict/identity composition data, and DGLA-to-L∞ transport now includes a canonical lift in the current interface.
+4. Recent hardening removed fabricated transfer/formality/BV outputs and tautological bridge shells; nontrivial constructions now require explicit witness data rather than hidden defaults, both `LInftyHom` and core `LInftyMorphism` composition have explicit identity/derived composition data, and DGLA-to-L∞ transport now includes a canonical lift in the current interface.
 5. Remaining semantic debt is tracked explicitly in `StringAlgebra/Linfinity/TODO.md`.
 
 Current dependency flow toward `Formality.lean`:
