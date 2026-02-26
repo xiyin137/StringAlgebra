@@ -258,6 +258,23 @@ theorem transfer_is_quasiIso {R : Type u} [CommRing R]
     (transferInclusion L data T).isQuasiIso :=
   T.inclusion_isQuasiIso
 
+/-- The SDR inclusion maps are degreewise bijective when the transferred
+    inclusion is certified as a quasi-isomorphism in `TransferResult`. -/
+theorem transferInclusionLinear_isBijective {R : Type u} [CommRing R]
+    {V H : ℤ → Type v}
+    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
+    [∀ i, AddCommGroup (H i)] [∀ i, Module R (H i)]
+    (L : LInftyAlgebra R V) (data : SDR R V H)
+    (T : TransferResult L data) :
+    ∀ n : ℤ, Function.Bijective (data.incl n) := by
+  intro n
+  have hq : Function.Bijective (((transferInclusion L data T).components 1 (by omega)).map n) :=
+    T.inclusion_isQuasiIso n
+  have hlin :
+      (((transferInclusion L data T).components 1 (by omega)).map n) = data.incl n :=
+    transferInclusion_linear L data T n
+  simpa [hlin] using hq
+
 /-! ## Minimal Models -/
 
 /-- A minimal L∞ algebra has l₁ = 0.
