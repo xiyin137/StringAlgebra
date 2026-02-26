@@ -494,10 +494,12 @@ theorem transferMorphism_isQuasiIso {R : Type u} [CommRing R]
     (transferMorphism L data T).isQuasiIso := by
   refine (transferMorphism_isQuasiIso_iff_linear_surjective
     (L := L) (data := data) T).2 ?_
-  -- Remaining core transfer debt:
-  -- degreewise surjectivity of the SDR inclusion map.
   intro n
-  sorry
+  have hsurj : Function.Surjective (data.incl n) := by
+    -- Remaining core transfer debt:
+    -- degreewise surjectivity of the SDR inclusion map.
+    sorry
+  exact hsurj
 
 /-! ## Special Cases -/
 
