@@ -679,6 +679,78 @@ theorem starProductClassification_toGaugeClass (data : FormalityData R)
   simpa [StarProduct.toGaugeClass_eq_iff_gaugeEquivalent] using
     (classify star₁ star₂ h1 h2)
 
+/-- Under a classification hypothesis, equality of first-order Poisson brackets
+    implies gauge equivalence of quantizations of the fixed bivector. -/
+theorem starProductClassification_gaugeEquivalent_of_poisson_eq
+    (data : FormalityData R)
+    (π : PoissonStructure R data.tPoly)
+    (classify :
+      ∀ (star₁ star₂ : StarProduct R data.dPoly),
+        star₁.poissonBracket = data.hkr.component 1 π.bivector →
+        star₂.poissonBracket = data.hkr.component 1 π.bivector →
+        (star₁.gaugeEquivalent star₂ ↔
+          star₁.poissonBracket = star₂.poissonBracket))
+    (star₁ star₂ : StarProduct R data.dPoly)
+    (h1 : star₁.poissonBracket = data.hkr.component 1 π.bivector)
+    (h2 : star₂.poissonBracket = data.hkr.component 1 π.bivector)
+    (hpoisson : star₁.poissonBracket = star₂.poissonBracket) :
+    star₁.gaugeEquivalent star₂ :=
+  (classify star₁ star₂ h1 h2).2 hpoisson
+
+/-- Under a classification hypothesis, gauge equivalence forces equality of
+    first-order Poisson brackets. -/
+theorem starProductClassification_poisson_eq_of_gaugeEquivalent
+    (data : FormalityData R)
+    (π : PoissonStructure R data.tPoly)
+    (classify :
+      ∀ (star₁ star₂ : StarProduct R data.dPoly),
+        star₁.poissonBracket = data.hkr.component 1 π.bivector →
+        star₂.poissonBracket = data.hkr.component 1 π.bivector →
+        (star₁.gaugeEquivalent star₂ ↔
+          star₁.poissonBracket = star₂.poissonBracket))
+    (star₁ star₂ : StarProduct R data.dPoly)
+    (h1 : star₁.poissonBracket = data.hkr.component 1 π.bivector)
+    (h2 : star₂.poissonBracket = data.hkr.component 1 π.bivector)
+    (hgauge : star₁.gaugeEquivalent star₂) :
+    star₁.poissonBracket = star₂.poissonBracket :=
+  (classify star₁ star₂ h1 h2).1 hgauge
+
+/-- Under a classification hypothesis, equality of first-order Poisson brackets
+    implies equality of gauge classes. -/
+theorem starProductClassification_toGaugeClass_eq_of_poisson_eq
+    (data : FormalityData R)
+    (π : PoissonStructure R data.tPoly)
+    (classify :
+      ∀ (star₁ star₂ : StarProduct R data.dPoly),
+        star₁.poissonBracket = data.hkr.component 1 π.bivector →
+        star₂.poissonBracket = data.hkr.component 1 π.bivector →
+        (star₁.gaugeEquivalent star₂ ↔
+          star₁.poissonBracket = star₂.poissonBracket))
+    (star₁ star₂ : StarProduct R data.dPoly)
+    (h1 : star₁.poissonBracket = data.hkr.component 1 π.bivector)
+    (h2 : star₂.poissonBracket = data.hkr.component 1 π.bivector)
+    (hpoisson : star₁.poissonBracket = star₂.poissonBracket) :
+    star₁.toGaugeClass = star₂.toGaugeClass :=
+  (starProductClassification_toGaugeClass data π classify star₁ star₂ h1 h2).2 hpoisson
+
+/-- Under a classification hypothesis, equality of gauge classes forces
+    equality of first-order Poisson brackets. -/
+theorem starProductClassification_poisson_eq_of_toGaugeClass_eq
+    (data : FormalityData R)
+    (π : PoissonStructure R data.tPoly)
+    (classify :
+      ∀ (star₁ star₂ : StarProduct R data.dPoly),
+        star₁.poissonBracket = data.hkr.component 1 π.bivector →
+        star₂.poissonBracket = data.hkr.component 1 π.bivector →
+        (star₁.gaugeEquivalent star₂ ↔
+          star₁.poissonBracket = star₂.poissonBracket))
+    (star₁ star₂ : StarProduct R data.dPoly)
+    (h1 : star₁.poissonBracket = data.hkr.component 1 π.bivector)
+    (h2 : star₂.poissonBracket = data.hkr.component 1 π.bivector)
+    (hclass : star₁.toGaugeClass = star₂.toGaugeClass) :
+    star₁.poissonBracket = star₂.poissonBracket :=
+  (starProductClassification_toGaugeClass data π classify star₁ star₂ h1 h2).1 hclass
+
 /-- Convert quotient-class classification back to gauge-equivalence classification. -/
 theorem starProductClassification_of_toGaugeClass (data : FormalityData R)
     (π : PoissonStructure R data.tPoly)
