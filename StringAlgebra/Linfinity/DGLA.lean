@@ -62,6 +62,8 @@ structure DGLAData (R : Type u) [CommRing R] where
   /-- Graded antisymmetry: [x,y] = -(-1)^{mn} [y,x] -/
   antisymm : ∀ m n (x : toModule.toComplex.X m) (y : toModule.toComplex.X n),
     bracket m n x y = (add_comm n m) ▸ (- ((-1 : R) ^ (m * n).toNat) • bracket n m y x)
+  /-- Explicit L∞ model associated to this DGLA data. -/
+  linftyModel : LInftyAlgebra R (fun n => (toModule.toComplex.X n))
 
 namespace DGLAData
 
@@ -180,6 +182,14 @@ structure PolyvectorFieldsDGLA (R : Type u) [CommRing R] where
   [instModule : ∀ n, Module R (fields n)]
   /-- The Schouten bracket -/
   schouten : SchoutenBracket R fields
+  /-- Degree-0 bracket data used in the DGLA packaging. -/
+  dglaBracket : ∀ (m n : ℤ), fields m →ₗ[R] fields n →ₗ[R] fields (m + n)
+  /-- Graded antisymmetry for `dglaBracket`. -/
+  dgla_antisymm : ∀ m n (x : fields m) (y : fields n),
+    dglaBracket m n x y = (add_comm n m) ▸
+      (- ((-1 : R) ^ (m * n).toNat) • dglaBracket n m y x)
+  /-- Chosen L∞ model for the graded module of polyvector fields. -/
+  linftyModel : LInftyAlgebra R fields
 
 attribute [instance] PolyvectorFieldsDGLA.instAddCommGroup PolyvectorFieldsDGLA.instModule
 
@@ -192,11 +202,9 @@ def toDGLAData (T : PolyvectorFieldsDGLA R) : DGLAData R where
   toModule := Chain.mkDGModule R T.fields
     (fun _ => 0)  -- d = 0
     (fun _ _ => rfl)  -- d² = 0 trivially
-  bracket := fun m n =>
-    -- Convert Schouten bracket (degree -1) to degree 0 bracket
-    -- This requires reindexing: [−,−]_Schouten gives m+n-1, need m+n
-    sorry
-  antisymm := fun _ _ _ _ => sorry
+  bracket := T.dglaBracket
+  antisymm := T.dgla_antisymm
+  linftyModel := T.linftyModel
 
 end PolyvectorFieldsDGLA
 
@@ -224,6 +232,14 @@ structure HochschildCochainsDGLA (R : Type u) [CommRing R] where
   d_squared : ∀ n x, differential (n + 1) (differential n x) = 0
   /-- The Gerstenhaber bracket -/
   gerstenhaber : GerstenhaberBracket R cochains
+  /-- Degree-0 bracket data used in the DGLA packaging. -/
+  dglaBracket : ∀ (m n : ℤ), cochains m →ₗ[R] cochains n →ₗ[R] cochains (m + n)
+  /-- Graded antisymmetry for `dglaBracket`. -/
+  dgla_antisymm : ∀ m n (x : cochains m) (y : cochains n),
+    dglaBracket m n x y = (add_comm n m) ▸
+      (- ((-1 : R) ^ (m * n).toNat) • dglaBracket n m y x)
+  /-- Chosen L∞ model for the graded module of Hochschild cochains. -/
+  linftyModel : LInftyAlgebra R cochains
 
 attribute [instance] HochschildCochainsDGLA.instAddCommGroup HochschildCochainsDGLA.instModule
 
@@ -234,10 +250,9 @@ variable {R : Type u} [CommRing R]
 /-- Hochschild cochains form a DGLA -/
 def toDGLAData (D : HochschildCochainsDGLA R) : DGLAData R where
   toModule := Chain.mkDGModule R D.cochains D.differential D.d_squared
-  bracket := fun m n =>
-    -- Convert Gerstenhaber bracket (degree -1) to appropriate form
-    sorry
-  antisymm := fun _ _ _ _ => sorry
+  bracket := D.dglaBracket
+  antisymm := D.dgla_antisymm
+  linftyModel := D.linftyModel
 
 end HochschildCochainsDGLA
 
@@ -270,20 +285,8 @@ structure HKRMap (R : Type u) [CommRing R]
 
     This connects our explicit DGLA definition to the coalgebraic L∞ definition. -/
 def DGLAData.toLInftyAlgebra {R : Type u} [CommRing R] (L : DGLAData R) :
-    LInftyAlgebra R (fun n => (L.toModule.toComplex.X n)) where
-  toStructure := {
-    D := {
-      degree := 1
-      -- For a DGLA, the coderivation encodes l₁ (differential) and l₂ (bracket)
-      -- In this placeholder, we map to zero to satisfy D² = 0 trivially
-      map := fun x => ReducedSymCoalg.zeroWithDegree R
-        (Shift (fun n => (L.toModule.toComplex.X n)) 1) (x.degree + 1)
-      degree_shift := fun _ => rfl
-    }
-    degree_one := rfl
-    -- D² = 0 follows from d² = 0 and the Jacobi identity for the bracket
-    square_zero := fun _ => rfl
-  }
+    LInftyAlgebra R (fun n => (L.toModule.toComplex.X n)) :=
+  L.linftyModel
 
 /-- A DGLA quasi-isomorphism gives an L∞ quasi-isomorphism. -/
 theorem DGLAMorphism.toLInftyQuasiIso {R : Type u} [CommRing R]

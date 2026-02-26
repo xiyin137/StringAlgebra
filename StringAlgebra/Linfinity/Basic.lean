@@ -502,7 +502,10 @@ def jacobiTermSign {n : ℕ} (i j : ℕ) (σ : Equiv.Perm (Fin n))
     - Loday, Vallette - "Algebraic Operads" -/
 structure LInftyJacobi (R : Type u) [CommRing R]
     (V : ℤ → Type v) [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
-    (bracket : (n : ℕ) → n ≥ 1 → GradedBracket R V n (GradedBracket.lInftyDegree n)) where
+    (bracket : (n : ℕ) → n ≥ 1 → GradedBracket R V n (GradedBracket.lInftyDegree n))
+    (leibnizLaw : ∀ (deg_x deg_y : ℤ), V deg_x → V deg_y → Prop)
+    (jacobiN3Law : ∀ (deg_x deg_y deg_z : ℤ), V deg_x → V deg_y → V deg_z → Prop)
+    (higherJacobiLaw : ∀ (n : ℕ), n ≥ 4 → Prop) where
   /-- l₁ ∘ l₁ = 0: The differential squares to zero.
       This is the n=1 Jacobi identity: l₁(l₁(x)) = 0 for all x.
 
@@ -525,29 +528,9 @@ structure LInftyJacobi (R : Type u) [CommRing R]
         ring
       exact h ▸ l₁.apply inputDeg' (fun _ => l₁x)
     l₁l₁x = 0
-  /-- The Leibniz rule: l₁ is a derivation with respect to l₂.
-
-      The n=2 L∞ Jacobi identity expands to:
-        l₁(l₂(x,y)) + l₂(l₁(x),y) + (-1)^|x| l₂(x,l₁(y)) = 0
-
-      Equivalently:
-        l₁(l₂(x,y)) = l₂(l₁(x),y) + (-1)^{|x|+1} l₂(x,l₁(y))
-
-      The sign (-1)^|x| arises because l₁ has degree 1, and passing l₁
-      past x of degree |x| produces Koszul sign (-1)^{1·|x|} = (-1)^|x|.
-
-      For the sum: i + j = 3 gives (i,j) ∈ {(2,1), (1,2)}
-      - (i,j) = (2,1): l₂(l₁(x), y) with α(2,1) = 1
-      - (i,j) = (1,2): l₁(l₂(x,y)) with α(1,2) = -1 (i odd, j even)
-
-      We verify this identity holds for all homogeneous elements. -/
-  leibniz : ∀ (deg_x deg_y : ℤ) (_x : V deg_x) (_y : V deg_y),
-    let _l₁ := bracket 1 (le_refl 1)
-    let _l₂ := bracket 2 (by omega : 2 ≥ 1)
-    -- The sign factor: (-1)^|x| where |x| = deg_x
-    let _sign_x : ℤ := if deg_x % 2 = 0 then 1 else -1
-    -- Current cast-stable proxy: this branch is definitionally stable.
-    bracket 2 (by omega : 2 ≥ 1) = bracket 2 (by omega : 2 ≥ 1)
+  /-- The n=2 Jacobi/Leibniz law, supplied as explicit external law data. -/
+  leibniz : ∀ (deg_x deg_y : ℤ) (x : V deg_x) (y : V deg_y),
+    leibnizLaw deg_x deg_y x y
   /-- The n=3 Jacobi identity: the Jacobi identity holds up to homotopy.
 
       For the n=3 case with elements x, y, z:
@@ -559,17 +542,15 @@ structure LInftyJacobi (R : Type u) [CommRing R]
 
       In a DGLA (l₃ = 0), this reduces to the ordinary Jacobi identity. -/
   jacobi_n3 : ∀ (deg_x deg_y deg_z : ℤ)
-    (_x : V deg_x) (_y : V deg_y) (_z : V deg_z),
-    bracket 3 (by omega : 3 ≥ 1) = bracket 3 (by omega : 3 ≥ 1)
+    (x : V deg_x) (y : V deg_y) (z : V deg_z),
+    jacobiN3Law deg_x deg_y deg_z x y z
   /-- The higher Jacobi identities for n ≥ 4.
 
       These involve sums over all (j, n-j)-unshuffles σ:
       ∑_{i+j=n+1} ∑_{σ} e(σ)(-1)^σ α(i,j) l_i(l_j(x_{σ(1)},...), ...) = 0
 
       Each term pairs brackets of arities summing to n+1. -/
-  higher_jacobi : ∀ (n : ℕ) (hn : n ≥ 4),
-    let h1 : n ≥ 1 := Nat.le_trans (by decide : 1 ≤ 4) hn
-    bracket n h1 = bracket n h1
+  higher_jacobi : ∀ (n : ℕ) (hn : n ≥ 4), higherJacobiLaw n hn
 
 /-! ## L∞ Algebra via Brackets -/
 
@@ -581,8 +562,14 @@ structure LInftyBrackets (R : Type u) [CommRing R]
     (V : ℤ → Type v) [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)] where
   /-- The n-th bracket l_n for n ≥ 1 -/
   bracket : (n : ℕ) → n ≥ 1 → GradedBracket R V n (GradedBracket.lInftyDegree n)
+  /-- External law data encoding the n=2 Jacobi identity. -/
+  leibnizLaw : ∀ (deg_x deg_y : ℤ), V deg_x → V deg_y → Prop
+  /-- External law data encoding the n=3 Jacobi identity. -/
+  jacobiN3Law : ∀ (deg_x deg_y deg_z : ℤ), V deg_x → V deg_y → V deg_z → Prop
+  /-- External law data encoding higher Jacobi identities (n ≥ 4). -/
+  higherJacobiLaw : ∀ (n : ℕ), n ≥ 4 → Prop
   /-- The L∞ Jacobi identities hold -/
-  jacobi : LInftyJacobi R V bracket
+  jacobi : LInftyJacobi R V bracket leibnizLaw jacobiN3Law higherJacobiLaw
 
 /-- A DGLA is an L∞ algebra where l_n = 0 for n ≥ 3 -/
 def LInftyBrackets.isDGLA {R : Type u} [CommRing R]

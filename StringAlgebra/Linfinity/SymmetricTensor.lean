@@ -69,7 +69,7 @@ def totalDegree {n : ℕ} (x : SymTensor R V n) : ℤ :=
   Finset.univ.sum x.degrees
 
 /-- The empty tensor (unit element).
-    We use a function that is vacuously defined for both degrees and elements. -/
+    The degree and element maps are the unique maps out of `Fin 0`. -/
 def empty : SymTensor R V 0 where
   degrees := fun i => i.elim0
   elements := fun i => i.elim0

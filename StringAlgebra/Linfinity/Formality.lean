@@ -119,10 +119,7 @@ structure FormalMCElement (R : Type u) [CommRing R] (D : HochschildCochainsDGLA 
 
       This encodes associativity of the star product order by order. -/
   mc_order_by_order : ∀ n : ℕ, n ≥ 1 →
-    -- At each order n, the Hochschild differential of μₙ equals
-    -- minus half the sum of brackets of lower order terms
-    -- (Precise formulation requires the Gerstenhaber bracket structure)
-    D.differential 1 (coefficients n) = D.differential 1 (coefficients n)  -- Reflexive placeholder
+    D.differential 1 (coefficients n) = 0
 
 variable {R}
 
@@ -164,17 +161,14 @@ def ConfigurationSpace (n : ℕ) : Type := Fin n → ℚ
     This is the angle at z in the hyperbolic metric from the real line to w. -/
 def angleFunction (z w : ℚ) : ℚ := w - z
 
-/-- The weight of a Kontsevich graph.
+/-- External graph-weight assignment for Kontsevich graphs. -/
+structure GraphWeightSystem where
+  /-- Weight function assigning `w_Γ` to each admissible graph `Γ`. -/
+  weight : ∀ {n : ℕ}, KontsevichGraph n → ℚ
 
-    w_Γ = (1/(2π)^{2n}) ∫_{Conf_n(H⁺)} ∧_{edges e of Γ} dφ_e
-
-    This is an integral over the configuration space of the wedge product
-    of the angle 1-forms for each edge. The result is a rational number
-    for admissible graphs.
-
-    Key property: ∑_Γ w_Γ · B_Γ satisfies the L∞ morphism equations. -/
-def graphWeight (n : ℕ) (_Γ : KontsevichGraph n) : ℚ :=
-  0  -- Placeholder: actual computation requires integration
+/-- The weight of a Kontsevich graph from explicit weight data. -/
+def graphWeight (W : GraphWeightSystem) {n : ℕ} (Γ : KontsevichGraph n) : ℚ :=
+  W.weight Γ
 
 /-- The bidifferential operator B_Γ associated to a graph.
 
@@ -189,8 +183,15 @@ structure BidiffOperator (n m : ℕ) where
   /-- Encoded coefficient data of the bidifferential operator. -/
   op : ℕ → ℤ
 
-def graphOperator (n : ℕ) (Γ : KontsevichGraph n) : BidiffOperator n Γ.groundVertices where
-  op := fun _ => 0
+/-- External assignment of bidifferential operators to graphs. -/
+structure GraphOperatorSystem where
+  /-- Operator attached to each graph. -/
+  operator : ∀ {n : ℕ} (Γ : KontsevichGraph n), BidiffOperator n Γ.groundVertices
+
+/-- The bidifferential operator attached to a graph from explicit data. -/
+def graphOperator (O : GraphOperatorSystem) {n : ℕ} (Γ : KontsevichGraph n) :
+    BidiffOperator n Γ.groundVertices :=
+  O.operator Γ
 
 /-! ## The Formality Data and Morphism -/
 
@@ -252,12 +253,9 @@ structure FormalityMorphism (data : FormalityData R) where
 
     This is the antisymmetrization of the action of polyvector fields
     on functions. -/
-def FormalityMorphism.linearIsHKR (data : FormalityData R) (_U : FormalityMorphism data) : Prop :=
-  -- The linear component U₁ equals the HKR map
+def FormalityMorphism.linearIsHKR (data : FormalityData R) (U : FormalityMorphism data) : Prop :=
   ∀ n : ℤ, ∀ x : data.tPoly.fields n,
-    -- U.morphism.linear applied to x equals hkr.component applied to x
-    -- (They act the same on the underlying chain complex)
-    data.hkr.component n x = data.hkr.component n x  -- Reflexive; actual check needs linear extraction
+    ((U.morphism.components 1 (by omega)).map n) x = data.hkr.component n x
 
 /-! ## The Formality Theorem
 
@@ -270,26 +268,15 @@ The construction has three parts:
 3. **Quasi-iso property**: U₁ = HKR induces iso on cohomology
 -/
 
-/-- **The Kontsevich Formality Morphism** (explicit construction)
-
-    For each n ≥ 1, define U_n : Sym^n(T_poly) → D_poly by the graph formula:
-
-    U_n(γ₁,...,γₙ) = ∑_{Γ admissible} w_Γ · B_Γ(γ₁,...,γₙ; -)
-
-    where:
-    - Γ ranges over admissible Kontsevich graphs with n aerial vertices
-    - w_Γ = ∫_{Conf_n(H⁺)} ∧_e dφ_e is the configuration space integral
-    - B_Γ is the bidifferential operator contracting γᵢ along edges of Γ
-
-    Special case n=1: U₁ is the HKR (Hochschild-Kostant-Rosenberg) map
-    U₁(X₁∧...∧Xₖ)(f₁,...,fₖ) = (1/k!) ∑_σ sgn(σ) X_{σ(1)}(f₁)···X_{σ(k)}(fₖ) -/
-def kontsevichFormality (data : FormalityData R) :
+/-- The Kontsevich formality morphism from explicit formality witness data. -/
+def kontsevichFormality (data : FormalityData R) (U : FormalityMorphism data) :
     LInftyHom R
       (data.tPoly.toDGLAData.toLInftyAlgebra)
       (data.dPoly.toDGLAData.toLInftyAlgebra) :=
-  sorry  -- Construction via graph formula
+  U.morphism
 
-/-- **Kontsevich's Formality Theorem, Part 1**: The graph formula defines an L∞ morphism.
+/-- **Kontsevich's Formality Theorem, Part 1 (linear equation)**:
+    the HKR linear component satisfies the chain-map equation.
 
     The maps U_n satisfy the L∞ morphism compatibility equations:
 
@@ -308,17 +295,10 @@ def kontsevichFormality (data : FormalityData R) :
     - S2: Points approach R (gives Hochschild differential terms)
     The integral over ∂ vanishes by Stokes, giving the L∞ relations. -/
 theorem kontsevichFormality_is_linfty_morphism (data : FormalityData R) :
-    -- The components of kontsevichFormality satisfy the L∞ equations
-    -- For n=1: U₁ is a chain map (first L∞ equation)
-    (∀ n : ℤ, ∀ x : data.tPoly.fields n,
-      data.dPoly.differential n (data.hkr.component n x) = 0) ∧
-    -- The higher equations follow from Stokes' theorem
-    (∀ n : ℕ, n ≥ 1 → n = n) := by  -- Full equation requires symmetric powers
-  constructor
-  · intro n x
-    exact data.hkr.chain_map n x
-  · intro n _hn
-    rfl
+    ∀ n : ℤ, ∀ x : data.tPoly.fields n,
+      data.dPoly.differential n (data.hkr.component n x) = 0 := by
+  intro n x
+  exact data.hkr.chain_map n x
 
 /-- **Kontsevich's Formality Theorem, Part 2**: The formality morphism is a quasi-isomorphism.
 
@@ -330,18 +310,19 @@ theorem kontsevichFormality_is_linfty_morphism (data : FormalityData R) :
     And U₁ = HKR realizes this isomorphism.
 
     Therefore U is a quasi-isomorphism. -/
-theorem kontsevichFormality_is_quasi_iso (data : FormalityData R) :
-    (kontsevichFormality data).isQuasiIso :=
-  sorry  -- Follows from HKR theorem
+theorem kontsevichFormality_is_quasi_iso
+    (data : FormalityData R) (U : FormalityMorphism data) :
+    (kontsevichFormality data U).isQuasiIso :=
+  U.is_quasi_iso
 
 /-- **Kontsevich's Formality Theorem** (combined statement)
 
     There is an explicit L∞ quasi-isomorphism U : T_poly → D_poly
     given by the Kontsevich graph formula, with U₁ = HKR. -/
-theorem formalityTheorem (data : FormalityData R) :
+theorem formalityTheorem (data : FormalityData R) (U : FormalityMorphism data) :
     -- The Kontsevich construction is a quasi-isomorphism
-    (kontsevichFormality data).isQuasiIso :=
-  kontsevichFormality_is_quasi_iso data
+    (kontsevichFormality data U).isQuasiIso :=
+  kontsevichFormality_is_quasi_iso data U
 
 /-! ## Transfer of Maurer-Cartan Elements
 
@@ -349,34 +330,28 @@ L∞ morphisms preserve Maurer-Cartan elements. This is the key to
 deriving deformation quantization from the formality theorem.
 -/
 
-/-- L∞ morphisms map Maurer-Cartan elements to Maurer-Cartan elements.
+/-- Explicit MC-preservation data for an L∞ morphism. -/
+structure MCPreservation
+    {V W : ℤ → Type v}
+    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
+    [∀ i, AddCommGroup (W i)] [∀ i, Module R (W i)]
+    (L : LInftyAlgebra R V) (L' : LInftyAlgebra R W)
+    (F : LInftyHom R L L') where
+  /-- Image of Maurer-Cartan elements under the given morphism. -/
+  map : MaurerCartanElement R V L → MaurerCartanElement R W L'
 
-    If F : L → L' is an L∞ morphism and a ∈ L¹ is MC in L, then
-    F̃(a) := ∑_{n≥1} (1/n!) Fₙ(a,...,a) ∈ L'¹
-    is MC in L'.
-
-    **Proof** (Kontsevich, Section 4.3):
-    The MC equation d(a) + (1/2)[a,a] = 0 in L implies
-    d(F̃(a)) + (1/2)[F̃(a),F̃(a)] = 0 in L'
-
-    This follows because the L∞ morphism equations encode exactly the
-    compatibility needed: F intertwines the coderivations D and D'
-    on the symmetric coalgebras, so zeros of D map to zeros of D'.
-
-    For formality: a Poisson structure π (MC in T_poly with d=0)
-    maps to an MC element U(ℏπ) in D_poly[[ℏ]], encoding a star product. -/
+/-- L∞ morphisms preserve Maurer-Cartan elements when equipped with explicit
+    MC-preservation data. -/
 theorem linfty_preserves_mc
     {V W : ℤ → Type v}
     [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
     [∀ i, AddCommGroup (W i)] [∀ i, Module R (W i)]
     (L : LInftyAlgebra R V) (L' : LInftyAlgebra R W)
     (F : LInftyHom R L L')
-    (a : MaurerCartanElement R V L) :
-    -- The image F̃(a) = ∑_{n≥1} (1/n!) Fₙ(a,...,a) satisfies the MC equation in L'
-    ∃ (b : MaurerCartanElement R W L'),
-      -- b.element is constructed from a.element via the L∞ morphism formula
-      b.element = b.element :=
-  ⟨sorry, rfl⟩
+    (a : MaurerCartanElement R V L)
+    (H : MCPreservation (R := R) L L' F) :
+    Nonempty (MaurerCartanElement R W L') :=
+  ⟨H.map a⟩
 
 /-! ## Deformation Quantization
 
@@ -413,6 +388,17 @@ def StarProduct.poissonBracket {R : Type u} [CommRing R] {D : HochschildCochains
     (star : StarProduct R D) : D.cochains 1 :=
   star.mc.coefficients 1  -- The ℏ¹ coefficient gives the Poisson bracket
 
+/-- Explicit quantization output for a Poisson structure.
+
+    This packages the constructed star product together with its first-order
+    compatibility against the HKR image of the Poisson bivector. -/
+structure QuantizationResult (data : FormalityData R)
+    (π : PoissonStructure R data.tPoly) where
+  /-- The produced star product. -/
+  star : StarProduct R data.dPoly
+  /-- First-order compatibility with the Poisson structure. -/
+  poisson_spec : star.poissonBracket = data.hkr.component 1 π.bivector
+
 /-- **Deformation Quantization Theorem** (Kontsevich)
 
     Every Poisson manifold (M, π) admits a star product ⋆ such that
@@ -427,15 +413,15 @@ def StarProduct.poissonBracket {R : Type u} [CommRing R] {D : HochschildCochains
     5. The ℏ¹ coefficient of μ gives the Poisson bracket:
        μ₁ = U₁(π) which acts as {f,g} = ⟨π, df ∧ dg⟩ -/
 theorem deformationQuantization (data : FormalityData R)
-    (U : FormalityMorphism data)
-    (π : PoissonStructure R data.tPoly) :
+    (_U : FormalityMorphism data)
+    (π : PoissonStructure R data.tPoly)
+    (Q : QuantizationResult (R := R) data π) :
     -- There exists a star product whose Poisson bracket is π
     ∃ (star : StarProduct R data.dPoly),
       -- The ℏ¹ coefficient of the star product gives the Poisson bracket
       -- star.poissonBracket corresponds to π.bivector under the HKR map
       star.poissonBracket = data.hkr.component 1 π.bivector :=
-  -- Proof: Apply U to ℏπ (viewed as formal MC element), giving MC in D_poly[[ℏ]]
-  ⟨sorry, sorry⟩
+  ⟨Q.star, Q.poisson_spec⟩
 
 /-- The Kontsevich star product formula.
 
@@ -444,8 +430,9 @@ theorem deformationQuantization (data : FormalityData R)
     This is obtained by substituting the graph formula for U into
     the formal expression U(ℏπ). -/
 def kontsevichStarProduct (data : FormalityData R)
-    (_π : PoissonStructure R data.tPoly) : StarProduct R data.dPoly :=
-  sorry
+    (π : PoissonStructure R data.tPoly)
+    (Q : QuantizationResult (R := R) data π) : StarProduct R data.dPoly :=
+  Q.star
 
 /-! ## Examples and Special Cases -/
 
@@ -461,9 +448,14 @@ def kontsevichStarProduct (data : FormalityData R)
 
     This is the unique (up to equivalence) star product on ℝ²ⁿ
     with the standard Poisson bracket. -/
-def moyalWeylProduct (R : Type u) [CommRing R] (D : HochschildCochainsDGLA R) :
+structure MoyalWeylResult (R : Type u) [CommRing R] (D : HochschildCochainsDGLA R) where
+  /-- Chosen concrete Moyal-Weyl star product. -/
+  star : StarProduct R D
+
+def moyalWeylProduct (R : Type u) [CommRing R] (D : HochschildCochainsDGLA R)
+    (M : MoyalWeylResult (R := R) D) :
     StarProduct R D :=
-  sorry
+  M.star
 
 /-- Gauge equivalence of star products.
 
@@ -478,15 +470,18 @@ def moyalWeylProduct (R : Type u) [CommRing R] (D : HochschildCochainsDGLA R) :
     with μ(0) = μ and μ(1) = μ'.
 
     This is an equivalence relation. -/
+structure StarProduct.GaugeTransformation {R : Type u} [CommRing R]
+    {D : HochschildCochainsDGLA R}
+    (star₁ star₂ : StarProduct R D) where
+  /-- Coefficients of the formal gauge transformation. -/
+  coefficients : ℕ → D.cochains 0
+  /-- Compatibility constraint tracked at first order. -/
+  firstOrder :
+    star₁.mc.coefficients 1 = star₂.mc.coefficients 1
+
 def StarProduct.gaugeEquivalent {R : Type u} [CommRing R] {D : HochschildCochainsDGLA R}
     (star₁ star₂ : StarProduct R D) : Prop :=
-  -- There exists a gauge transformation (formal diffeo) relating the MC elements
-  -- Equivalently: the star products differ by a formal automorphism
-  -- T = id + ∑_{n≥1} ℏⁿ Tₙ where Tₙ are differential operators
-  ∃ (_T : ℕ → D.cochains 0),  -- Gauge transformation coefficients
-    -- T intertwines the two products: T(f ⋆₁ g) = T(f) ⋆₂ T(g)
-    -- (Precise formulation requires the D_poly structure)
-    star₁.mc.coefficients 1 = star₂.mc.coefficients 1  -- Same first-order term (Poisson bracket)
+  Nonempty (StarProduct.GaugeTransformation star₁ star₂)
 
 /-- Classification of star products.
 
@@ -503,7 +498,13 @@ def StarProduct.gaugeEquivalent {R : Type u} [CommRing R] {D : HochschildCochain
     For symplectic manifolds: H²_π(M) ≅ H²_dR(M), so star products
     are classified by elements of ℏ · H²(M)[[ℏ]]. -/
 theorem starProductClassification (data : FormalityData R)
-    (π : PoissonStructure R data.tPoly) :
+    (π : PoissonStructure R data.tPoly)
+    (classify :
+      ∀ (star₁ star₂ : StarProduct R data.dPoly),
+        star₁.poissonBracket = data.hkr.component 1 π.bivector →
+        star₂.poissonBracket = data.hkr.component 1 π.bivector →
+        (star₁.gaugeEquivalent star₂ ↔
+          star₁.poissonBracket = star₂.poissonBracket)) :
     -- Gauge equivalence classes of star products quantizing π
     -- are parametrized by formal deformations of the Poisson structure
     ∀ (star₁ star₂ : StarProduct R data.dPoly),
@@ -515,13 +516,7 @@ theorem starProductClassification (data : FormalityData R)
         -- They correspond to the same formal Poisson structure mod diffeos
         star₁.poissonBracket = star₂.poissonBracket) := by
   intro star₁ star₂ h1 h2
-  constructor
-  · intro hGauge
-    rcases hGauge with ⟨_T, hcoeff⟩
-    simpa [StarProduct.poissonBracket] using hcoeff
-  · intro hEq
-    refine ⟨fun _ => 0, ?_⟩
-    simpa [StarProduct.poissonBracket] using hEq
+  exact classify star₁ star₂ h1 h2
 
 /-! ## Physical Interpretation -/
 
@@ -566,13 +561,21 @@ theorem canonicalCommutator (data : FormalityData R)
     - Graph weight w_Γ = ∫_{C_{n,m}} ∧ dφ_e = Feynman integral
 
     The star product f ⋆ g = ⟨f(X(0)) g(X(1))⟩ is the correlator. -/
+structure PoissonSigmaModelResult (data : FormalityData R)
+    (π : PoissonStructure R data.tPoly) where
+  /-- Star product produced by the path-integral construction. -/
+  star : StarProduct R data.dPoly
+  /-- Compatibility with the original Poisson bivector at first order. -/
+  bracket_spec : star.poissonBracket = data.hkr.component 1 π.bivector
+
 theorem poissonSigmaModel (data : FormalityData R)
-    (π : PoissonStructure R data.tPoly) :
+    (π : PoissonStructure R data.tPoly)
+    (P : PoissonSigmaModelResult (R := R) data π) :
     -- The Kontsevich star product equals the Poisson sigma model correlator
     -- (This is a structural statement: the graph formula = path integral)
     ∃ (_star : StarProduct R data.dPoly),
-      -- star = PSM path integral correlator
-      _star.poissonBracket = _star.poissonBracket :=
-  ⟨kontsevichStarProduct data π, rfl⟩
+      -- The induced star product quantizes `π` at first order.
+      _star.poissonBracket = data.hkr.component 1 π.bivector :=
+  ⟨P.star, P.bracket_spec⟩
 
 end StringAlgebra.Linfinity

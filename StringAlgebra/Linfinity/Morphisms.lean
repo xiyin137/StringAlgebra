@@ -67,10 +67,6 @@ structure LInftyHom (R : Type u) [CommRing R]
     (L : LInftyAlgebra R V) (L' : LInftyAlgebra R W) where
   /-- The components f_n for n ≥ 1 -/
   components : ∀ n : ℕ, (hn : n ≥ 1) → MorphismComponent R V W n hn
-  /-- Each component map is linear, hence preserves `0`. -/
-  compatible : ∀ n : ℕ, (hn : n ≥ 1) → ∀ i : ℤ, ((components n hn).map i) 0 = 0 := by
-    intro n hn i
-    simpa using ((components n hn).map i).map_zero
 
 namespace LInftyHom
 
@@ -155,20 +151,25 @@ def StrictMorphism.toLInftyHom {R : Type u} [CommRing R]
 /-- An L∞ morphism is a quasi-isomorphism if f₁ induces an
     isomorphism on homology H(V, l₁) → H(W, l'₁).
 
-    In the full implementation, this would require:
-    1. Defining homology H(V, l₁) = ker(l₁) / im(l₁)
-    2. Showing f₁ descends to a map on homology
-    3. Proving that map is an isomorphism
-
-    Current approximation: the linear component preserves the zero element
-    in each degree. -/
+    At the current interface level, we track degreewise bijectivity of `f₁`
+    as the concrete surrogate for quasi-isomorphism data. -/
 def LInftyHom.isQuasiIso {R : Type u} [CommRing R]
     {V W : ℤ → Type v}
     [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
     [∀ i, AddCommGroup (W i)] [∀ i, Module R (W i)]
     {L : LInftyAlgebra R V} {L' : LInftyAlgebra R W}
     (F : LInftyHom R L L') : Prop :=
-  ∀ i : ℤ, ((F.components 1 (by omega)).map i) 0 = 0
+  ∀ i : ℤ, Function.Bijective ((F.components 1 (by omega)).map i)
+
+/-- The identity morphism is a quasi-isomorphism. -/
+theorem id_isQuasiIso {R : Type u} [CommRing R]
+    {V : ℤ → Type v}
+    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
+    (L : LInftyAlgebra R V) :
+    (LInftyHom.id L).isQuasiIso := by
+  intro i
+  simpa [LInftyHom.id] using
+    (show Function.Bijective (LinearMap.id : V i →ₗ[R] V i) from Function.bijective_id)
 
 /-- Quasi-isomorphisms are closed under composition.
 
@@ -181,11 +182,14 @@ theorem quasiIso_comp {R : Type u} [CommRing R]
     [∀ i, AddCommGroup (U i)] [∀ i, Module R (U i)]
     {L : LInftyAlgebra R V} {L' : LInftyAlgebra R W} {L'' : LInftyAlgebra R U}
     (G : LInftyHom R L' L'') (F : LInftyHom R L L')
-    (_hG : G.isQuasiIso) (_hF : F.isQuasiIso) :
+    (hG : G.isQuasiIso) (hF : F.isQuasiIso) :
     (G.comp F).isQuasiIso :=
   by
     intro i
-    exact (G.comp F).compatible 1 (by omega) i
+    let G1 : W i →ₗ[R] U i := (G.components 1 (by omega)).map i
+    let F1 : V i →ₗ[R] W i := (F.components 1 (by omega)).map i
+    have hcomp : Function.Bijective (fun x : V i => G1 (F1 x)) := (hG i).comp (hF i)
+    simpa [LInftyHom.comp, G1, F1] using hcomp
 
 /-! ## L∞ Homotopies -/
 
@@ -203,12 +207,6 @@ structure LInftyHomotopy (R : Type u) [CommRing R]
     (_F _G : LInftyHom R L L') where
   /-- Components h_n of degree -n -/
   components : ∀ n : ℕ, n ≥ 1 → (i : ℤ) → V i →ₗ[R] W (i - n)
-  /-- Homotopy condition: F - G = dH + Hd (in appropriate sense)
-      This encodes that F and G differ by a boundary in the
-      morphism complex. -/
-  homotopy_condition : ∀ n : ℕ, (hn : n ≥ 1) → ∀ i : ℤ, ((components n hn i) 0) = 0 := by
-    intro n hn i
-    simpa using (components n hn i).map_zero
 
 /-- Homotopy is an equivalence relation -/
 def LInftyHom.homotopic {R : Type u} [CommRing R]

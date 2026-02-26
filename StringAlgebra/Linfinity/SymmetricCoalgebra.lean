@@ -300,7 +300,7 @@ structure ReducedCoproductData (R : Type u) [CommRing R] (V : ℤ → Type v)
   /-- For elements of word length 1, coproduct is zero -/
   single_is_primitive :
     ∀ (x : ReducedSymCoalg R V) (hwl : x.wordLength = 1),
-      x.degree = x.factorDegrees ⟨0, by simpa [hwl] using x.wordLength_pos⟩
+      x.degree = x.factorDegrees ⟨0, by simp [hwl]⟩
   /-- Coproduct respects degree -/
   degree_additive : ∀ x : ReducedSymCoalg R V, x.degree = Finset.univ.sum x.factorDegrees
 

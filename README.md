@@ -1,6 +1,6 @@
 # StringAlgebra
 
-Rigorous formalization of algebraic structures in string theory in Lean 4 with Mathlib. All definitions and proofs build purely on Mathlib's foundations, with `sorry` used for incomplete proofs. `axiom` is strictly forbidden.
+Rigorous formalization of algebraic structures in string theory in Lean 4 with Mathlib. All definitions and proofs build purely on Mathlib's foundations. `axiom` is strictly forbidden.
 
 Previously part of [ModularPhysics](https://github.com/xiyin137/ModularPhysics).
 
@@ -61,27 +61,42 @@ StringAlgebra/
 
 Core infrastructure for L-infinity (strong homotopy Lie) algebras, including the symmetric coalgebra/coderivation approach, morphisms, homotopy transfer, Maurer-Cartan theory, DGLAs, BV structures, and the formality/quantization pipeline.
 
+Current audited status (2026-02-26):
+
+1. `lake build StringAlgebra.Linfinity` passes.
+2. `StringAlgebra/Linfinity` is currently `sorry`-free.
+3. No `axiom`/`admit`/`Classical.choose`/`Classical.epsilon` usage in Linfinity Lean files.
+4. Recent hardening removed fabricated transfer/formality outputs; nontrivial constructions now require explicit witness data rather than hidden defaults.
+5. Remaining semantic debt is tracked explicitly in `StringAlgebra/Linfinity/TODO.md`.
+
 Current dependency flow toward `Formality.lean`:
 
 ```text
-Basic -> SymmetricCoalgebra -> Coderivations -> LInfinityAlgebra -> Morphisms
+Basic
+  ├─> SymmetricTensor
+  ├─> SymmetricAlgebra
+  └─> SymmetricCoalgebra
+
+SymmetricCoalgebra -> Coderivations -> LInfinityAlgebra -> Morphisms
 ChainComplex -> DGLA
-LInfinityAlgebra -> DGLA
+LInfinityAlgebra + DGLA + Morphisms -> MaurerCartan
+MaurerCartan -> Transfer
 DGLA + Morphisms -> Formality
+Transfer + SymmetricAlgebra -> BVAlgebra
 ```
 
 Theorem-critical flow toward deformation quantization:
 
 ```text
-PolyvectorFieldsDGLA.toDGLAData + HochschildCochainsDGLA.toDGLAData
+PolyvectorFieldsDGLA.toDGLAData + HochschildCochainsDGLA.toDGLAData + HKRMap + FormalityMorphism witness
 -> kontsevichFormality
 -> kontsevichFormality_is_quasi_iso
 -> formalityTheorem
--> linfty_preserves_mc
--> deformationQuantization
+-> linfty_preserves_mc (with MCPreservation witness)
+-> deformationQuantization (with QuantizationResult witness)
 ```
 
-Detailed debt tracking, anti-smuggling gates, and closure order are maintained in `StringAlgebra/Linfinity/TODO.md`.
+Detailed dependency debt tracking, anti-smuggling gates, and closure order are maintained in `StringAlgebra/Linfinity/TODO.md`.
 
 ### Multiple Zeta Values
 

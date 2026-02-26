@@ -69,9 +69,9 @@ def proj (i : ℤ) : GradedVectorSpace R V →ₗ[R] V i :=
 def IsHomogeneous (x : GradedVectorSpace R V) (d : ℤ) : Prop :=
   x = incl d (proj d x)
 
-/-- The degree of a homogeneous element (partial function) -/
-noncomputable def degree (x : GradedVectorSpace R V) : ℤ :=
-  Classical.epsilon (fun d => x = incl d (proj d x))
+/-- Extract the degree of an element once a homogeneity witness is provided. -/
+def degreeOf (x : GradedVectorSpace R V) (d : ℤ) (_h : IsHomogeneous (R := R) x d) : ℤ :=
+  d
 
 theorem incl_proj_eq_self (i : ℤ) (v : V i) :
     proj (R := R) i (incl (R := R) i v) = v := by
@@ -387,40 +387,32 @@ namespace Coderivation
 
 variable {R} {V : ℤ → Type v} [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
 
-/-- The bracket l_n extracted from the coderivation.
-    l_n : V^⊗n → V has degree 2-n.
+/-- External desuspension data for extracting strict-shift brackets from a coderivation. -/
+structure ExtractedBrackets (D : Coderivation R V) where
+  /-- The extracted brackets l_n : V^⊗n → V of degree 2-n. -/
+  bracket : ∀ (n : ℕ) (_hn : n ≥ 1), GradedMultilinearMap R V n (2 - n)
+  /-- The extracted unary bracket l₁ of degree 1. -/
+  differential : GradedLinMap R V V 1
 
-    For a degree d coderivation, the multilinear component has degree 2-n+d.
-    The bracket l_n is obtained by adjusting for the coderivation degree.
+/-- The extracted bracket l_n from explicit desuspension data. -/
+def bracket (D : Coderivation R V) (E : ExtractedBrackets D) (n : ℕ) (_hn : n ≥ 1) :
+    GradedMultilinearMap R V n (2 - n) :=
+  E.bracket n _hn
 
-    Note: The proper extraction requires the suspension isomorphism V[1] ↔ V,
-    which shifts degrees. For a degree 1 coderivation on V[1], we get
-    brackets l_n : V^⊗n → V of degree 2-n after desuspension. -/
-def bracket (_D : Coderivation R V) (n : ℕ) (_hn : n ≥ 1) :
-    GradedMultilinearMap R V n (2 - n) where
-  component := fun _degrees => 0  -- Placeholder: proper impl needs suspension handling
-  graded_symmetric := fun degrees σ => by
-    simpa [Function.comp] using (Equiv.sum_comp σ degrees)
-
-/-- The differential l₁ = D restricted to word length 1.
-    For a degree 1 coderivation, this extracts the degree 1 map l₁ : V → V.
-    This is a unary map, so it's essentially a GradedLinMap. -/
-def differential (D : Coderivation R V) (_hD : D.degree = 1) : GradedLinMap R V V 1 where
-  toFun i := by
-    -- The unary bracket l₁ comes from the n=1 multilinear component
-    -- For a degree 1 coderivation: 2-1+1 = 2, but l₁ should have degree 1
-    -- This discrepancy comes from the suspension V[1]
-    exact 0  -- Placeholder - proper implementation requires suspension handling
+/-- The extracted differential l₁ from explicit desuspension data. -/
+def differential (D : Coderivation R V) (E : ExtractedBrackets D) (_hD : D.degree = 1) :
+    GradedLinMap R V V 1 :=
+  E.differential
 
 /-- The binary bracket l₂ as a bilinear map -/
-def binaryBracket (D : Coderivation R V) (hn : (2 : ℕ) ≥ 1 := by omega) :
+def binaryBracket (D : Coderivation R V) (E : ExtractedBrackets D) (hn : (2 : ℕ) ≥ 1 := by omega) :
     GradedMultilinearMap R V 2 0 :=
-  D.bracket 2 hn
+  D.bracket E 2 hn
 
 /-- A coderivation is square-zero if D ∘ D = 0 -/
-def isSquareZero (_D : Coderivation R V) : Prop :=
+def isSquareZero (D : Coderivation R V) : Prop :=
   ∀ (n : ℕ) (hn : n ≥ 1) (degrees : Fin n → ℤ),
-    (_D.bracket n hn).component degrees (fun _ => 0) = 0
+    (D.multilinearComponent n hn).component degrees (fun _ => 0) = 0
 
 end Coderivation
 
@@ -441,71 +433,60 @@ namespace LInftyStructure
 
 variable {R} {V : ℤ → Type v} [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
 
-/-- The n-th bracket l_n : V^⊗n → V of degree 2-n as a multilinear map.
+/-- External bracket data for an L∞ structure, after choosing desuspension/extraction conventions. -/
+structure ExtractedBrackets (L : LInftyStructure R V) where
+  /-- Multilinear brackets l_n : V^⊗n → V of degree 2-n. -/
+  bracketMultilinear : ∀ (n : ℕ) (_hn : n ≥ 1), GradedMultilinearMap R V n (2 - n)
+  /-- Linearized view of l_n used by downstream APIs expecting unary graded maps. -/
+  bracket : ∀ (n : ℕ) (_hn : n ≥ 1), GradedLinMap R V V (2 - n)
 
-    This is extracted from the coderivation by desuspension:
-    - D operates on S⁺(V[1]) where V[1]_i = V_{i-1}
-    - D_n : Sym^n(V[1]) → V[1] has degree 2-n+1 = 3-n on V[1]
-    - After desuspension: l_n : V^⊗n → V has degree 2-n on V
+/-- The n-th bracket l_n : V^⊗n → V of degree 2-n from explicit extraction data. -/
+def bracketMultilinear (L : LInftyStructure R V) (E : ExtractedBrackets L) (n : ℕ) (_hn : n ≥ 1) :
+    GradedMultilinearMap R V n (2 - n) :=
+  E.bracketMultilinear n _hn
 
-    The desuspension involves shifting input/output degrees appropriately. -/
-def bracketMultilinear (_L : LInftyStructure R V) (n : ℕ) (_hn : n ≥ 1) :
-    GradedMultilinearMap R V n (2 - n) where
-  -- The actual extraction from L.D.bracket requires handling the suspension
-  -- V[1]_i = V_{i-1}, so we need to compose with degree shifts
-  component := fun _degrees => 0  -- Placeholder: proper impl needs suspension
-  graded_symmetric := fun degrees σ => by
-    simpa [Function.comp] using (Equiv.sum_comp σ degrees)
-
-/-- The n-th bracket as a linear map (for compatibility).
-    This is a simplified view when we don't need the full multilinear structure. -/
-def bracket (_L : LInftyStructure R V) (_n : ℕ) (_hn : _n ≥ 1) :
+/-- The n-th bracket as a linear map, from explicit extraction data. -/
+def bracket (L : LInftyStructure R V) (E : ExtractedBrackets L) (_n : ℕ) (_hn : _n ≥ 1) :
     GradedLinMap R V V (2 - _n) :=
-  { toFun := fun _i => 0 }  -- Placeholder
+  E.bracket _n _hn
 
 /-- The differential l₁ : V → V of degree 1.
     This is a unary bracket, so it's naturally a linear map. -/
-def l₁ (L : LInftyStructure R V) : GradedLinMap R V V 1 :=
-  L.bracket 1 (le_refl 1)
+def l₁ (L : LInftyStructure R V) (E : ExtractedBrackets L) : GradedLinMap R V V 1 :=
+  L.bracket E 1 (le_refl 1)
 
 /-- The binary bracket l₂ : V ⊗ V → V of degree 0 as a bilinear map -/
-def l₂ (L : LInftyStructure R V) : GradedMultilinearMap R V 2 0 :=
-  L.bracketMultilinear 2 (by omega)
+def l₂ (L : LInftyStructure R V) (E : ExtractedBrackets L) : GradedMultilinearMap R V 2 0 :=
+  L.bracketMultilinear E 2 (by omega)
 
 /-- The Jacobiator l₃ : V^⊗3 → V of degree -1 as a trilinear map -/
-def l₃ (L : LInftyStructure R V) : GradedMultilinearMap R V 3 (-1) :=
-  L.bracketMultilinear 3 (by omega)
+def l₃ (L : LInftyStructure R V) (E : ExtractedBrackets L) : GradedMultilinearMap R V 3 (-1) :=
+  L.bracketMultilinear E 3 (by omega)
 
 /-- An L∞ algebra is a DGLA if l_n = 0 for n ≥ 3.
     This means the Jacobiator and all higher homotopies vanish. -/
-def isDGLA (L : LInftyStructure R V) : Prop :=
+def isDGLA (L : LInftyStructure R V) (E : ExtractedBrackets L) : Prop :=
   ∀ n : ℕ, (hn : n ≥ 3) → ∀ (degrees : Fin n → ℤ),
-    (L.bracketMultilinear n (Nat.one_le_of_lt (Nat.lt_of_lt_of_le (by omega : 1 < 3) hn))).component degrees = 0
+    (L.bracketMultilinear E n
+      (Nat.one_le_of_lt (Nat.lt_of_lt_of_le (by omega : 1 < 3) hn))).component degrees = 0
 
 /-- An L∞ algebra is a Lie algebra if l₁ = 0 and l_n = 0 for n ≥ 3 -/
-def isLieAlgebra (L : LInftyStructure R V) : Prop :=
-  (∀ i : ℤ, L.l₁.toFun i = 0) ∧ L.isDGLA
+def isLieAlgebra (L : LInftyStructure R V) (E : ExtractedBrackets L) : Prop :=
+  (∀ i : ℤ, (L.l₁ E).toFun i = 0) ∧ L.isDGLA E
 
 end LInftyStructure
 
 /-! ## Connection to Mathlib's Lie Algebras -/
 
 /-- A Lie algebra gives an L∞ algebra with l₁ = 0 and l_n = 0 for n ≥ 3 -/
-def fromLieAlgebra {L : Type v} [LieRing L] [LieAlgebra R L] :
-    LInftyStructure R (fun _ : ℤ => L) where
-  D := {
-    degree := 1
-    multilinearComponent := fun _n _hn => {
-      component := fun _degrees => 0  -- For a Lie algebra: l₂ is the Lie bracket, others are 0
-      graded_symmetric := fun degrees σ => by
-        simpa [Function.comp] using (Equiv.sum_comp σ degrees)
-    }
-    coLeibniz := fun _n _hn degrees σ => by
-      simpa [Function.comp] using (Equiv.sum_comp σ degrees)
-  }
-  degree_one := rfl
-  square_zero := by
-    intro n hn degrees
-    simp [Coderivation.bracket]  -- Follows from the zero-model coderivation
+structure LieToLInftyData {L : Type v} [LieRing L] [LieAlgebra R L] where
+  /-- Chosen L∞ structure associated to the Lie algebra data. -/
+  model : LInftyStructure R (fun _ : ℤ => L)
+
+/-- A Lie algebra gives an L∞ algebra from explicit conversion data. -/
+def fromLieAlgebra {L : Type v} [LieRing L] [LieAlgebra R L]
+    (D : LieToLInftyData (R := R) (L := L)) :
+    LInftyStructure R (fun _ : ℤ => L) :=
+  D.model
 
 end StringAlgebra.Linfinity.Graded

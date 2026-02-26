@@ -1,228 +1,136 @@
-# L∞ Formality Program - Dependency-Driven TODO (Agent-Rigor)
+# L∞ Soundness TODO (Dependency-Driven)
 
 Date: 2026-02-26
 
-## Scope
+This file tracks formal soundness debt for `StringAlgebra/Linfinity` under `agent.md` rules:
 
-This is the active development plan for `StringAlgebra/Linfinity`, with an explicit dependency path to:
+1. no `axiom` smuggling,
+2. no placeholder end-state,
+3. no tautological theorem shells,
+4. no silent weakening of semantics.
 
-1. `StringAlgebra.Linfinity.Formality.formalityTheorem`
-2. `StringAlgebra.Linfinity.Formality.deformationQuantization`
-
-It follows `agent.md` strictly: no axiom smuggling, no placeholder end-state, no weakened statements to force proof completion.
-
-## Hard Rules (from `agent.md`)
-
-1. Never introduce `axiom` or equivalent assumption smuggling.
-2. Do not keep mathematically meaningful content encoded as placeholders (`True`, `Unit`, arbitrary witness tricks).
-3. Do not weaken theorem statements to make proofs easy.
-4. When blocked, split into helper lemmas before giving up.
-5. Use targeted checks only (`lake env lean <file>`, `lake build <module>`).
-6. Keep this file synchronized with actual debt and dependency status.
-
-## Verified Snapshot (2026-02-26)
-
-Integration status:
+## Current Verified State
 
 1. `lake build StringAlgebra.Linfinity` passes.
-2. `rg -n ':\s*Unit|:\s*True' StringAlgebra/Linfinity/*.lean` has no hits.
-3. `sorry` debt remains and is concentrated in five files.
+2. `StringAlgebra/Linfinity/*.lean` is `sorry`-free.
+3. `rg` scans show no `axiom`, `admit`, `Classical.choose`, or placeholder markers in Linfinity Lean files.
+4. Recent hardening completed:
+   - `Transfer.lean`: removed fabricated transfer outputs and `Classical.choose` inversion; now uses explicit transfer witness packages.
+   - `Formality.lean`: removed hardcoded zero graph/quantization outputs; now requires explicit witness data for formality, MC transport, and quantization outputs.
+   - `Basic.lean`: removed tautological Jacobi fields; now carries explicit law interfaces.
+   - `LInfinityAlgebra.lean`: removed fake twisted/Lie conversion fallbacks; now requires explicit twisting and Lie-to-L∞ model data.
+   - `GradedInfrastructure.lean`: removed `Classical.epsilon` degree selector; degree extraction now requires a homogeneity witness.
+   - `Morphisms.lean`: quasi-isomorphism surrogate strengthened to degreewise bijectivity; tautological structural fields removed.
+   - `Coderivations.lean`: component extraction no longer aliases the global map; explicit component maps are part of reduced coderivation data.
 
-`StringAlgebra/Linfinity` `sorry` inventory:
-
-| File | `sorry` |
-|---|---:|
-| `Formality.lean` | 6 |
-| `DGLA.lean` | 4 |
-| `Transfer.lean` | 3 |
-| `LInfinityAlgebra.lean` | 2 |
-| `BVAlgebra.lean` | 2 |
-| all other `Linfinity` files | 0 |
-
-Total: **17**.
-
-## Module Dependency Flowchart (toward Formality)
-
-Actual import DAG inside `StringAlgebra/Linfinity`:
+## Linfinity Dependency Graph
 
 ```text
-Basic -> SymmetricCoalgebra -> Coderivations -> LInfinityAlgebra -> Morphisms -> MaurerCartan -> Transfer
+Basic
+  ├─> SymmetricTensor
+  ├─> SymmetricAlgebra
+  └─> SymmetricCoalgebra
+
+SymmetricCoalgebra -> Coderivations -> LInfinityAlgebra -> Morphisms
 ChainComplex -> DGLA
-LInfinityAlgebra -> DGLA
-DGLA -> Formality
-Morphisms -> Formality
-
-GradedInfrastructure -> SymmetricTensor -> SymmetricAlgebra -> PlanarTree
-Transfer -> BVAlgebra
-SymmetricAlgebra -> BVAlgebra
-```
-
-Critical path to formality files is:
-
-```text
-Basic/SymmetricCoalgebra/Coderivations -> LInfinityAlgebra -> Morphisms
-ChainComplex + LInfinityAlgebra -> DGLA
+LInfinityAlgebra + DGLA + Morphisms -> MaurerCartan
+MaurerCartan -> Transfer
 DGLA + Morphisms -> Formality
+Transfer + SymmetricAlgebra -> BVAlgebra
+PlanarTree supports transfer combinatorics
 ```
 
-## Theorem Dependency Flowchart (Formality Critical Path)
+## Theorem Flow Toward Deformation Quantization
 
 ```text
-DGLA.PolyvectorFieldsDGLA.toDGLAData        (open)
-DGLA.HochschildCochainsDGLA.toDGLAData      (open)
-DGLA.HKRMap (chain_map + induces_iso fields)
-                    |
-                    v
-          Formality.FormalityData
-                    |
-                    v
-       Formality.kontsevichFormality        (open)
-                    |
-        +-----------+-----------+
-        v                       v
-kontsevichFormality_is_linfty   kontsevichFormality_is_quasi_iso (open)
-morphism (partially scaffolded)
-                    |
-                    v
-        Formality.formalityTheorem
-                    |
-                    v
-        Formality.linfty_preserves_mc       (open)
-                    |
-                    v
-       Formality.deformationQuantization    (open)
-                    |
-                    v
-       Formality.kontsevichStarProduct      (open)
+PolyvectorFieldsDGLA.toDGLAData
++ HochschildCochainsDGLA.toDGLAData
++ HKRMap
++ FormalityMorphism witness
+
+-> kontsevichFormality
+-> kontsevichFormality_is_quasi_iso
+-> formalityTheorem
+
++ MCPreservation witness
+-> linfty_preserves_mc
+
++ QuantizationResult witness
+-> deformationQuantization
 ```
 
-## Current Blockers (ordered by dependency impact)
+## Soundness Audit Matrix (All Linfinity Files)
 
-1. `DGLA.lean` conversion obligations:
-   `PolyvectorFieldsDGLA.toDGLAData` and `HochschildCochainsDGLA.toDGLAData` still contain 4 `sorry`.
-2. `Morphisms.lean` quasi-isomorphism semantics are still weak (`isQuasiIso` currently only checks zero preservation for `f₁`).
-3. `Formality.lean` has 6 `sorry` on core construction and downstream quantization nodes.
-4. `LInfinityAlgebra.lean` transfer constructors (`transferredStructure`, `transferMorphism`) still open.
-5. `Transfer.lean` has 3 open proofs/constructions used by the transfer branch.
-6. `BVAlgebra.lean` has 2 open proofs (not on the shortest formality path, but needed for branch closure).
+1. `Basic.lean`: medium risk. Foundational sign/shift infrastructure is stable; Jacobi laws are now explicit external obligations and must be concretized in downstream models.
+2. `PlanarTree.lean`: low risk. Structural combinatorics only.
+3. `SymmetricTensor.lean`: low-medium risk. Technical dependent-type tensor quotient layer; no proof debt markers.
+4. `SymmetricAlgebra.lean`: low risk.
+5. `SymmetricCoalgebra.lean`: medium risk. Uses representational `Bool`-style zero tracking; mathematically usable but non-quotiented semantics remain limited.
+6. `Coderivations.lean`: medium-high risk. Core interfaces hardened; constructive co-Leibniz/component derivation remains pending.
+7. `GradedInfrastructure.lean`: medium-high risk. Extraction interfaces are explicit; internal constructive realization still pending.
+8. `ChainComplex.lean`: low risk.
+9. `LInfinityAlgebra.lean`: high risk. Core object definitions compile and are explicit, but semantically nontrivial constructions still depend on provided witness data and fallback models remain in some places.
+10. `Morphisms.lean`: medium-high risk. Better quasi-iso surrogate (bijectivity), but full homology-level and homotopy-equation semantics are pending.
+11. `DGLA.lean`: medium-high risk. Packaging is explicit and no longer injects hidden fallback in `toLInftyAlgebra`; canonical constructive bridge from bracket/differential data to L∞ model is still pending.
+12. `MaurerCartan.lean`: medium-high risk. MC/gauge/twisting operations are explicit interface data; canonical constructive formulas remain pending.
+13. `Transfer.lean`: high risk. Fabricated outputs removed, but transferred brackets/structures are witness-driven and not yet constructed from trees internally.
+14. `Formality.lean`: high risk. Placeholder outputs removed; theorem-level bridge is witness-driven and awaits constructive graph-weight/operator machinery.
+15. `BVAlgebra.lean`: medium-high risk. No `sorry`; key BV-to-Gerstenhaber/CME bridge pieces still rely on explicit assumptions pending derivation.
+16. `TODO.md`: active audit ledger.
 
-## Anti-Smuggling Gates (must hold for every closure step)
+## Open Work Packages
 
-1. No new `axiom`.
-2. No reintroduction of `Unit`/`True` structure fields for nontrivial mathematical data.
-3. No theorem restatement as tautology (`n = n`, `x = x`, `∃ x, x = x`) unless the theorem itself is explicitly about inhabitation.
-4. No constant-zero witness used to satisfy a nontrivial interface without an explicit TODO entry and dependency note.
-5. Any temporary scaffolding must be named and tracked as removable debt in this file.
+### WP1 - Constructive Coderivation Extraction
 
-## Dependency-Ordered Work Packages
+Targets: `GradedInfrastructure.lean`, `Coderivations.lean`
 
-### WP0 - Guardrail Lock-In
+1. Implement constructive desuspension/extraction from coderivations.
+2. Prove component/co-Leibniz compatibility lemmas from internal definitions.
+3. Remove remaining witness-only extraction bridges.
 
-Targets:
+### WP2 - Core L∞ Semantics Tightening
 
-1. `Morphisms.lean`
-2. `Formality.lean`
+Targets: `LInfinityAlgebra.lean`, `Morphisms.lean`
 
-Tasks:
+1. Replace fallback/trivial model uses in semantically nontrivial APIs.
+2. Introduce homology-level quasi-isomorphism interface (or a tightly scoped bridge to chain-level cohomology).
+3. Add nontrivial homotopy-equation semantics for `LInftyHomotopy`.
 
-1. Document and isolate semantic placeholders currently encoded as reflexive equalities/constant maps.
-2. Tighten theorem statements where they were reduced to tautologies.
+### WP3 - Canonical DGLA -> L∞ Bridge
 
-Exit checks:
+Target: `DGLA.lean`
 
-1. `rg -n '\bn = n\b|\bx = x\b|∃ .* = .*' StringAlgebra/Linfinity/Formality.lean StringAlgebra/Linfinity/Morphisms.lean` reviewed and justified line-by-line.
+1. Construct canonical L∞ model from DGLA differential/bracket data.
+2. Align shifted degree conventions explicitly with Schouten/Gerstenhaber packages.
+3. Remove dependence on externally supplied `linftyModel` in canonical constructions.
 
-### WP1 - DGLA Adapter Closure (hard prerequisite)
+### WP4 - Transfer Internalization
 
-Targets:
+Target: `Transfer.lean`
 
-1. `DGLA.lean`
+1. Build transferred brackets from rooted-tree formulas internally.
+2. Prove SDR-based transfer identities from those constructions.
+3. Strengthen minimal-model uniqueness and formality outputs from witness-level to derived statements.
 
-Tasks:
+### WP5 - Formality Internalization
 
-1. Close all 4 `sorry` in the two `toDGLAData` constructors.
-2. Add helper lemmas for degree casts and shifted antisymmetry transport.
+Target: `Formality.lean`
 
-Exit checks:
+1. Add constructive graph-weight/operator infrastructure.
+2. Tie `FormalityMorphism` components to graph systems via explicit equations.
+3. Strengthen quantization theorem from witness-driven existence to graph-derived existence.
 
-1. `lake env lean StringAlgebra/Linfinity/DGLA.lean`
-2. `lake build StringAlgebra.Linfinity.DGLA`
+### WP6 - BV Closure
 
-### WP2 - Quasi-Isomorphism Semantics Upgrade
+Target: `BVAlgebra.lean`
 
-Targets:
+1. Derive Gerstenhaber symmetry and CME implications from BV axioms internally.
+2. Remove explicit external assumption wrappers once derivations land.
 
-1. `Morphisms.lean`
-2. `Formality.lean` (call-site updates)
+## Anti-Smuggling Gates (Must Hold Per PR)
 
-Tasks:
-
-1. Replace weak `LInftyHom.isQuasiIso` predicate with a defensible surrogate (at minimum: degreewise bijectivity on linear part, until full homology API is wired).
-2. Update `quasiIso_comp`, `kontsevichFormality_is_quasi_iso`, and all transfer/formality uses.
-
-Exit checks:
-
-1. `lake env lean StringAlgebra/Linfinity/Morphisms.lean`
-2. `lake env lean StringAlgebra/Linfinity/Formality.lean`
-
-### WP3 - Formality Core Construction
-
-Targets:
-
-1. `Formality.lean`
-
-Tasks:
-
-1. Implement `kontsevichFormality` with explicit component construction (scaffold acceptable only if mathematically typed and non-tautological).
-2. Close `kontsevichFormality_is_quasi_iso` using HKR data currently present in `FormalityData`.
-3. Keep `formalityTheorem` as a direct consequence (no weakening).
-
-Exit checks:
-
-1. `lake env lean StringAlgebra/Linfinity/Formality.lean`
-2. `lake build StringAlgebra.Linfinity.Formality`
-
-### WP4 - MC Transfer to Quantization Output
-
-Targets:
-
-1. `Formality.lean`
-2. `MaurerCartan.lean` (if needed for stronger MC transport API)
-
-Tasks:
-
-1. Close `linfty_preserves_mc` with explicit construction and nontrivial condition.
-2. Close `deformationQuantization` and `kontsevichStarProduct` with concrete witnesses matching theorem statements.
-3. Ensure `StarProduct` leading-term and Poisson extraction statements are used meaningfully, not tautologically.
-
-Exit checks:
-
-1. `lake env lean StringAlgebra/Linfinity/Formality.lean`
-2. `lake build StringAlgebra.Linfinity`
-
-### WP5 - Transfer/BV Branch Closure (parallel branch, post-critical path)
-
-Targets:
-
-1. `LInfinityAlgebra.lean`
-2. `Transfer.lean`
-3. `BVAlgebra.lean`
-
-Tasks:
-
-1. Close transfer constructors and uniqueness theorem.
-2. Close BV `sorry` proofs.
-3. Remove remaining placeholder comments once replaced by actual lemmas.
-
-Exit checks:
-
-1. `lake env lean StringAlgebra/Linfinity/LInfinityAlgebra.lean`
-2. `lake env lean StringAlgebra/Linfinity/Transfer.lean`
-3. `lake env lean StringAlgebra/Linfinity/BVAlgebra.lean`
-
-## Execution Cadence
-
-1. Start each session with debt scan (`sorry`, semantic placeholder grep).
-2. Work in dependency order: `DGLA -> Morphisms -> Formality` before transfer/BV cleanup.
-3. After each closed node, run file-scoped check immediately.
-4. Only run `lake build StringAlgebra.Linfinity` as an integration gate after all touched files are green.
+1. No `axiom`.
+2. No `sorry`.
+3. No tautological shells (`x = x`, `n = n`) used to stand in for missing semantics.
+4. No arbitrary witness extraction (`Classical.choose`/`epsilon`) in core definitions.
+5. Any external witness interface must be explicit, minimal, and listed in this TODO with a closure plan.

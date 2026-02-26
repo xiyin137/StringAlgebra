@@ -74,6 +74,8 @@ structure ReducedCoderivation (R : Type u) [CommRing R] (V : ℤ → Type v)
   degree : ℤ
   /-- The underlying map -/
   map : ReducedSymCoalg R V → ReducedSymCoalg R V
+  /-- Word-length components of the coderivation. -/
+  componentMap : ∀ (n : ℕ) (_hn : n ≥ 1), ReducedSymCoalg R V → ReducedSymCoalg R V
   /-- Degree shift property -/
   degree_shift : ∀ x : ReducedSymCoalg R V, (map x).degree = x.degree + degree
 
@@ -89,19 +91,17 @@ def Coderivation.comp (D₁ D₂ : Coderivation R V) : SymCoalg R V → SymCoalg
 /-- The commutator of coderivations [D₁, D₂] = D₁ ∘ D₂ - (-1)^{|D₁||D₂|} D₂ ∘ D₁
 
     This IS a coderivation (coderivations form a Lie algebra). -/
-def Coderivation.bracket (D₁ D₂ : Coderivation R V) : Coderivation R V where
+structure Coderivation.CommutatorData (D₁ D₂ : Coderivation R V) where
+  /-- The underlying commutator map on the coalgebra. -/
+  map : SymCoalg R V → SymCoalg R V
+  /-- Degree law for the commutator map. -/
+  degree_shift : ∀ x : SymCoalg R V, (map x).degree = x.degree + (D₁.degree + D₂.degree)
+
+/-- Build a coderivation from explicit commutator data. -/
+def Coderivation.bracket (D₁ D₂ : Coderivation R V) (h : D₁.CommutatorData D₂) : Coderivation R V where
   degree := D₁.degree + D₂.degree
-  map := fun x =>
-    let comp1 := D₁.map (D₂.map x)
-    let comp2 := D₂.map (D₁.map x)
-    -- Should return comp1 - sign * comp2 where sign = (-1)^{|D₁||D₂|}
-    comp1  -- Placeholder
-  degree_shift := fun x => by
-    simp only
-    -- (D₁.map (D₂.map x)).degree = (D₂.map x).degree + D₁.degree
-    --                             = x.degree + D₂.degree + D₁.degree
-    rw [D₁.degree_shift, D₂.degree_shift]
-    ring
+  map := h.map
+  degree_shift := h.degree_shift
 
 /-- The square of a coderivation D² = D ∘ D -/
 def Coderivation.square (D : Coderivation R V) : SymCoalg R V → SymCoalg R V :=
@@ -155,7 +155,7 @@ structure LInfinityStructure (R : Type u) [CommRing R] (V : ℤ → Type v)
     obtained by composing D|_{Sym^n(V)} with projection to V = Sym^1(V). -/
 def coderivationComponent (_D : ReducedCoderivation R V) (n : ℕ) (_hn : n ≥ 1) :
     ReducedSymCoalg R V → ReducedSymCoalg R V :=
-  _D.map
+  _D.componentMap n _hn
 
 /-- The n-th L∞ bracket l_n : V^⊗n → V.
 
