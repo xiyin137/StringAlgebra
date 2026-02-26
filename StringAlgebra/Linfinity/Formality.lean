@@ -560,6 +560,38 @@ instance StarProduct.gaugeEquivalentSetoid {R : Type u} [CommRing R]
   r := StarProduct.gaugeEquivalent
   iseqv := StarProduct.gaugeEquivalent_equivalence (R := R)
 
+/-- Gauge-equivalence classes of star products. -/
+def StarProductGaugeClass {R : Type u} [CommRing R]
+    (D : HochschildCochainsDGLA R) : Type _ :=
+  Quotient (StarProduct.gaugeEquivalentSetoid (R := R) (D := D))
+
+namespace StarProduct
+
+/-- Projection of a star product to its gauge-equivalence class. -/
+def toGaugeClass {R : Type u} [CommRing R]
+    {D : HochschildCochainsDGLA R} (star : StarProduct R D) :
+    StarProductGaugeClass D :=
+  Quotient.mk _ star
+
+@[simp] theorem toGaugeClass_eq_iff_gaugeEquivalent {R : Type u} [CommRing R]
+    {D : HochschildCochainsDGLA R} (star₁ star₂ : StarProduct R D) :
+    star₁.toGaugeClass = star₂.toGaugeClass ↔ star₁.gaugeEquivalent star₂ :=
+  Quotient.eq
+
+theorem toGaugeClass_eq_of_gaugeEquivalent {R : Type u} [CommRing R]
+    {D : HochschildCochainsDGLA R} {star₁ star₂ : StarProduct R D}
+    (h : star₁.gaugeEquivalent star₂) :
+    star₁.toGaugeClass = star₂.toGaugeClass :=
+  (toGaugeClass_eq_iff_gaugeEquivalent star₁ star₂).2 h
+
+theorem gaugeEquivalent_of_toGaugeClass_eq {R : Type u} [CommRing R]
+    {D : HochschildCochainsDGLA R} {star₁ star₂ : StarProduct R D}
+    (h : star₁.toGaugeClass = star₂.toGaugeClass) :
+    star₁.gaugeEquivalent star₂ :=
+  (toGaugeClass_eq_iff_gaugeEquivalent star₁ star₂).1 h
+
+end StarProduct
+
 /-- Classification of star products.
 
     For a Poisson manifold (M, π), the gauge equivalence classes of
