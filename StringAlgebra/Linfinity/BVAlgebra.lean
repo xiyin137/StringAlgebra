@@ -113,10 +113,12 @@ structure CyclicLInfty (R : Type u) [CommRing R]
     A graded commutative algebra A with:
     - A degree 1 operator Δ (the BV Laplacian)
     - Δ² = 0
-    - Δ is a second-order differential operator
+    - An explicit trilinear closure witness `triple_delta_zero`
+      (full second-order/seven-term identities are not internalized here)
 
     The bracket [a,b] := Δ(ab) - Δ(a)b - (-1)^|a| a Δ(b)
-    makes A into a Gerstenhaber algebra. -/
+    is the derived bracket used by this interface; Gerstenhaber-level laws
+    are tracked through explicit assumptions below. -/
 structure BVAlgebra (R : Type u) [CommRing R]
     (A : ℤ → Type v)
     [∀ i, AddCommGroup (A i)] [∀ i, Module R (A i)] where
