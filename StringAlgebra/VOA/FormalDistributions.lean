@@ -149,13 +149,6 @@ theorem mutuallyLocal_symm (a b : FormalDistribution R V) :
   have hcomm : (a n) ((b m) v) = (b m) ((a n) v) := hN v n m (by simpa [add_comm] using hmn)
   exact hcomm.symm
 
-theorem mutuallyLocal_of_mode_commute_pair (a b : FormalDistribution R V)
-    (hcomm : ∀ v : V, ∀ m n : ℤ, (a m) ((b n) v) = (b n) ((a m) v)) :
-    mutuallyLocal R V a b ∧ mutuallyLocal R V b a := by
-  refine ⟨mutuallyLocal_of_mode_commute (R := R) (V := V) a b hcomm, ?_⟩
-  exact mutuallyLocal_symm (R := R) (V := V) a b
-    (mutuallyLocal_of_mode_commute (R := R) (V := V) a b hcomm)
-
 /-- The OPE data: the singular part of a(z)b(w) -/
 structure OPEData where
   /-- Order of the pole (locality order) -/
@@ -169,17 +162,6 @@ structure OPEData where
 def nthProduct (a b : FormalDistribution R V) (j : ℤ) : FormalDistribution R V :=
   fun n => a j * b (n - j)  -- Simplified; full formula involves sums
 
-/-- The Borcherds identity (generalized Jacobi identity for VOAs):
-    ∑_{i≥0} (m choose i) (a(n+i)b)(m+k-i) =
-    ∑_{i≥0} (-1)^i (n choose i) (a(m+n-i) b(k+i) - (-1)^n b(n+k-i) a(m+i))
-
-    This is the main structural identity for vertex algebras.
-
-    In this coefficient-level model, it reduces to the defining mode formula
-    for `nthProduct`. -/
-theorem borcherds_identity (a b : FormalDistribution R V) (_m n k : ℤ) :
-    (nthProduct R V a b n) k = a n * b (k - n) := rfl
-
 /-- Explicit Dong-lemma witness package in the coefficient model. -/
 structure DongLemmaData (a b c : FormalDistribution R V) where
   /-- Closure of pairwise locality under all `n`-th products. -/
@@ -189,16 +171,6 @@ structure DongLemmaData (a b c : FormalDistribution R V) where
       mutuallyLocal R V a c →
       mutuallyLocal R V b c →
       mutuallyLocal R V (nthProduct R V a b n) c
-
-/-- Dong's lemma from explicit closure data. -/
-theorem dong_lemma (a b c : FormalDistribution R V)
-    (D : DongLemmaData (R := R) (V := V) a b c)
-    (hab : mutuallyLocal R V a b)
-    (hac : mutuallyLocal R V a c)
-    (hbc : mutuallyLocal R V b c)
-    (n : ℤ) :
-    mutuallyLocal R V (nthProduct R V a b n) c :=
-  D.closure n hab hac hbc
 
 /-! ## Normally Ordered Product
 
@@ -211,9 +183,5 @@ The normally ordered product :a(z)b(w): puts creation operators to the left.
     This equals the (-1)-st product: :ab: = a(-1)b -/
 def normalOrderedProduct (a b : FormalDistribution R V) : FormalDistribution R V :=
   nthProduct R V a b (-1)
-
-/-- Normal ordering is the (-1)-st product -/
-theorem normalOrdered_eq_minus1_product (a b : FormalDistribution R V) :
-    normalOrderedProduct R V a b = nthProduct R V a b (-1) := rfl
 
 end StringAlgebra.VOA

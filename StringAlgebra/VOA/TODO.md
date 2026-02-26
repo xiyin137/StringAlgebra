@@ -13,6 +13,7 @@ This file tracks semantic and proof debt for `StringAlgebra/VOA` under `agent.md
 5. Conformal-weight extraction and lattice rationality criteria now use explicit witness packages (`L0Grading`, `RationalityCriterion`) instead of implicit selection.
 6. `FormalDistributions.lean` now includes explicit locality constructors/derived symmetry lemmas (`mutuallyLocal_of_mode_commute`, `mutuallyLocal_symm`).
 7. Redundant field-projection theorem shells in `Examples.lean` were removed (including direct criterion-direction wrappers), keeping the example interface focused on substantive statements.
+8. Additional unused shell wrappers in `FormalDistributions.lean` (definitional and witness-projection helper theorems) were removed to reduce non-semantic interface noise.
 
 ## VOA Dependency Graph
 
