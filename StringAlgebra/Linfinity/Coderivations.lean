@@ -166,16 +166,6 @@ def coderivationComponent (_D : ReducedCoderivation R V) (n : ℕ) (_hn : n ≥ 
     ReducedSymCoalg R V → ReducedSymCoalg R V :=
   _D.componentMap n _hn
 
-theorem coderivationComponent_spec (_D : ReducedCoderivation R V)
-    (n : ℕ) (hn : n ≥ 1) (x : ReducedSymCoalg R V) (hx : x.wordLength = n) :
-    coderivationComponent _D n hn x = _D.map x :=
-  _D.component_spec n hn x hx
-
-theorem coderivationComponent_wordLength_one (_D : ReducedCoderivation R V)
-    (n : ℕ) (hn : n ≥ 1) (x : ReducedSymCoalg R V) (hx : x.wordLength = n) :
-    (coderivationComponent _D n hn x).wordLength = 1 :=
-  _D.component_wordLength_one n hn x hx
-
 /-- The n-th L∞ bracket l_n : V^⊗n → V.
 
     This is obtained from the coderivation D by:
@@ -186,18 +176,6 @@ theorem coderivationComponent_wordLength_one (_D : ReducedCoderivation R V)
 def LInfinityStructure.bracket (_L : LInfinityStructure R V) (n : ℕ) (_hn : n ≥ 1) :
     ReducedSymCoalg R (Shift V 1) → ReducedSymCoalg R (Shift V 1) :=
   coderivationComponent _L.D n _hn
-
-theorem LInfinityStructure.bracket_spec (_L : LInfinityStructure R V)
-    (n : ℕ) (hn : n ≥ 1) (x : ReducedSymCoalg R (Shift V 1))
-    (hx : x.wordLength = n) :
-    _L.bracket n hn x = _L.D.map x :=
-  coderivationComponent_spec _L.D n hn x hx
-
-theorem LInfinityStructure.bracket_wordLength_one (_L : LInfinityStructure R V)
-    (n : ℕ) (hn : n ≥ 1) (x : ReducedSymCoalg R (Shift V 1))
-    (hx : x.wordLength = n) :
-    (_L.bracket n hn x).wordLength = 1 :=
-  coderivationComponent_wordLength_one _L.D n hn x hx
 
 /-! ## Special Cases -/
 
@@ -247,11 +225,15 @@ theorem isDGLA_iff_bracketVanishes (L : LInfinityStructure R V) :
   constructor
   · intro h n hn3 x hx
     have hmap : (L.D.map x).isZero = true := h n hn3 x hx
-    have hbr : L.bracket n (by omega) x = L.D.map x := L.bracket_spec n (by omega) x hx
+    have hbr : L.bracket n (by omega) x = L.D.map x := by
+      simpa [LInfinityStructure.bracket, coderivationComponent] using
+        (L.D.component_spec n (by omega) x hx)
     simpa [hbr] using hmap
   · intro h n hn3 x hx
     have hbr : (L.bracket n (by omega) x).isZero = true := h n hn3 x hx
-    have hmap : L.bracket n (by omega) x = L.D.map x := L.bracket_spec n (by omega) x hx
+    have hmap : L.bracket n (by omega) x = L.D.map x := by
+      simpa [LInfinityStructure.bracket, coderivationComponent] using
+        (L.D.component_spec n (by omega) x hx)
     simpa [hmap] using hbr
 
 /-- A Lie algebra is an L∞ algebra where l₁ = 0 and l_n = 0 for n ≥ 3.
@@ -276,7 +258,9 @@ theorem isLieAlgebra_iff_bracketVanishes (L : LInfinityStructure R V) :
     refine ⟨?_, ?_⟩
     · intro x hx
       have hmap : (L.D.map x).isZero = true := h1 x hx
-      have hbr : L.bracket 1 (by decide) x = L.D.map x := L.bracket_spec 1 (by decide) x hx
+      have hbr : L.bracket 1 (by decide) x = L.D.map x := by
+        simpa [LInfinityStructure.bracket, coderivationComponent] using
+          (L.D.component_spec 1 (by decide) x hx)
       simpa [hbr] using hmap
     · exact (isDGLA_iff_bracketVanishes L).1 hdgla
   · intro h
@@ -284,7 +268,9 @@ theorem isLieAlgebra_iff_bracketVanishes (L : LInfinityStructure R V) :
     refine ⟨?_, (isDGLA_iff_bracketVanishes L).2 hhigh⟩
     intro x hx
     have hbr : (L.bracket 1 (by decide) x).isZero = true := h1 x hx
-    have hmap : L.bracket 1 (by decide) x = L.D.map x := L.bracket_spec 1 (by decide) x hx
+    have hmap : L.bracket 1 (by decide) x = L.D.map x := by
+      simpa [LInfinityStructure.bracket, coderivationComponent] using
+        (L.D.component_spec 1 (by decide) x hx)
     simpa [hmap] using hbr
 
 /-- A strict Lie 2-algebra is an L∞ algebra where l_n = 0 for n ≥ 4.
@@ -301,11 +287,15 @@ theorem isLie2Algebra_iff_bracketVanishes (L : LInfinityStructure R V) :
   constructor
   · intro h n hn4 x hx
     have hmap : (L.D.map x).isZero = true := h n hn4 x hx
-    have hbr : L.bracket n (by omega) x = L.D.map x := L.bracket_spec n (by omega) x hx
+    have hbr : L.bracket n (by omega) x = L.D.map x := by
+      simpa [LInfinityStructure.bracket, coderivationComponent] using
+        (L.D.component_spec n (by omega) x hx)
     simpa [hbr] using hmap
   · intro h n hn4 x hx
     have hbr : (L.bracket n (by omega) x).isZero = true := h n hn4 x hx
-    have hmap : L.bracket n (by omega) x = L.D.map x := L.bracket_spec n (by omega) x hx
+    have hmap : L.bracket n (by omega) x = L.D.map x := by
+      simpa [LInfinityStructure.bracket, coderivationComponent] using
+        (L.D.component_spec n (by omega) x hx)
     simpa [hmap] using hbr
 
 end StringAlgebra.Linfinity
