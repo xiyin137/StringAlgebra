@@ -27,9 +27,13 @@ variable [RibbonFusionCategory k RepV]
 
 theorem nondegeneracy_gap
     (i : FusionCategory.Idx (k := k) (C := RepV))
-    (h : BraidedFusionCategory.isTransparent (FusionCategory.simpleObj i)) :
+    (h : BraidedFusionCategory.isTransparent (FusionCategory.simpleObj i))
+    (hHuang :
+      ∀ j : FusionCategory.Idx (k := k) (C := RepV),
+        BraidedFusionCategory.isTransparent (FusionCategory.simpleObj j) →
+        Nonempty (FusionCategory.simpleObj j ≅ 𝟙_ RepV)) :
     Nonempty (FusionCategory.simpleObj i ≅ 𝟙_ RepV) :=
-  huang_nondegeneracy_of_assumptions (k := k) (RepV := RepV) i h
+  huang_nondegeneracy (k := k) (RepV := RepV) i h hHuang
 
 noncomputable def modularity_from_huang
     (hHuang :
@@ -50,10 +54,14 @@ variable [MonoidalPreadditive RepV] [HasFiniteBiproducts RepV] [RigidCategory Re
 variable [RibbonFusionCategory k RepV] [HasKernels RepV]
 
 theorem twist_roots_gap
-    (i : FusionCategory.Idx (k := k) (C := RepV)) :
+    (i : FusionCategory.Idx (k := k) (C := RepV))
+    (hTwistRoots :
+      ∀ j : FusionCategory.Idx (k := k) (C := RepV),
+        ∃ (n : ℕ) (_ : 0 < n),
+          RibbonFusionCategory.twistValue (C := RepV) j ^ n = (1 : k)) :
     ∃ (n : ℕ) (_ : 0 < n),
       RibbonFusionCategory.twistValue (C := RepV) i ^ n = (1 : k) :=
-  twist_roots_of_unity_of_assumptions (k := k) (RepV := RepV) i
+  twist_roots_of_unity (k := k) (RepV := RepV) i hTwistRoots
 
 end TwistRoots
 

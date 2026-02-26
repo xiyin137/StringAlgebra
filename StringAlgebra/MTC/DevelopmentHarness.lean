@@ -227,7 +227,9 @@ variable [Preadditive C] [Linear ℂ C] [MonoidalPreadditive C]
 variable [HasFiniteBiproducts C] [RigidCategory C]
 variable [ModularTensorCategory ℂ C]
 
-theorem fpdim_unit :
+theorem fpdim_unit
+    [HasKernels C]
+    [FusionCategory.CanonicalSimpleIndex (k := ℂ) (C := C)] :
     FusionCategory.fpDimCandidate (C := C) FusionCategory.unitIdx = 1 :=
   FusionCategory.fpDimCandidate_unit_gap (C := C)
 

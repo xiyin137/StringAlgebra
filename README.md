@@ -11,8 +11,8 @@ Counted as lines matching `^\s*sorry` in Lean files.
 1. `StringAlgebra/Linfinity`: 3
 2. `StringAlgebra/MZV`: 0
 3. `StringAlgebra/VOA`: 0
-4. `StringAlgebra/MTC`: 22
-5. Total (`StringAlgebra/**/*.lean`): 25
+4. `StringAlgebra/MTC`: 18
+5. Total (`StringAlgebra/**/*.lean`): 21
 
 Recompute command:
 
@@ -198,4 +198,4 @@ Full hierarchy from pivotal categories to the Verlinde formula:
 
 Definitions include fusion coefficients N^m\_{ij}, the S-matrix, T-matrix, quantum dimensions, the Mueger center, and TQFT dimensions. Core definitions are proper (no placeholder defs). Key completed proofs include the twist on the unit, braiding symmetry of fusion coefficients, closure of transparent objects under tensor products, Schur's lemma applications, and the Verlinde genus-1 dimension formula. Remaining MTC proof debt is explicit at theorem sites (`sorry`), with no local assumption-bundle/axiom-class wrappers in MTC.
 
-Current audited gap count (2026-02-26): proof-level `sorry` count in `StringAlgebra/MTC/*.lean` is 22.
+Current audited gap count (2026-02-26): proof-level `sorry` count in `StringAlgebra/MTC/*.lean` is 18.

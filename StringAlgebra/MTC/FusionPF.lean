@@ -32,8 +32,10 @@ variable [FusionCategory ℂ C]
 namespace FusionCategory
 
 theorem fpDimCandidate_unit_gap
+    [HasKernels C]
+    [CanonicalSimpleIndex (k := ℂ) (C := C)]
     : fpDimCandidate (C := C) unitIdx = 1 := by
-  sorry
+  simpa using fpDimCandidate_unit (C := C)
 
 theorem fpDimCandidate_pos_gap
     (i : Idx (k := ℂ) (C := C)) :

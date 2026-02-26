@@ -3,11 +3,11 @@
 ## Status (2026-02-26)
 
 - `lake build StringAlgebra.MTC` passes.
-- Proof-gap count: **22 theorem-level `sorry` markers** in `StringAlgebra/MTC`.
+- Proof-gap count: **18 theorem-level `sorry` markers** in `StringAlgebra/MTC`.
 - No local MTC assumption-bundle/axiom-class wrappers remain (`*Axioms`, `*Assumptions`, `RibbonSphericalAxiom` removed).
 - Open debt is represented directly at theorem sites.
 
-## Proof-Gap Inventory (22)
+## Proof-Gap Inventory (18)
 
 1. `Spherical.lean`
 - `qdim_dual`
@@ -34,16 +34,10 @@
 - `sMatrix_diagonalizes_fusion`
 
 6. `FusionPF.lean`
-- `fpDimCandidate_unit_gap`
 - `fpDimCandidate_pos_gap`
 - `fpDimCandidate_fusion_gap`
 - `fpDimCandidateByFin_pos`
 - `fpDimCandidateByFin_fusion`
-
-7. `Bridge/VOAToMTC.lean`
-- `huang_nondegeneracy_of_assumptions`
-- `twist_roots_of_unity_of_assumptions`
-- `twist_roots_of_unity_of_bridge_assumptions`
 
 ## Smuggling Cleanup Completed
 
@@ -59,7 +53,7 @@
 - `RibbonSphericalAxiom`
 - `toSphericalCategory`
 4. Updated `DevelopmentHarness.lean` to consume direct theorem-gap interfaces.
-5. Removed bridge assumption-bundle layer earlier (`Bridge/Assumptions.lean`) and kept bridge debt theorem-local.
+5. Removed bridge assumption-bundle layer earlier (`Bridge/Assumptions.lean`) and kept bridge hypotheses theorem-local.
 
 ## Build-Verified Import Surface
 
@@ -92,8 +86,7 @@ Top-level MTC entry is now:
 6. `FusionPF.lean`
 - discharge PF candidate positivity and fusion character theorems
 
-7. `Bridge/VOAToMTC.lean`
-- replace VOA-interface theorem gaps when VOA analytic infrastructure is formalized
+7. `Bridge/VOAToMTC.lean` has no theorem-level `sorry`; bridge interfaces now require explicit VOA analytic hypotheses at theorem call sites.
 
 ## Audit Commands
 

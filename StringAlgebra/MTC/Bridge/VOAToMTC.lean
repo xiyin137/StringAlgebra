@@ -107,12 +107,6 @@ theorem huang_nondegeneracy [RibbonFusionCategory k RepV]
     Nonempty (FusionCategory.simpleObj i ≅ 𝟙_ RepV) :=
   hHuang i hTransparent
 
-theorem huang_nondegeneracy_of_assumptions [RibbonFusionCategory k RepV]
-    (i : FusionCategory.Idx (k := k) (C := RepV))
-    (hTransparent : BraidedFusionCategory.isTransparent (FusionCategory.simpleObj i)) :
-    Nonempty (FusionCategory.simpleObj i ≅ 𝟙_ RepV) := by
-  sorry
-
 section TwistRoots
 
 variable [IsAlgClosed k] [HasKernels RepV]
@@ -134,18 +128,6 @@ theorem twist_roots_of_unity [RibbonFusionCategory k RepV]
     ∃ (n : ℕ) (_ : 0 < n),
       RibbonFusionCategory.twistValue (C := RepV) i ^ n = (1 : k) :=
   hTwistRoots i
-
-theorem twist_roots_of_unity_of_assumptions [RibbonFusionCategory k RepV]
-    (i : FusionCategory.Idx (k := k) (C := RepV)) :
-    ∃ (n : ℕ) (_ : 0 < n),
-      RibbonFusionCategory.twistValue (C := RepV) i ^ n = (1 : k) := by
-  sorry
-
-theorem twist_roots_of_unity_of_bridge_assumptions [RibbonFusionCategory k RepV]
-    (i : FusionCategory.Idx (k := k) (C := RepV)) :
-    ∃ (n : ℕ) (_ : 0 < n),
-      RibbonFusionCategory.twistValue (C := RepV) i ^ n = (1 : k) := by
-  sorry
 
 end TwistRoots
 
