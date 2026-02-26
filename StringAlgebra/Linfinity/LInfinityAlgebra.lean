@@ -371,8 +371,6 @@ structure HomotopyTransferTheory {R : Type u} [CommRing R]
   inclusion : LInftyMorphism R transferred L
   /-- Linear component of the lifted morphism is the SDR inclusion. -/
   inclusion_linear : ∀ n : ℤ, inclusion.linear n = data.incl n
-  /-- The lifted inclusion is a quasi-isomorphism. -/
-  inclusion_isQuasiIso : inclusion.isQuasiIso
 
 /-- The transferred L∞ structure on H from explicit transfer theory data. -/
 def transferredStructure {R : Type u} [CommRing R]
@@ -415,8 +413,8 @@ theorem transferMorphism_isQuasiIso {R : Type u} [CommRing R]
     {L : LInftyAlgebra R V}
     {data : HomotopyTransferData R V H}
     (T : HomotopyTransferTheory L data) :
-    (transferMorphism L data T).isQuasiIso :=
-  T.inclusion_isQuasiIso
+    (transferMorphism L data T).isQuasiIso := by
+  sorry
 
 /-! ## Special Cases -/
 

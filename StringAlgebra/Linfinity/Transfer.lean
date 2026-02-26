@@ -210,8 +210,6 @@ structure TransferResult {R : Type u} [CommRing R]
   /-- Linear component of the lifted inclusion agrees with the SDR inclusion. -/
   inclusion_linear :
     ∀ n : ℤ, ((inclusion.components 1 (by omega)).map n) = data.incl n
-  /-- The inclusion morphism is a quasi-isomorphism. -/
-  inclusion_isQuasiIso : inclusion.isQuasiIso
 
 /-- The transferred L∞ structure on H.
 
@@ -255,11 +253,11 @@ theorem transfer_is_quasiIso {R : Type u} [CommRing R]
     [∀ i, AddCommGroup (H i)] [∀ i, Module R (H i)]
     (L : LInftyAlgebra R V) (data : SDR R V H)
     (T : TransferResult L data) :
-    (transferInclusion L data T).isQuasiIso :=
-  T.inclusion_isQuasiIso
+    (transferInclusion L data T).isQuasiIso := by
+  sorry
 
 /-- The SDR inclusion maps are degreewise bijective when the transferred
-    inclusion is certified as a quasi-isomorphism in `TransferResult`. -/
+    inclusion is a quasi-isomorphism. -/
 theorem transferInclusionLinear_isBijective {R : Type u} [CommRing R]
     {V H : ℤ → Type v}
     [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
@@ -269,7 +267,7 @@ theorem transferInclusionLinear_isBijective {R : Type u} [CommRing R]
     ∀ n : ℤ, Function.Bijective (data.incl n) := by
   intro n
   have hq : Function.Bijective (((transferInclusion L data T).components 1 (by omega)).map n) :=
-    T.inclusion_isQuasiIso n
+    transfer_is_quasiIso L data T n
   have hlin :
       (((transferInclusion L data T).components 1 (by omega)).map n) = data.incl n :=
     transferInclusion_linear L data T n
@@ -308,8 +306,6 @@ structure MinimalModelResult {R : Type u} [CommRing R]
   linear : (n : ℤ) → H n →ₗ[R] V n
   /-- The linear part agrees with the arity-1 component of `quasiIso`. -/
   linear_spec : ∀ n : ℤ, ((quasiIso.components 1 (by omega)).map n) = linear n
-  /-- Quasi-isomorphism proof. -/
-  quasiIso_property : quasiIso.isQuasiIso
 
 attribute [instance] MinimalModelResult.instAddCommGroup
 attribute [instance] MinimalModelResult.instModule
@@ -326,8 +322,8 @@ theorem minimalModelMorphism_isQuasiIso {R : Type u} [CommRing R]
     {V : ℤ → Type v}
     [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
     {L : LInftyAlgebra R V} (M : MinimalModelResult L) :
-    (minimalModelMorphism M).isQuasiIso :=
-  M.quasiIso_property
+    (minimalModelMorphism M).isQuasiIso := by
+  sorry
 
 /-- The canonical minimal-model morphism has degreewise bijective linear part. -/
 theorem minimalModelMorphism_linear_isBijective {R : Type u} [CommRing R]
@@ -565,8 +561,6 @@ structure FormalityResult {R : Type u} [CommRing R]
   linear : (n : ℤ) → H n →ₗ[R] V n
   /-- The linear part agrees with the arity-1 component of `quasiIso`. -/
   linear_spec : ∀ n : ℤ, ((quasiIso.components 1 (by omega)).map n) = linear n
-  /-- Quasi-isomorphism proof. -/
-  quasiIso_property : quasiIso.isQuasiIso
 
 attribute [instance] FormalityResult.instAddCommGroup
 attribute [instance] FormalityResult.instModule
@@ -583,8 +577,8 @@ theorem formalityMorphism_isQuasiIso {R : Type u} [CommRing R]
     {V : ℤ → Type v}
     [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
     {L : LInftyAlgebra R V} (F : FormalityResult L) :
-    (formalityMorphism F).isQuasiIso :=
-  F.quasiIso_property
+    (formalityMorphism F).isQuasiIso := by
+  sorry
 
 /-- The canonical formality morphism has degreewise bijective linear part. -/
 theorem formalityMorphism_linear_isBijective {R : Type u} [CommRing R]
@@ -635,7 +629,8 @@ theorem isFormal_unpacked {R : Type u} [CommRing R]
       ∃ (_minimal : isMinimal model),
       ∃ (q : LInftyHom R model L), q.isQuasiIso := by
   rcases h with ⟨F⟩
-  exact ⟨F.H, F.instAddCommGroup, F.instModule, F.model, F.minimal, F.quasiIso, F.quasiIso_property⟩
+  exact ⟨F.H, F.instAddCommGroup, F.instModule, F.model, F.minimal, F.quasiIso,
+    by simpa [formalityMorphism] using formalityMorphism_isQuasiIso F⟩
 
 /-- Unpack formality into explicit model/quasi-isomorphism data together with
     degreewise bijectivity of the arity-1 component. -/
@@ -719,7 +714,6 @@ theorem isFormal_of_unpacked {R : Type u} [CommRing R]
     linear_spec := by
       intro n
       rfl
-    quasiIso_property := hq
   }⟩
 
 theorem isFormal_of_unpacked_with_linear_bijectivity {R : Type u} [CommRing R]

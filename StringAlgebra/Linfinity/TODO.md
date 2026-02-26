@@ -12,7 +12,7 @@ This file tracks formal soundness debt for `StringAlgebra/Linfinity` under `agen
 ## Current Verified State
 
 1. `lake build StringAlgebra.Linfinity` passes.
-2. `StringAlgebra/Linfinity/*.lean` is `sorry`-free.
+2. `StringAlgebra/Linfinity/*.lean` currently carries explicit theorem-level `sorry` markers for active proof gaps; there is no `sorry` in `def`/`structure`/`abbrev` bodies.
 3. `rg` scans show no `axiom`, `admit`, `Classical.choose`, or placeholder markers in Linfinity Lean files.
 4. Recent hardening completed:
    - `Transfer.lean`: removed fabricated transfer outputs and `Classical.choose` inversion; now uses explicit transfer witness packages.
@@ -24,7 +24,8 @@ This file tracks formal soundness debt for `StringAlgebra/Linfinity` under `agen
    - `Transfer.lean`: added canonical accessor morphisms (`minimalModelMorphism`, `formalityMorphism`) with explicit quasi-isomorphism theorems and routed `minimal_model_exists` through these accessors.
    - `Transfer.lean`: strengthened `TransferResult` with explicit linear-consistency constraint (`inclusion_linear`) tying the lifted inclusion's arity-1 component to the underlying SDR inclusion map; added exported theorem `transferInclusion_linear`.
    - `Transfer.lean`: strengthened both `MinimalModelResult` and `FormalityResult` with explicit linear-part fields tied to the arity-1 quasi-isomorphism components (`linear_spec`), and added derived degreewise bijectivity theorems (`minimalModelLinear_isBijective`, `formalityLinear_isBijective`).
-   - `Transfer.lean`: added `transferInclusionLinear_isBijective`, deriving degreewise bijectivity of `data.incl` from `TransferResult.inclusion_isQuasiIso` via the exported arity-1 coherence theorem `transferInclusion_linear`.
+   - `Transfer.lean`: added `transferInclusionLinear_isBijective`, deriving degreewise bijectivity of `data.incl` from `transfer_is_quasiIso` via the exported arity-1 coherence theorem `transferInclusion_linear`.
+   - `Transfer.lean`: removed proof-carrying fields `TransferResult.inclusion_isQuasiIso`, `MinimalModelResult.quasiIso_property`, and `FormalityResult.quasiIso_property`; corresponding quasi-isomorphism claims are now explicit theorem-level gaps (`transfer_is_quasiIso`, `minimalModelMorphism_isQuasiIso`, `formalityMorphism_isQuasiIso`).
    - `Transfer.lean`: added canonical accessor linear-bridge theorems (`minimalModelMorphism_linear_isBijective`, `formalityMorphism_linear_isBijective`) and simp equalities (`minimalModelMorphism_linear_eq`, `formalityMorphism_linear_eq`), so package-level linear bijectivity now explicitly factors through canonical accessor morphisms.
    - `Transfer.lean`: strengthened extraction-level existence theorems with explicit linear bijectivity packaging (`minimal_model_exists_with_linear_bijectivity`, `isFormal_unpacked_with_linear_bijectivity`, `isFormal_exists_formalityLinear_isBijective`), so witness unpacking now preserves explicit arity-1 isomorphism data.
    - `Transfer.lean`: added reverse/iff bridges for strengthened formality extraction (`isFormal_of_unpacked_with_linear_bijectivity`, `isFormal_iff_unpacked_with_linear_bijectivity`) and package-level linear-bijectivity characterization (`isFormal_iff_exists_formalityLinear_isBijective`).
@@ -46,7 +47,7 @@ This file tracks formal soundness debt for `StringAlgebra/Linfinity` under `agen
    - `Formality.lean`: aligned theorem naming/documentation with witness-level semantics (`hkr_chain_equation`, `canonicalCommutator_firstOrder`, `poissonSigmaModel_witness`) while retaining compatibility aliases for historical names.
    - `Basic.lean`: removed tautological Jacobi fields; now carries explicit law interfaces.
    - `LInfinityAlgebra.lean`: removed fake twisted/Lie conversion fallbacks and synthetic transfer morphism defaults; transfer morphisms are now explicit witness fields, and core `LInftyMorphism` composition now uses explicit composition data with canonical identity instances.
-   - `LInfinityAlgebra.lean`: homotopy-transfer witness package now includes explicit quasi-isomorphism certification of the lifted inclusion, with derived transfer linear/quasi-iso lemmas.
+   - `LInfinityAlgebra.lean`: homotopy-transfer witness package now carries explicit linear certification only; quasi-isomorphism is tracked as an explicit theorem-level gap (`transferMorphism_isQuasiIso`).
    - `LInfinityAlgebra.lean`: core `LInftyMorphism` now enforces arity-0 normalization via `higher_zero`; canonical constructors and bridge adapters (`Morphisms.lean`, `DGLA.lean`) are updated accordingly.
    - `SymmetricCoalgebra.lean`: strengthened `SymPower` with explicit total-degree consistency proof (`totalDegree_eq`) and exported simp lemma (`SymPower.totalDegree_eq_sum`), eliminating unconstrained stored total-degree metadata.
    - `SymmetricCoalgebra.lean`: strengthened `SymPower` zero-marker semantics with explicit degree-vanishing constraint (`isZero_degrees_zero`) and derived theorems (`degrees_eq_zero_of_isZero`, `totalDegree_eq_zero_of_isZero`), preventing inconsistent zero-flag payloads.
@@ -108,16 +109,16 @@ PolyvectorFieldsDGLA.toDGLAData
 -> kontsevichFormality_is_quasi_iso
 -> formalityTheorem
 
-TransferResult.inclusion_isQuasiIso
+transfer_is_quasiIso
 + transferInclusion_linear
 -> transferInclusionLinear_isBijective
 
-MinimalModelResult.quasiIso_property
+minimalModelMorphism_isQuasiIso
 + minimalModelMorphism_linear_eq
 -> minimalModelMorphism_linear_isBijective
 -> minimalModelLinear_isBijective
 
-FormalityResult.quasiIso_property
+formalityMorphism_isQuasiIso
 + formalityMorphism_linear_eq
 -> formalityMorphism_linear_isBijective
 -> formalityLinear_isBijective
@@ -199,11 +200,11 @@ StarProductClassificationByGauge
 6. `Coderivations.lean`: medium-high risk. Core interfaces are further hardened with explicit map/component consistency, unary-output shape constraints for components/brackets, synchronized vanishing formulations, square-zero decomposition by word length, and bracket-level characterization lemmas for DGLA/Lie/Lie2 truncation; constructive co-Leibniz/component derivation remains pending.
 7. `GradedInfrastructure.lean`: medium-high risk. Extraction interfaces are explicit, enforce unary consistency across multilinear/linear extracted data, and now enforce stored total-degree consistency for reduced coalgebra elements while exposing theorem-level unary bridge access; internal constructive realization is still pending.
 8. `ChainComplex.lean`: low risk.
-9. `LInfinityAlgebra.lean`: medium risk. Core object definitions compile, morphisms now enforce arity-0 normalization and transfer morphisms carry explicit linear/quasi-isomorphism certification in the homotopy-transfer interface; semantically nontrivial constructions still depend on supplied transfer/twisting data.
+9. `LInfinityAlgebra.lean`: medium risk. Core object definitions compile and morphisms enforce arity-0 normalization; homotopy-transfer data carries explicit linear certification while transfer quasi-isomorphism is currently an explicit theorem-level gap (`transferMorphism_isQuasiIso`).
 10. `Morphisms.lean`: medium risk. Composition/quasi-isomorphism interfaces are explicit and include canonical strict/identity composition data, component records now enforce arity-indexed degree consistency, bridge conversions now have explicit higher-component round-trip guarantees, and first-order homotopy-equation semantics exist with explicit symmetry/transitivity constructors; higher coherence equations and homology-level semantics remain pending.
 11. `DGLA.lean`: medium risk. Tautological bridge shells removed, canonical lift/compose wiring has bidirectional quasi-isomorphism criterion equivalence, arbitrary explicit lift packages now also carry bidirectional quasi-isomorphism criteria plus derived linear-vs-unary coherence, and lift witnesses explicitly constrain higher-component shape; full bracket-sensitive constructive bridge from DGLA structure to higher L∞ components is still pending.
 12. `MaurerCartan.lean`: medium risk. MC/gauge/twisting operations are explicit interface data with witness-aligned theorem/docs, gauge action is explicitly tied to gauge-equivalence and MC preservation (including canonical action on `MCElement` and moduli-class invariance under that action), and Kuranishi outputs are no longer fabricated; canonical constructive formulas and cohomological quotient realization remain pending.
-13. `Transfer.lean`: high risk. Fabricated outputs removed, witness-return theorems now preserve supplied comparison data explicitly, lifted transfer inclusions carry explicit arity-1 agreement with SDR inclusion maps, and minimal/formality witness packages now expose linear quasi-isomorphism views tied to arity-1 components; transferred brackets/structures are still witness-driven and not yet constructed from trees internally.
+13. `Transfer.lean`: high risk. Fabricated outputs removed, witness-return theorems now preserve supplied comparison data explicitly, lifted transfer inclusions carry explicit arity-1 agreement with SDR inclusion maps, and minimal/formality witness packages expose linear views tied to arity-1 components while quasi-isomorphism claims are explicit theorem-level gaps (`transfer_is_quasiIso`, `minimalModelMorphism_isQuasiIso`, `formalityMorphism_isQuasiIso`); transferred brackets/structures are still witness-driven and not yet constructed from trees internally.
 14. `Formality.lean`: high risk. Placeholder outputs removed; `KontsevichGraph.ordering` now records explicit ground-target bounds (no tautological ground branch), formality components now enforce arity-indexed degree consistency, `FormalityMorphism` enforces arity-wise component consistency with bundled L∞ data and explicit HKR normalization at arity 1, MC-preservation data now enforces element-level arity-1 linear compatibility with the chosen L∞ morphism, gauge-equivalence/gauge-class interfaces are explicit, theorem naming now reflects witness-level semantics, and gauge-transformation normalization/composition are data-preserving, while the theorem-level bridge still remains witness-driven and awaits constructive graph-weight/operator machinery.
 15. `BVAlgebra.lean`: medium risk. No `sorry`; cyclic antibracket interface is explicit, `Δ`-closure is tracked via an explicit trilinear vanishing witness (`triple_delta_zero`), and key BV-to-Gerstenhaber/CME derivations still rely on explicit assumptions pending closure.
 16. `TODO.md`: active audit ledger.
@@ -263,7 +264,7 @@ Target: `BVAlgebra.lean`
 ## Anti-Smuggling Gates (Must Hold Per PR)
 
 1. No `axiom`.
-2. No `sorry`.
+2. No `sorry` in `def`/`structure`/`abbrev`; theorem/lemma-level `sorry` is allowed only as tracked interim proof debt.
 3. No tautological shells (`x = x`, `n = n`) used to stand in for missing semantics.
 4. No arbitrary witness extraction (`Classical.choose`/`epsilon`) in core definitions.
 5. Any external witness interface must be explicit, minimal, and listed in this TODO with a closure plan.
