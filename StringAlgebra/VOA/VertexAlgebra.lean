@@ -103,10 +103,6 @@ theorem state_field_injective : Function.Injective (VertexAlgebra.Y (R := R) (V 
       VertexAlgebra.creation_axiom_value (R := R)] at h1
   exact h1
 
-/-- Skew-symmetry (simplified statement) -/
-theorem skew_symmetry (_a _b : V) (_n : ℤ) :
-    ∃ (_terms : ℕ → V), True := ⟨fun _ => 0, trivial⟩
-
 end VertexAlgebra
 
 /-! ## Conformal Vertex Algebra -/
@@ -192,9 +188,6 @@ namespace VertexOperatorAlgebra
 
 variable {R : Type*} [CommRing R]
 variable {V : Type*} [AddCommGroup V] [Module R V]
-
-/-- Zhu's algebra A(V) classifies irreducible representations -/
-theorem zhu_correspondence [VertexOperatorAlgebra R V] : True := trivial
 
 end VertexOperatorAlgebra
 

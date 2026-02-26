@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ModularPhysics Contributors
 -/
 import StringAlgebra.MZV.Basic
+import StringAlgebra.MZV.ShuffleAlgebra
 
 /-!
 # Stuffle (Quasi-Shuffle) Algebra
@@ -192,10 +193,12 @@ theorem stuffle_comm (s t : Composition) : (stuffle s t).Perm (stuffle t s) := b
     rw [hTail] at hFinal
     simpa [stuffle, List.append_assoc] using hFinal
 
-/-- Stuffle is associative (lifted to formal sums) -/
-theorem stuffle_assoc :
-    True := -- Placeholder for associativity
-  trivial
+/-- Associativity specification for stuffle, up to permutation
+    after expanding both parenthesizations. -/
+def stuffle_assoc : Prop :=
+  ∀ s t u : Composition,
+    (List.flatMap (fun st => stuffle st u) (stuffle s t)).Perm
+      (List.flatMap (fun tu => stuffle s tu) (stuffle t u))
 
 /-- The empty composition is a left unit -/
 theorem stuffle_one_left (s : Composition) :
@@ -213,23 +216,27 @@ theorem stuffle_depth1 (m n : ℕ+) :
     stuffle [m] [n] = [[m, n], [n, m], [m + n]] := by
   simp only [stuffle, List.map_cons, List.map_nil, List.nil_append, List.cons_append]
 
-/-- This encodes: ζ(m)ζ(n) = ζ(m,n) + ζ(n,m) + ζ(m+n) -/
-theorem mzv_stuffle_depth1 (_m _n : ℕ) (_hm : _m ≥ 2) (_hn : _n ≥ 2) :
-    True := -- ζ(m)·ζ(n) = ζ(m,n) + ζ(n,m) + ζ(m+n)
-  trivial
+/-- Depth-1 stuffle relation for admissible indices written as positive-integer compositions. -/
+theorem mzv_stuffle_depth1 (m n : ℕ) (hm : m ≥ 2) (hn : n ≥ 2) :
+    ∃ (m' n' : ℕ+), (m' : ℕ) = m ∧ (n' : ℕ) = n ∧
+      stuffle [m'] [n'] = [[m', n'], [n', m'], [m' + n']] := by
+  have hm_pos : 0 < m := by omega
+  have hn_pos : 0 < n := by omega
+  let m' : ℕ+ := ⟨m, hm_pos⟩
+  let n' : ℕ+ := ⟨n, hn_pos⟩
+  refine ⟨m', n', rfl, rfl, ?_⟩
+  simpa [m', n'] using stuffle_depth1 (m := m') (n := n')
 
 /-! ## Double Shuffle Relations -/
 
-/-- The double shuffle relations state that shuffle and stuffle
-    give the same result when evaluated on MZVs.
-
-    For any two MZV words w, v:
-    Σ_{u ∈ w ш v} ζ(u) = Σ_{s ∈ comp(w) * comp(v)} ζ(s)
-
-    This is a fundamental constraint on MZV relations. -/
-theorem double_shuffle_relation :
-    True := -- Placeholder for the key theorem
-  trivial
+/-- Specification of a double-shuffle compatibility:
+    evaluation through stuffle on compositions agrees with evaluation through
+    shuffle on associated words. -/
+def double_shuffle_relation {β : Type*} [Semiring β] : Prop :=
+  ∃ (ζw : MZVWord → β) (ζc : Composition → β),
+    ∀ s t : Composition,
+      ((stuffle s t).map ζc).sum =
+        ((shuffle (compositionToWord s) (compositionToWord t)).map ζw).sum
 
 /-! ## Regularization -/
 

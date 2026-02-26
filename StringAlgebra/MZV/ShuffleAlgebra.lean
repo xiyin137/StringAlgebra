@@ -159,10 +159,12 @@ theorem shuffle_comm (u v : Word A) : (shuffle u v).Perm (shuffle v u) := by
       List.perm_append_comm
     simpa [shuffle] using hAppend.trans hSwap
 
-/-- Shuffle is associative (lifted to formal sums) -/
-theorem shuffle_assoc :
-    True := -- Placeholder for associativity
-  trivial
+/-- Associativity specification for shuffle, up to permutation
+    after expanding both parenthesizations. -/
+def shuffle_assoc : Prop :=
+  ∀ u v w : Word A,
+    (List.flatMap (fun uv => shuffle uv w) (shuffle u v)).Perm
+      (List.flatMap (fun vw => shuffle u vw) (shuffle v w))
 
 /-- The empty word is a left unit -/
 theorem shuffle_one_left (w : Word A) :
@@ -174,15 +176,10 @@ theorem shuffle_one_right (w : Word A) :
 
 /-! ## Connection to MZVs -/
 
-/-- The fundamental shuffle relation on MZV words.
-
-    For MZV iterated integrals, this expresses:
-    (∫ω_w)(∫ω_v) = ∫ω_{w ш v}
-
-    Concretely: ζ(w) · ζ(v) = Σ_{u ∈ w ш v} ζ(u) -/
-theorem mzv_shuffle_product (_w _v : MZVWord) :
-    True := -- Placeholder for the shuffle product formula
-  trivial
+/-- Shuffle-product relation for a chosen evaluation map on MZV words:
+    `ζ(w) * ζ(v) = Σ_{u ∈ w ш v} ζ(u)`. -/
+def mzv_shuffle_product {β : Type*} [Semiring β] (ζ : MZVWord → β) (w v : MZVWord) : Prop :=
+  ζ w * ζ v = ((shuffle w v).map ζ).sum
 
 /-! ## Lyndon Words -/
 
@@ -193,12 +190,13 @@ theorem mzv_shuffle_product (_w _v : MZVWord) :
 def isLyndon [LT A] (w : Word A) : Prop :=
   w ≠ [] ∧ ∀ i, 0 < i → i < w.length → w < w.rotate i
 
-/-- Every word has a unique factorization into non-increasing Lyndon words.
-
-    This is the Chen-Fox-Lyndon theorem. -/
-theorem lyndon_factorization_unique [LinearOrder A] (_w : Word A) :
-    True := -- Placeholder for Chen-Fox-Lyndon theorem
-  trivial
+/-- Specification of Chen-Fox-Lyndon factorization:
+    unique decomposition into a non-increasing list of Lyndon words. -/
+def lyndon_factorization_unique [LinearOrder A] (w : Word A) : Prop :=
+  ∃! factors : List (Word A),
+    List.flatten factors = w ∧
+    (∀ u ∈ factors, isLyndon u) ∧
+    List.IsChain (fun u v => v ≤ u) factors
 
 /-! ## Examples -/
 

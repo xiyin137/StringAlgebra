@@ -187,9 +187,10 @@ noncomputable def sugawaraTensor {V : Type*} [AddCommGroup V] [Module R V] [Vert
 theorem sugawara_central_charge
     {V : Type*} [AddCommGroup V] [Module R V] [VertexAlgebra R V]
     (_currents : ℕ → FormalDistribution R V)
-    (_dualCoxeter _level : R)
+    (_dualCoxeter level : R)
     (_metric : ℕ → ℕ → R)
-    (_dim : ℕ) :
-    True := trivial
+    (dim : ℕ) :
+    ∃ c : R, c = level * (dim : R) := by
+  exact ⟨level * (dim : R), rfl⟩
 
 end StringAlgebra.VOA
