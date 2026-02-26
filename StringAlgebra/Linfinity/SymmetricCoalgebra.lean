@@ -202,11 +202,24 @@ structure SymCoalg (R : Type u) [CommRing R] (V : ℤ → Type v)
   degree_eq : degree = Finset.univ.sum factorDegrees
   /-- Whether this is the zero element -/
   isZero : Bool := false
+  /-- If marked zero, all factor degrees vanish. -/
+  isZero_factorDegrees_zero : isZero = true → ∀ i : Fin wordLength, factorDegrees i = 0
 
 namespace SymCoalg
 
 variable {R : Type u} [CommRing R] {V : ℤ → Type v}
     [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
+
+theorem factorDegrees_eq_zero_of_isZero (x : SymCoalg R V)
+    (hzero : x.isZero = true) : ∀ i : Fin x.wordLength, x.factorDegrees i = 0 :=
+  x.isZero_factorDegrees_zero hzero
+
+theorem degree_eq_zero_of_isZero (x : SymCoalg R V)
+    (hzero : x.isZero = true) : x.degree = 0 := by
+  rw [x.degree_eq]
+  refine Finset.sum_eq_zero ?_
+  intro i _
+  exact x.factorDegrees_eq_zero_of_isZero hzero i
 
 /-- Zero element in the symmetric coalgebra -/
 protected def zero : SymCoalg R V where
@@ -215,6 +228,9 @@ protected def zero : SymCoalg R V where
   factorDegrees := Fin.elim0
   degree_eq := by simp
   isZero := true
+  isZero_factorDegrees_zero := by
+    intro _ i
+    exact Fin.elim0 i
 
 instance : Zero (SymCoalg R V) := ⟨SymCoalg.zero⟩
 
@@ -225,6 +241,9 @@ protected def one : SymCoalg R V where
   factorDegrees := Fin.elim0
   degree_eq := by simp
   isZero := false
+  isZero_factorDegrees_zero := by
+    intro h
+    cases h
 
 instance : One (SymCoalg R V) := ⟨SymCoalg.one⟩
 
@@ -235,6 +254,10 @@ def single (d : ℤ) : SymCoalg R V where
   wordLength := 1
   factorDegrees := fun _ => d
   degree_eq := by simp
+  isZero := false
+  isZero_factorDegrees_zero := by
+    intro h
+    cases h
 
 /-- Construct a symmetric tensor from n elements with given degrees -/
 def ofDegrees {n : ℕ} (degrees : Fin n → ℤ) : SymCoalg R V where
@@ -242,6 +265,10 @@ def ofDegrees {n : ℕ} (degrees : Fin n → ℤ) : SymCoalg R V where
   wordLength := n
   factorDegrees := degrees
   degree_eq := rfl
+  isZero := false
+  isZero_factorDegrees_zero := by
+    intro h
+    cases h
 
 end SymCoalg
 
