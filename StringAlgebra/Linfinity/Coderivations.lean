@@ -280,6 +280,21 @@ theorem ReducedCoderivation.isSquareZero_iff_squareVanishesOnAllWordLengths
 def isDGLA (L : LInfinityStructure R V) : Prop :=
   ∀ n : ℕ, n ≥ 3 → L.D.vanishesOnWordLength n
 
+theorem isDGLA_iff_bracketVanishes (L : LInfinityStructure R V) :
+    isDGLA L ↔
+      ∀ n : ℕ, ∀ hn3 : n ≥ 3,
+        ∀ x : ReducedSymCoalg R (Shift V 1), x.wordLength = n →
+          (L.bracket n (by omega) x).isZero = true := by
+  constructor
+  · intro h n hn3 x hx
+    have hmap : (L.D.map x).isZero = true := h n hn3 x hx
+    have hbr : L.bracket n (by omega) x = L.D.map x := L.bracket_spec n (by omega) x hx
+    simpa [hbr] using hmap
+  · intro h n hn3 x hx
+    have hbr : (L.bracket n (by omega) x).isZero = true := h n hn3 x hx
+    have hmap : L.bracket n (by omega) x = L.D.map x := L.bracket_spec n (by omega) x hx
+    simpa [hmap] using hbr
+
 /-- A Lie algebra is an L∞ algebra where l₁ = 0 and l_n = 0 for n ≥ 3.
 
     This means:
@@ -289,10 +304,49 @@ def isDGLA (L : LInfinityStructure R V) : Prop :=
 def isLieAlgebra (L : LInfinityStructure R V) : Prop :=
   L.D.vanishesOnWordLength 1 ∧ isDGLA L
 
+theorem isLieAlgebra_iff_bracketVanishes (L : LInfinityStructure R V) :
+    isLieAlgebra L ↔
+      (∀ x : ReducedSymCoalg R (Shift V 1), x.wordLength = 1 →
+        (L.bracket 1 (by decide) x).isZero = true) ∧
+      (∀ n : ℕ, ∀ hn3 : n ≥ 3,
+        ∀ x : ReducedSymCoalg R (Shift V 1), x.wordLength = n →
+          (L.bracket n (by omega) x).isZero = true) := by
+  constructor
+  · intro h
+    rcases h with ⟨h1, hdgla⟩
+    refine ⟨?_, ?_⟩
+    · intro x hx
+      have hmap : (L.D.map x).isZero = true := h1 x hx
+      have hbr : L.bracket 1 (by decide) x = L.D.map x := L.bracket_spec 1 (by decide) x hx
+      simpa [hbr] using hmap
+    · exact (isDGLA_iff_bracketVanishes L).1 hdgla
+  · intro h
+    rcases h with ⟨h1, hhigh⟩
+    refine ⟨?_, (isDGLA_iff_bracketVanishes L).2 hhigh⟩
+    intro x hx
+    have hbr : (L.bracket 1 (by decide) x).isZero = true := h1 x hx
+    have hmap : L.bracket 1 (by decide) x = L.D.map x := L.bracket_spec 1 (by decide) x hx
+    simpa [hmap] using hbr
+
 /-- A strict Lie 2-algebra is an L∞ algebra where l_n = 0 for n ≥ 4.
 
     This allows a nontrivial Jacobiator l₃ but no higher homotopies. -/
 def isLie2Algebra (L : LInfinityStructure R V) : Prop :=
   ∀ n : ℕ, n ≥ 4 → L.D.vanishesOnWordLength n
+
+theorem isLie2Algebra_iff_bracketVanishes (L : LInfinityStructure R V) :
+    isLie2Algebra L ↔
+      ∀ n : ℕ, ∀ hn4 : n ≥ 4,
+        ∀ x : ReducedSymCoalg R (Shift V 1), x.wordLength = n →
+          (L.bracket n (by omega) x).isZero = true := by
+  constructor
+  · intro h n hn4 x hx
+    have hmap : (L.D.map x).isZero = true := h n hn4 x hx
+    have hbr : L.bracket n (by omega) x = L.D.map x := L.bracket_spec n (by omega) x hx
+    simpa [hbr] using hmap
+  · intro h n hn4 x hx
+    have hbr : (L.bracket n (by omega) x).isZero = true := h n hn4 x hx
+    have hmap : L.bracket n (by omega) x = L.D.map x := L.bracket_spec n (by omega) x hx
+    simpa [hmap] using hbr
 
 end StringAlgebra.Linfinity
