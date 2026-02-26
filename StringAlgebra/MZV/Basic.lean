@@ -267,9 +267,6 @@ def zeta21 : Composition := [⟨2, by omega⟩, ⟨1, by omega⟩]
 theorem zeta21_weight : zeta21.weight = 3 := by
   simp [zeta21, Composition.weight]
 
-/-- ζ(2,1) has depth 2 -/
-theorem zeta21_depth : zeta21.depth = 2 := rfl
-
 /-! ## Hoffman Basis
 
 Following Brown "Mixed Tate Motives over Z" (Annals of Math 2012), every MZV

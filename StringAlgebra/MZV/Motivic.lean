@@ -242,12 +242,6 @@ def weight (f : FGenerator) : ℕ := f.oddWeight
 /-- Index of the f-generator: f_{2n+1} has index n -/
 def index (f : FGenerator) : ℕ := (f.oddWeight - 1) / 2
 
-/-- f₃ has index 1 -/
-theorem f3_index : f3.index = 1 := by rfl
-
-/-- f₅ has index 2 -/
-theorem f5_index : f5.index = 2 := by rfl
-
 end FGenerator
 
 /-- A monomial in f-generators with rational coefficient.

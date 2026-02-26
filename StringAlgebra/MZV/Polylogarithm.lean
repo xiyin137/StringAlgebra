@@ -115,10 +115,6 @@ theorem polylog_one_eq_zeta (n : ℕ) (hn : n ≥ 2) :
   · simp [Composition.weight]
   · simp [Composition.isAdmissible, hn]
 
-/-- The dilogarithm reflection formula:
-    Li_2(z) + Li_2(1-z) = ζ(2) - log(z)log(1-z) -/
-theorem dilog_reflection : li2.order = 2 := rfl
-
 /-- The 5-term relation for Li_2 (Abel's identity):
     Li_2(x) + Li_2(y) + Li_2((1-x)/(1-xy)) + Li_2(1-xy) + Li_2((1-y)/(1-xy))
     = ζ(2) + log(...)  -/
