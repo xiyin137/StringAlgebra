@@ -492,6 +492,56 @@ theorem minimal_model_unique_with_linear_bijectivity_iff_isQuasiIso {R : Type u}
     exact minimal_model_unique_with_linear_bijectivity
       L L_H L_H' _hH _hH' _f _f' _hf _hf' comparison hcomparison
 
+/-- Conservativity of the strengthened uniqueness package relative to the
+    base witness-return package. -/
+theorem minimal_model_unique_with_linear_bijectivity_iff_minimal_model_unique
+    {R : Type u} [CommRing R]
+    {V H H' : ℤ → Type v}
+    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
+    [∀ i, AddCommGroup (H i)] [∀ i, Module R (H i)]
+    [∀ i, AddCommGroup (H' i)] [∀ i, Module R (H' i)]
+    (L : LInftyAlgebra R V) (L_H : LInftyAlgebra R H) (L_H' : LInftyAlgebra R H')
+    (_hH : isMinimal L_H) (_hH' : isMinimal L_H')
+    (_f : LInftyHom R L_H L) (_f' : LInftyHom R L_H' L)
+    (_hf : _f.isQuasiIso) (_hf' : _f'.isQuasiIso)
+    (comparison : LInftyHom R L_H L_H') :
+    (∃ comparison' : LInftyHom R L_H L_H',
+      comparison'.isQuasiIso ∧
+      comparison' = comparison ∧
+      (∀ n : ℤ, Function.Bijective (((comparison'.components 1 (by omega)).map n)))) ↔
+    (∃ comparison' : LInftyHom R L_H L_H',
+      comparison'.isQuasiIso ∧ comparison' = comparison) := by
+  constructor
+  · intro h
+    rcases h with ⟨comparison', hq, hEq, _hlin⟩
+    exact ⟨comparison', hq, hEq⟩
+  · intro h
+    rcases h with ⟨comparison', hq, hEq⟩
+    refine ⟨comparison', hq, hEq, ?_⟩
+    intro n
+    simpa using hq n
+
+/-- Any base uniqueness witness implies degreewise bijectivity of the
+    supplied comparison map on arity-1 components. -/
+theorem minimal_model_unique_linear_isBijective_of_unique
+    {R : Type u} [CommRing R]
+    {V H H' : ℤ → Type v}
+    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
+    [∀ i, AddCommGroup (H i)] [∀ i, Module R (H i)]
+    [∀ i, AddCommGroup (H' i)] [∀ i, Module R (H' i)]
+    (L : LInftyAlgebra R V) (L_H : LInftyAlgebra R H) (L_H' : LInftyAlgebra R H')
+    (_hH : isMinimal L_H) (_hH' : isMinimal L_H')
+    (_f : LInftyHom R L_H L) (_f' : LInftyHom R L_H' L)
+    (_hf : _f.isQuasiIso) (_hf' : _f'.isQuasiIso)
+    (comparison : LInftyHom R L_H L_H')
+    (hunique :
+      ∃ comparison' : LInftyHom R L_H L_H',
+        comparison'.isQuasiIso ∧ comparison' = comparison) :
+    ∀ n : ℤ, Function.Bijective (((comparison.components 1 (by omega)).map n)) := by
+  intro n
+  rcases hunique with ⟨comparison', hq, hEq⟩
+  simpa [hEq] using (hq n)
+
 /-! ## Formality -/
 
 /-- Witness package for formality via an explicit minimal-model style target. -/

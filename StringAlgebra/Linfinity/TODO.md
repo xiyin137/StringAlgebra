@@ -19,6 +19,7 @@ This file tracks formal soundness debt for `StringAlgebra/Linfinity` under `agen
    - `Transfer.lean`: tightened `minimal_model_unique` output from bare `Nonempty` to an explicit quasi-isomorphic comparison witness that is returned identically (no hidden witness substitution).
    - `Transfer.lean`: added `minimal_model_unique_iff_isQuasiIso`, making the witness-return formulation of minimal-model uniqueness explicitly equivalent to quasi-isomorphism of the supplied comparison map.
    - `Transfer.lean`: added strengthened minimal-model uniqueness packaging with explicit arity-1 bijectivity (`minimal_model_unique_with_linear_bijectivity`) and its conservativity iff theorem (`minimal_model_unique_with_linear_bijectivity_iff_isQuasiIso`).
+   - `Transfer.lean`: added base-vs-strengthened uniqueness bridge (`minimal_model_unique_with_linear_bijectivity_iff_minimal_model_unique`) and derived arity-1 bijectivity extraction from base uniqueness witnesses (`minimal_model_unique_linear_isBijective_of_unique`).
    - `Transfer.lean`: added unpacked formality interface (`isFormal_unpacked`/`isFormal_of_unpacked`/`isFormal_iff_unpacked`) exposing explicit minimal-model and quasi-isomorphism data from/to `isFormal`.
    - `Transfer.lean`: added canonical accessor morphisms (`minimalModelMorphism`, `formalityMorphism`) with explicit quasi-isomorphism theorems and routed `minimal_model_exists` through these accessors.
    - `Transfer.lean`: strengthened `TransferResult` with explicit linear-consistency constraint (`inclusion_linear`) tying the lifted inclusion's arity-1 component to the underlying SDR inclusion map; added exported theorem `transferInclusion_linear`.
@@ -135,6 +136,12 @@ minimal_model_unique
 
 minimal_model_unique_with_linear_bijectivity
 <-> minimal_model_unique_with_linear_bijectivity_iff_isQuasiIso
+
+minimal_model_unique_with_linear_bijectivity
+<-> minimal_model_unique_with_linear_bijectivity_iff_minimal_model_unique
+
+minimal_model_unique
+-> minimal_model_unique_linear_isBijective_of_unique
 
 isFormal_of_unpacked_with_linear_bijectivity
 -> isFormal
