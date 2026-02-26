@@ -80,6 +80,11 @@ structure ReducedCoderivation (R : Type u) [CommRing R] (V : ℤ → Type v)
   component_spec :
     ∀ (n : ℕ) (hn : n ≥ 1) (x : ReducedSymCoalg R V), x.wordLength = n →
       componentMap n hn x = map x
+  /-- Shape invariant: the extracted `n`-component lands in word length `1`
+      on word-length-`n` inputs. -/
+  component_wordLength_one :
+    ∀ (n : ℕ) (hn : n ≥ 1) (x : ReducedSymCoalg R V), x.wordLength = n →
+      (componentMap n hn x).wordLength = 1
   /-- Degree shift property -/
   degree_shift : ∀ x : ReducedSymCoalg R V, (map x).degree = x.degree + degree
 
@@ -166,6 +171,11 @@ theorem coderivationComponent_spec (_D : ReducedCoderivation R V)
     coderivationComponent _D n hn x = _D.map x :=
   _D.component_spec n hn x hx
 
+theorem coderivationComponent_wordLength_one (_D : ReducedCoderivation R V)
+    (n : ℕ) (hn : n ≥ 1) (x : ReducedSymCoalg R V) (hx : x.wordLength = n) :
+    (coderivationComponent _D n hn x).wordLength = 1 :=
+  _D.component_wordLength_one n hn x hx
+
 /-- The n-th L∞ bracket l_n : V^⊗n → V.
 
     This is obtained from the coderivation D by:
@@ -182,6 +192,12 @@ theorem LInfinityStructure.bracket_spec (_L : LInfinityStructure R V)
     (hx : x.wordLength = n) :
     _L.bracket n hn x = _L.D.map x :=
   coderivationComponent_spec _L.D n hn x hx
+
+theorem LInfinityStructure.bracket_wordLength_one (_L : LInfinityStructure R V)
+    (n : ℕ) (hn : n ≥ 1) (x : ReducedSymCoalg R (Shift V 1))
+    (hx : x.wordLength = n) :
+    (_L.bracket n hn x).wordLength = 1 :=
+  coderivationComponent_wordLength_one _L.D n hn x hx
 
 /-! ## Key Properties -/
 

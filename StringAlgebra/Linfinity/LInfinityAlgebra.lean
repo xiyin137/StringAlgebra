@@ -119,6 +119,9 @@ def LInftyAlgebra.trivial (R : Type u) [CommRing R] (V : ℤ → Type v)
       component_spec := by
         intro n hn x hx
         rfl
+      component_wordLength_one := by
+        intro n hn x hx
+        rfl
       degree_shift := fun _ => rfl
     }
     degree_one := rfl
