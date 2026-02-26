@@ -86,6 +86,55 @@ Top-level MTC entry is now:
 
 7. `Bridge/VOAToMTC.lean` has no theorem-level `sorry`; bridge interfaces now require explicit VOA analytic hypotheses at theorem call sites.
 
+## Remaining Dependency DAG (Formal)
+
+The remaining theorem-level goals close in the following dependency order.
+
+1. `FusionCategory.lean`
+- `fusionCoeff_assoc`
+  Required by matrix product linear-combination identities used downstream in `FusionMatrices`, `SMatrix`, and `Verlinde`.
+- `fusionCoeff_frobenius`
+  Required for dual-index substitutions in S-matrix orthogonality and Verlinde manipulations.
+- `fusionCoeff_dual_swap`
+  Required for duality-symmetry rewrites in modular and Verlinde expressions.
+
+2. `Spherical.lean`
+- `qdim_unit`
+  Base normalization for quantum dimensions.
+- `qdim_dual`
+  Needed for dual-object dimension substitutions.
+- `qdim_tensor`
+  Needed for multiplicative dimension manipulations in modular identities.
+
+3. `SMatrix.lean`
+- `sMatrixEnd_symmetric`
+  End(𝟙)-valued symmetry foundation.
+- `totalDimSq_ne_zero`
+  Nondegeneracy scalar used by vacuum normalization and modular inversion steps.
+- `quantumDim_fusion`
+  Character relation from fusion coefficients to quantum dimensions.
+- `sMatrix_orthogonality`
+  Core orthogonality relation feeding `S^2` and Verlinde.
+
+4. `ModularTensorCategory.lean`
+- `sMatrix_squared`
+  Uses orthogonality + dual-index rewrites to identify charge conjugation.
+- `modular_relation`
+  Uses S/T identities and Gauss sum to establish projective modular relation.
+
+5. `Verlinde.lean`
+- `verlinde_formula`
+  Uses previous modular identities and nonvanishing denominators.
+- `sMatrix_diagonalizes_fusion`
+  Derived equivalent diagonalization statement.
+
+6. `FusionPF.lean`
+- `fpDimCandidate_pos`
+- `fpDimCandidate_fusion`
+  PF-analytic closure layer (Fin-indexed forms are already proved transports).
+
+No additional assumption bundles/classes should be introduced to close this DAG; remaining debt must stay theorem-local (`sorry`) until each node is proved from existing core definitions and lemmas.
+
 ## Audit Commands
 
 ```bash
