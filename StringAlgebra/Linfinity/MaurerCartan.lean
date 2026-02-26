@@ -65,8 +65,12 @@ structure MCTheory (R : Type u) [CommRing R]
   zero_curvature : curvature 0 = 0
   /-- Infinitesimal gauge action of degree-0 parameters on degree-1 elements. -/
   gaugeAction : V 0 → V 1 → V 1
+  /-- Neutral gauge parameter acts trivially. -/
+  gaugeAction_zero : ∀ a : V 1, gaugeAction 0 a = a
   /-- Gauge-equivalence relation on degree-1 elements. -/
   gaugeEquivalent : V 1 → V 1 → Prop
+  /-- Gauge action produces gauge-equivalent points. -/
+  gaugeAction_sound : ∀ g : V 0, ∀ a : V 1, gaugeEquivalent a (gaugeAction g a)
   /-- Gauge-equivalence is an equivalence relation. -/
   gauge_equiv : Equivalence gaugeEquivalent
   /-- Twisted higher brackets indexed by arity. -/
@@ -146,6 +150,22 @@ def gaugeAction {R : Type u} [CommRing R]
     [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
     {L : LInftyAlgebra R V} (T : MCTheory R L) (g : V 0) (a : V 1) : V 1 :=
   T.gaugeAction g a
+
+/-- Gauge action by the neutral parameter is the identity. -/
+theorem gaugeAction_zero {R : Type u} [CommRing R]
+    {V : ℤ → Type v}
+    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
+    {L : LInftyAlgebra R V} (T : MCTheory R L) (a : V 1) :
+    gaugeAction T 0 a = a :=
+  T.gaugeAction_zero a
+
+/-- Gauge action lands in the supplied gauge-equivalence relation. -/
+theorem gaugeAction_gaugeEquivalent {R : Type u} [CommRing R]
+    {V : ℤ → Type v}
+    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
+    {L : LInftyAlgebra R V} (T : MCTheory R L) (g : V 0) (a : V 1) :
+    T.gaugeEquivalent a (gaugeAction T g a) :=
+  T.gaugeAction_sound g a
 
 /-- Gauge-equivalence relation on MC elements from explicit `MCTheory` data.
 
