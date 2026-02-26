@@ -31,18 +31,12 @@ variable [FusionCategory ℂ C]
 
 namespace FusionCategory
 
-theorem fpDimCandidate_unit_gap
-    [HasKernels C]
-    [CanonicalSimpleIndex (k := ℂ) (C := C)]
-    : fpDimCandidate (C := C) unitIdx = 1 := by
-  simpa using fpDimCandidate_unit (C := C)
-
-theorem fpDimCandidate_pos_gap
+theorem fpDimCandidate_pos
     (i : Idx (k := ℂ) (C := C)) :
     0 < fpDimCandidate (C := C) i := by
   sorry
 
-theorem fpDimCandidate_fusion_gap
+theorem fpDimCandidate_fusion
     (i j : Idx (k := ℂ) (C := C)) :
     fpDimCandidate (C := C) i * fpDimCandidate (C := C) j =
       ∑ m : Idx (k := ℂ) (C := C),
@@ -53,7 +47,7 @@ theorem fpDimCandidateByFin_pos
     (i : Fin (rank (k := ℂ) (C := C))) :
     0 < fpDimCandidateByFin (C := C) i := by
   simpa [fpDimCandidateByFin, fpDimCandidate, leftFusionSpectralRadiusByFin_eq] using
-    (fpDimCandidate_pos_gap (C := C) (idxOfFin (k := ℂ) (C := C) i))
+    (fpDimCandidate_pos (C := C) (idxOfFin (k := ℂ) (C := C) i))
 
 theorem fpDimCandidateByFin_fusion
     (i j : Fin (rank (k := ℂ) (C := C))) :
@@ -65,7 +59,7 @@ theorem fpDimCandidateByFin_fusion
           m : ℝ≥0∞) *
           fpDimCandidate (C := C) m := by
   simpa [fpDimCandidateByFin, fpDimCandidate, leftFusionSpectralRadiusByFin_eq] using
-    (fpDimCandidate_fusion_gap (C := C)
+    (fpDimCandidate_fusion (C := C)
       (idxOfFin (k := ℂ) (C := C) i)
       (idxOfFin (k := ℂ) (C := C) j))
 

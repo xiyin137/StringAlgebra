@@ -34,8 +34,8 @@
 - `sMatrix_diagonalizes_fusion`
 
 6. `FusionPF.lean`
-- `fpDimCandidate_pos_gap`
-- `fpDimCandidate_fusion_gap`
+- `fpDimCandidate_pos`
+- `fpDimCandidate_fusion`
 
 ## Smuggling Cleanup Completed
 

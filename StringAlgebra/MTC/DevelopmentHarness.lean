@@ -231,12 +231,12 @@ theorem fpdim_unit
     [HasKernels C]
     [FusionCategory.CanonicalSimpleIndex (k := ℂ) (C := C)] :
     FusionCategory.fpDimCandidate (C := C) FusionCategory.unitIdx = 1 :=
-  FusionCategory.fpDimCandidate_unit_gap (C := C)
+  FusionCategory.fpDimCandidate_unit (C := C)
 
 theorem fpdim_pos
     (i : FusionCategory.Idx (k := ℂ) (C := C)) :
     0 < FusionCategory.fpDimCandidate (C := C) i :=
-  FusionCategory.fpDimCandidate_pos_gap (C := C) i
+  FusionCategory.fpDimCandidate_pos (C := C) i
 
 theorem fpdim_fusion
     (i j : FusionCategory.Idx (k := ℂ) (C := C)) :
@@ -245,7 +245,7 @@ theorem fpdim_fusion
       ∑ m : FusionCategory.Idx (k := ℂ) (C := C),
         (FusionCategory.fusionCoeff (k := ℂ) i j m : ℝ≥0∞) *
           FusionCategory.fpDimCandidate (C := C) m :=
-  FusionCategory.fpDimCandidate_fusion_gap (C := C) i j
+  FusionCategory.fpDimCandidate_fusion (C := C) i j
 
 theorem fpdim_fin_pos
     (i : Fin (FusionCategory.rank (k := ℂ) (C := C))) :
