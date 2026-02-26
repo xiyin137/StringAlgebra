@@ -155,18 +155,6 @@ def transferBracket {R : Type u} [CommRing R]
     (n : ℕ) (_hn : n ≥ 1) : (k : ℤ) → H k →ₗ[R] H k :=
   T.bracket n _hn
 
-/-- The first transferred bracket l₁^H = p ∘ l₁ ∘ i
-
-    This is just the induced differential on homology. -/
-theorem transfer_l1 {R : Type u} [CommRing R]
-    {V H : ℤ → Type v}
-    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
-    [∀ i, AddCommGroup (H i)] [∀ i, Module R (H i)]
-    (L : LInftyAlgebra R V) (data : SDR R V H)
-    (T : TransferBracketTheory L data) :
-    transferBracket L data T 1 (by omega) = T.l1 :=
-  T.l1_spec
-
 /-- The second transferred bracket has two tree contributions:
     l₂^H = p ∘ l₂ ∘ i⊗i + p ∘ l₁ ∘ h ∘ l₂ ∘ i⊗i + p ∘ l₂ ∘ (h⊗1 + 1⊗h) ∘ l₂ ∘ i⊗i + ...
 
@@ -181,16 +169,6 @@ structure TransferL2DGLAFormula {R : Type u} [CommRing R]
   formula : (k : ℤ) → H k →ₗ[R] H k
   /-- The transferred binary bracket agrees with the chosen formula. -/
   formula_spec : T.bracket 2 (by omega) = formula
-
-theorem transfer_l2_DGLA {R : Type u} [CommRing R]
-    {V H : ℤ → Type v}
-    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
-    [∀ i, AddCommGroup (H i)] [∀ i, Module R (H i)]
-    (L : DGLA R V) (data : SDR R V H)
-    (T : TransferBracketTheory L.toLInftyAlgebra data)
-    (F : TransferL2DGLAFormula L data T) :
-    transferBracket L.toLInftyAlgebra data T 2 (by omega) = F.formula :=
-  F.formula_spec
 
 /-! ## The Homotopy Transfer Theorem -/
 
@@ -680,14 +658,5 @@ theorem unpacked_iff_exists_formalityLinear_isBijective
     (∃ F : FormalityResult L, ∀ n : ℤ, Function.Bijective (F.linear n)) := by
   exact (isFormal_iff_unpacked (L := L)).symm.trans
     (isFormal_iff_exists_formalityLinear_isBijective (L := L))
-
-/-- Constructor-style bridge from a witness package to the `isFormal` predicate. -/
-theorem isFormal_of_formalityResult {R : Type u} [CommRing R]
-    {V : ℤ → Type v}
-    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
-    (L : LInftyAlgebra R V)
-    (F : FormalityResult L) :
-    isFormal L :=
-  ⟨F⟩
 
 end StringAlgebra.Linfinity

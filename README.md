@@ -104,7 +104,8 @@ Current audited status (2026-02-26):
 13. Formality classification now also exposes directional extraction lemmas (`starProductClassification_gaugeEquivalent_of_poisson_eq`, `starProductClassification_poisson_eq_of_gaugeEquivalent`, `starProductClassification_toGaugeClass_eq_of_poisson_eq`, `starProductClassification_poisson_eq_of_toGaugeClass_eq`) to consume classification bridges without manually unpacking iff statements.
 14. Formality classification removed assumption-forwarding wrapper families; directional extraction lemmas now depend directly on `starProductClassification` and `starProductClassification_toGaugeClass`.
 15. Formality classification interface is now kept at direct theorem level (`starProductClassification` and quotient-class bridge/extraction theorems), without alias-contract or classify-parameter forwarding layers.
-16. Remaining semantic debt is tracked explicitly in `StringAlgebra/Linfinity/TODO.md`.
+16. Additional tautological forwarding wrappers have been removed from `LInfinityAlgebra.lean`, `Transfer.lean`, `Coderivations.lean`, `MaurerCartan.lean`, and `Formality.lean`; those files now use direct witness fields where the forwarding theorems added no semantics.
+17. Remaining semantic debt is tracked explicitly in `StringAlgebra/Linfinity/TODO.md`.
 
 Current dependency flow toward `Formality.lean`:
 

@@ -396,16 +396,6 @@ def transferMorphism {R : Type u} [CommRing R]
     LInftyMorphism R (transferredStructure T) L :=
   T.inclusion
 
-theorem transferMorphism_linear {R : Type u} [CommRing R]
-    {V H : ℤ → Type v}
-    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
-    [∀ i, AddCommGroup (H i)] [∀ i, Module R (H i)]
-    {L : LInftyAlgebra R V}
-    {data : HomotopyTransferData R V H}
-    (T : HomotopyTransferTheory L data) :
-    ∀ n : ℤ, (transferMorphism L data T).linear n = data.incl n :=
-  T.inclusion_linear
-
 theorem transferMorphism_isQuasiIso {R : Type u} [CommRing R]
     {V H : ℤ → Type v}
     [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
