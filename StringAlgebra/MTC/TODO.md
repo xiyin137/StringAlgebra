@@ -3,11 +3,11 @@
 ## Status (2026-02-26)
 
 - `lake build StringAlgebra.MTC` passes.
-- Proof-gap count: **18 theorem-level `sorry` markers** in `StringAlgebra/MTC`.
+- Proof-gap count: **16 theorem-level `sorry` markers** in `StringAlgebra/MTC`.
 - No local MTC assumption-bundle/axiom-class wrappers remain (`*Axioms`, `*Assumptions`, `RibbonSphericalAxiom` removed).
 - Open debt is represented directly at theorem sites.
 
-## Proof-Gap Inventory (18)
+## Proof-Gap Inventory (16)
 
 1. `Spherical.lean`
 - `qdim_dual`
@@ -36,8 +36,6 @@
 6. `FusionPF.lean`
 - `fpDimCandidate_pos_gap`
 - `fpDimCandidate_fusion_gap`
-- `fpDimCandidateByFin_pos`
-- `fpDimCandidateByFin_fusion`
 
 ## Smuggling Cleanup Completed
 

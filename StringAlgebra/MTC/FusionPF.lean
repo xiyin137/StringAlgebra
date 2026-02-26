@@ -52,7 +52,8 @@ theorem fpDimCandidate_fusion_gap
 theorem fpDimCandidateByFin_pos
     (i : Fin (rank (k := ℂ) (C := C))) :
     0 < fpDimCandidateByFin (C := C) i := by
-  sorry
+  simpa [fpDimCandidateByFin, fpDimCandidate, leftFusionSpectralRadiusByFin_eq] using
+    (fpDimCandidate_pos_gap (C := C) (idxOfFin (k := ℂ) (C := C) i))
 
 theorem fpDimCandidateByFin_fusion
     (i j : Fin (rank (k := ℂ) (C := C))) :
@@ -63,7 +64,10 @@ theorem fpDimCandidateByFin_fusion
           (idxOfFin (k := ℂ) (C := C) j)
           m : ℝ≥0∞) *
           fpDimCandidate (C := C) m := by
-  sorry
+  simpa [fpDimCandidateByFin, fpDimCandidate, leftFusionSpectralRadiusByFin_eq] using
+    (fpDimCandidate_fusion_gap (C := C)
+      (idxOfFin (k := ℂ) (C := C) i)
+      (idxOfFin (k := ℂ) (C := C) j))
 
 end FusionCategory
 
