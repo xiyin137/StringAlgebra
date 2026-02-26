@@ -291,6 +291,58 @@ theorem transferInclusionLinear_isInjective {R : Type u} [CommRing R]
     transferInclusion_linear L data T n
   simpa [hlin] using hincl
 
+/-- Under the current quasi-isomorphism surrogate (`bijective f₁`),
+    quasi-isomorphism of the transferred inclusion implies degreewise
+    surjectivity of the SDR inclusion map. -/
+theorem transferInclusionLinear_surjective_of_isQuasiIso {R : Type u} [CommRing R]
+    {V H : ℤ → Type v}
+    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
+    [∀ i, AddCommGroup (H i)] [∀ i, Module R (H i)]
+    (L : LInftyAlgebra R V) (data : SDR R V H)
+    (T : TransferResult L data)
+    (hq : (transferInclusion L data T).isQuasiIso) :
+    ∀ n : ℤ, Function.Surjective (data.incl n) := by
+  intro n y
+  rcases (hq n).2 y with ⟨x, hx⟩
+  refine ⟨x, ?_⟩
+  simpa [transferInclusion_linear L data T n] using hx
+
+/-- Under the current quasi-isomorphism surrogate (`bijective f₁`),
+    surjectivity of the SDR inclusion map is exactly the additional condition
+    needed for transfer quasi-isomorphism (`proj ∘ incl = id` already gives
+    injectivity). -/
+theorem transfer_is_quasiIso_of_incl_surjective {R : Type u} [CommRing R]
+    {V H : ℤ → Type v}
+    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
+    [∀ i, AddCommGroup (H i)] [∀ i, Module R (H i)]
+    (L : LInftyAlgebra R V) (data : SDR R V H)
+    (T : TransferResult L data)
+    (hsurj : ∀ n : ℤ, Function.Surjective (data.incl n)) :
+    (transferInclusion L data T).isQuasiIso := by
+  intro n
+  refine ⟨transferInclusionLinear_isInjective L data T n, ?_⟩
+  intro y
+  rcases hsurj n y with ⟨x, hx⟩
+  refine ⟨x, ?_⟩
+  simpa [transferInclusion_linear L data T n] using hx
+
+/-- Under the current quasi-isomorphism surrogate (`bijective f₁`),
+    transfer quasi-isomorphism is equivalent to degreewise surjectivity of the
+    SDR inclusion maps. -/
+theorem transfer_is_quasiIso_iff_incl_surjective {R : Type u} [CommRing R]
+    {V H : ℤ → Type v}
+    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
+    [∀ i, AddCommGroup (H i)] [∀ i, Module R (H i)]
+    (L : LInftyAlgebra R V) (data : SDR R V H)
+    (T : TransferResult L data) :
+    (transferInclusion L data T).isQuasiIso ↔
+      (∀ n : ℤ, Function.Surjective (data.incl n)) := by
+  constructor
+  · intro hq
+    exact transferInclusionLinear_surjective_of_isQuasiIso L data T hq
+  · intro hsurj
+    exact transfer_is_quasiIso_of_incl_surjective L data T hsurj
+
 /-- The SDR inclusion maps are degreewise bijective when the transferred
     inclusion is a quasi-isomorphism. -/
 theorem transferInclusionLinear_isBijective {R : Type u} [CommRing R]

@@ -427,6 +427,63 @@ theorem transferMorphism_linear_injective
     simpa [LinearMap.comp_apply] using congrArg (fun f : H n →ₗ[R] H n => f x) hcomp
   exact hleft.injective
 
+/-- Under the current quasi-isomorphism surrogate (`bijective f₁`),
+    quasi-isomorphism of the transferred inclusion implies degreewise
+    surjectivity of the SDR inclusion map. -/
+theorem transferMorphism_linear_surjective_of_isQuasiIso
+    {R : Type u} [CommRing R]
+    {V H : ℤ → Type v}
+    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
+    [∀ i, AddCommGroup (H i)] [∀ i, Module R (H i)]
+    {L : LInftyAlgebra R V}
+    {data : HomotopyTransferData R V H}
+    (T : HomotopyTransferTheory L data)
+    (hq : (transferMorphism L data T).isQuasiIso) :
+    ∀ n : ℤ, Function.Surjective (data.incl n) := by
+  intro n y
+  rcases (hq n).2 y with ⟨x, hx⟩
+  refine ⟨x, ?_⟩
+  simpa [transferMorphism_linear_eq_incl (L := L) (data := data) T n] using hx
+
+/-- Under the current quasi-isomorphism surrogate (`bijective f₁`),
+    surjectivity of the SDR inclusion map is the missing condition beyond
+    `proj ∘ incl = id`-derived injectivity. -/
+theorem transferMorphism_isQuasiIso_of_linear_surjective
+    {R : Type u} [CommRing R]
+    {V H : ℤ → Type v}
+    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
+    [∀ i, AddCommGroup (H i)] [∀ i, Module R (H i)]
+    {L : LInftyAlgebra R V}
+    {data : HomotopyTransferData R V H}
+    (T : HomotopyTransferTheory L data)
+    (hsurj : ∀ n : ℤ, Function.Surjective (data.incl n)) :
+    (transferMorphism L data T).isQuasiIso := by
+  intro n
+  refine ⟨transferMorphism_linear_injective (L := L) (data := data) T n, ?_⟩
+  intro y
+  rcases hsurj n y with ⟨x, hx⟩
+  refine ⟨x, ?_⟩
+  simpa [transferMorphism_linear_eq_incl (L := L) (data := data) T n] using hx
+
+/-- Under the current quasi-isomorphism surrogate (`bijective f₁`),
+    transfer quasi-isomorphism is equivalent to degreewise surjectivity of
+    the SDR inclusion map (`proj ∘ incl = id` already gives injectivity). -/
+theorem transferMorphism_isQuasiIso_iff_linear_surjective
+    {R : Type u} [CommRing R]
+    {V H : ℤ → Type v}
+    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
+    [∀ i, AddCommGroup (H i)] [∀ i, Module R (H i)]
+    {L : LInftyAlgebra R V}
+    {data : HomotopyTransferData R V H}
+    (T : HomotopyTransferTheory L data) :
+    (transferMorphism L data T).isQuasiIso ↔
+      (∀ n : ℤ, Function.Surjective (data.incl n)) := by
+  constructor
+  · intro hq
+    exact transferMorphism_linear_surjective_of_isQuasiIso (L := L) (data := data) T hq
+  · intro hsurj
+    exact transferMorphism_isQuasiIso_of_linear_surjective (L := L) (data := data) T hsurj
+
 theorem transferMorphism_isQuasiIso {R : Type u} [CommRing R]
     {V H : ℤ → Type v}
     [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]

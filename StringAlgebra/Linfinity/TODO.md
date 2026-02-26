@@ -36,7 +36,9 @@ This file tracks formal soundness debt for `StringAlgebra/Linfinity` under `agen
    - `Transfer.lean`: added conservativity equivalences (`minimal_model_exists_with_linear_bijectivity_iff`, `unpacked_with_linear_bijectivity_iff_unpacked`) showing the strengthened “with linear bijectivity” statements are logically equivalent to their base quasi-isomorphism unpackings.
    - `Transfer.lean`: added direct equivalence bridges from unpacked formality views to package-level linear-bijectivity witnesses (`unpacked_with_linear_bijectivity_iff_exists_formalityLinear_isBijective`, `unpacked_iff_exists_formalityLinear_isBijective`).
    - `LInfinityAlgebra.lean`: added explicit arity-1 transfer linear bridge/injectivity lemmas (`transferMorphism_linear_eq_incl`, `transferMorphism_linear_injective`) derived from `proj_incl`.
+   - `LInfinityAlgebra.lean`: added explicit quasi-isomorphism dependency bridges for transfer (`transferMorphism_linear_surjective_of_isQuasiIso`, `transferMorphism_isQuasiIso_of_linear_surjective`, `transferMorphism_isQuasiIso_iff_linear_surjective`), making the missing degreewise surjectivity requirement theorem-level explicit under the current `isQuasiIso` surrogate.
    - `Transfer.lean`: added SDR-level/transfer-level arity-1 injectivity infrastructure (`sdrInclusion_isInjective`, `transferInclusionLinear_isInjective`) independent of quasi-isomorphism closure.
+   - `Transfer.lean`: added transfer-level quasi-isomorphism dependency bridges (`transferInclusionLinear_surjective_of_isQuasiIso`, `transfer_is_quasiIso_of_incl_surjective`, `transfer_is_quasiIso_iff_incl_surjective`) exposing exact dependence on degreewise surjectivity of SDR inclusions.
    - `LInfinityAlgebra.lean`/`Transfer.lean`: removed unused tautological forwarding wrappers (`transferMorphism_linear`, `transfer_l1`, `transfer_l2_DGLA`, `isFormal_of_formalityResult`) so these APIs now consume witness fields directly where needed.
    - `Transfer.lean`: discharged `transfer_is_quasiIso` by explicit conversion to `LInfinityAlgebra.HomotopyTransferTheory` and reuse of the core theorem `transferMorphism_isQuasiIso` via the `LInftyHom`↔`LInftyMorphism` bridge.
    - `Formality.lean`: removed hardcoded zero graph/quantization outputs; now requires explicit witness data for formality, MC transport, and quantization outputs.
@@ -125,6 +127,12 @@ transfer_is_quasiIso
 + transferInclusion_linear
 -> transferInclusionLinear_isInjective
 -> transferInclusionLinear_isBijective
+
+transferMorphism_isQuasiIso
+<-> transferMorphism_isQuasiIso_iff_linear_surjective
+
+transfer_is_quasiIso
+<-> transfer_is_quasiIso_iff_incl_surjective
 
 minimalModelMorphism_isQuasiIso
 + minimalModelMorphism_linear_eq

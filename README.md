@@ -106,6 +106,7 @@ Current audited status (2026-02-26):
 16. Additional tautological forwarding wrappers have been removed from `LInfinityAlgebra.lean`, `Transfer.lean`, `Coderivations.lean`, `MaurerCartan.lean`, and `Formality.lean`; those files now use direct witness fields where the forwarding theorems added no semantics.
 17. `Transfer.transfer_is_quasiIso` and `Formality.kontsevichFormality_is_quasi_iso` are now proved from existing core bridges/spec fields; remaining theorem-level proof gaps are concentrated in core transfer and package-level quasi-isomorphism claims.
 18. Remaining semantic debt is tracked explicitly in `StringAlgebra/Linfinity/TODO.md`.
+19. Transfer quasi-isomorphism dependency is now explicit under the current `isQuasiIso` surrogate: `transferMorphism_isQuasiIso ↔ (∀ n, Function.Surjective (incl n))` and `transfer_is_quasiIso ↔ (∀ n, Function.Surjective (incl n))` are available as theorem-level bridges (`transferMorphism_isQuasiIso_iff_linear_surjective`, `transfer_is_quasiIso_iff_incl_surjective`), so unresolved surjectivity debt is formalized rather than implicit.
 
 Current dependency flow toward `Formality.lean`:
 
