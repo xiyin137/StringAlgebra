@@ -360,9 +360,15 @@ structure LInftyHomotopy (R : Type u) [CommRing R]
     [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
     [∀ i, AddCommGroup (W i)] [∀ i, Module R (W i)]
     {L : LInftyAlgebra R V} {L' : LInftyAlgebra R W}
-    (_F _G : LInftyHom R L L') where
+    (F G : LInftyHom R L L') where
   /-- Components h_n of degree -n -/
   components : ∀ n : ℕ, n ≥ 1 → (i : ℤ) → V i →ₗ[R] W (i - n)
+  /-- Degree-0 linear deviation between the linear components of `F` and `G`. -/
+  linearDelta : (i : ℤ) → V i →ₗ[R] W i
+  /-- First-order homotopy equation on the linear component. -/
+  linear_spec :
+    ∀ i : ℤ, ((G.components 1 (by omega)).map i) =
+      ((F.components 1 (by omega)).map i) + linearDelta i
 
 /-- Homotopy is an equivalence relation -/
 def LInftyHom.homotopic {R : Type u} [CommRing R]
@@ -379,7 +385,66 @@ theorem homotopic_refl {R : Type u} [CommRing R]
     [∀ i, AddCommGroup (W i)] [∀ i, Module R (W i)]
     {L : LInftyAlgebra R V} {L' : LInftyAlgebra R W}
     (F : LInftyHom R L L') : F.homotopic F :=
-  ⟨{ components := fun _ _ _ => 0 }⟩
+  ⟨{
+    components := fun _ _ _ => 0
+    linearDelta := fun _ => 0
+    linear_spec := by
+      intro i
+      simp
+  }⟩
+
+theorem homotopic_symm {R : Type u} [CommRing R]
+    {V W : ℤ → Type v}
+    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
+    [∀ i, AddCommGroup (W i)] [∀ i, Module R (W i)]
+    {L : LInftyAlgebra R V} {L' : LInftyAlgebra R W}
+    {F G : LInftyHom R L L'} (h : F.homotopic G) :
+    G.homotopic F := by
+  rcases h with ⟨H⟩
+  refine ⟨{
+    components := fun n hn i => -(H.components n hn i)
+    linearDelta := fun i => -(H.linearDelta i)
+    linear_spec := ?_
+  }⟩
+  intro i
+  let F1 : V i →ₗ[R] W i := (F.components 1 (by omega)).map i
+  let G1 : V i →ₗ[R] W i := (G.components 1 (by omega)).map i
+  have hlin : G1 = F1 + H.linearDelta i := by
+    simpa [F1, G1] using H.linear_spec i
+  have hcancel : G1 + (-H.linearDelta i) = F1 := by
+    have := congrArg (fun t : V i →ₗ[R] W i => t + (-H.linearDelta i)) hlin
+    simpa [add_assoc] using this
+  simpa [F1, G1] using hcancel.symm
+
+theorem homotopic_trans {R : Type u} [CommRing R]
+    {V W : ℤ → Type v}
+    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
+    [∀ i, AddCommGroup (W i)] [∀ i, Module R (W i)]
+    {L : LInftyAlgebra R V} {L' : LInftyAlgebra R W}
+    {F G K : LInftyHom R L L'}
+    (hFG : F.homotopic G) (hGK : G.homotopic K) :
+    F.homotopic K := by
+  rcases hFG with ⟨HFG⟩
+  rcases hGK with ⟨HGK⟩
+  refine ⟨{
+    components := fun n hn i => (HFG.components n hn i) + (HGK.components n hn i)
+    linearDelta := fun i => (HFG.linearDelta i) + (HGK.linearDelta i)
+    linear_spec := ?_
+  }⟩
+  intro i
+  let F1 : V i →ₗ[R] W i := (F.components 1 (by omega)).map i
+  let G1 : V i →ₗ[R] W i := (G.components 1 (by omega)).map i
+  let K1 : V i →ₗ[R] W i := (K.components 1 (by omega)).map i
+  have hFG1 : G1 = F1 + HFG.linearDelta i := by
+    simpa [F1, G1] using HFG.linear_spec i
+  have hGK1 : K1 = G1 + HGK.linearDelta i := by
+    simpa [G1, K1] using HGK.linear_spec i
+  calc
+    K1 = G1 + HGK.linearDelta i := hGK1
+    _ = (F1 + HFG.linearDelta i) + HGK.linearDelta i := by simp [hFG1]
+    _ = F1 + (HFG.linearDelta i + HGK.linearDelta i) := by simp [add_assoc]
+    _ = (F.components 1 (by omega)).map i + (HFG.linearDelta i + HGK.linearDelta i) := by
+      simp [F1]
 
 /-! ## The ∞-Category of L∞ Algebras -/
 
