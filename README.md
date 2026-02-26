@@ -1,24 +1,22 @@
 # StringAlgebra (Split Control Repo)
 
-This repository now acts as the split-control/orchestration repo.
-The domain source trees were factored out of this repo into standalone local repos.
+This repository is the split-control/orchestration repo for the StringAlgebra project.
+Domain development now lives in standalone repositories.
 
-## Local Split Repos
+## Domain Repositories
 
-Canonical local paths:
+1. MZV: https://github.com/xiyin137/StringAlgebra-MZV
+2. VOA: https://github.com/xiyin137/StringAlgebra-VOA
+3. Linfinity: https://github.com/xiyin137/StringAlgebra-Linfinity
+4. MTC: https://github.com/xiyin137/StringAlgebra-MTC
 
-1. `/Users/xiyin/StringAlgebra/split/repos/StringAlgebra-MZV`
-2. `/Users/xiyin/StringAlgebra/split/repos/StringAlgebra-VOA`
-3. `/Users/xiyin/StringAlgebra/split/repos/StringAlgebra-Linfinity`
-4. `/Users/xiyin/StringAlgebra/split/repos/StringAlgebra-MTC`
-
-## What Remains Here
+## What This Repo Contains
 
 1. Split planning and status docs.
-2. Extraction/dry-run scripts.
-3. Template files for per-domain repo scaffolding.
+2. Extraction and dry-run scripts.
+3. Template files for split repos.
 
-Main files:
+Key files:
 
 1. `SPLIT_REPO_READINESS.md`
 2. `split/README.md`
@@ -32,8 +30,8 @@ Main files:
 
 1. Theorem-level `sorry` is acceptable as honest in-progress proof debt.
 2. Smuggling is not allowed (`axiom` wrappers, hidden choice machinery, assumption bundles).
-3. Cutover must remain explicit and auditable.
+3. Cutover and repository boundary changes must be explicit and auditable.
 
-## Next Action
+## Active Development
 
-Use the standalone repos under `split/repos/` as the primary development locations.
+Use the standalone domain repositories above as the primary development locations.
