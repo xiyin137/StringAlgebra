@@ -227,6 +227,25 @@ theorem fusionCoeff_eq_finrank_hom_tensor_dualIdx
   exact finrank_hom_tensor_eq_finrank_hom_tensor_dualIdx
     (k := k) (C := C) i j m
 
+/-- Frobenius-adjunction rewrite of `fusionCoeff` through the raw right dual
+    object on the right tensor factor (requires `MonoidalLinear`). -/
+theorem fusionCoeff_eq_finrank_hom_tensor_rightDual
+    (i j m : Idx (k := k) (C := C)) :
+    fusionCoeff (k := k) i j m =
+      Module.finrank k (simpleObj i ⟶ simpleObj m ⊗ (simpleObj j)ᘁ) := by
+  unfold fusionCoeff
+  exact finrank_hom_tensor_eq_finrank_hom_tensor_rightDual
+    (k := k) (C := C) i j m
+
+/-- Specialized adjunction rewrite for the right-dual-index input:
+    `N^i_{m,j*}` as a Hom-into-tensor finrank with `dualIdx (dualIdx j)`. -/
+theorem fusionCoeff_dualIdx_right_eq_finrank_hom_tensor_dualDualIdx
+    (i j m : Idx (k := k) (C := C)) :
+    fusionCoeff (k := k) m (dualIdx j) i =
+      Module.finrank k (simpleObj m ⟶ simpleObj i ⊗ simpleObj (dualIdx (dualIdx j))) := by
+  exact fusionCoeff_eq_finrank_hom_tensor_dualIdx
+    (k := k) (C := C) m (dualIdx j) i
+
 end LinearAdjunction
 
 section FusionVacuum
@@ -358,7 +377,13 @@ theorem fusionCoeff_assoc
     (i j l m : Idx (k := k) (C := C)) :
     ∑ p, fusionCoeff (k := k) i j p * fusionCoeff p l m =
     ∑ q, fusionCoeff (k := k) j l q * fusionCoeff i q m := by
-  sorry
+  have hAssoc :
+      ∑ p, fusionCoeff (k := k) i j p * fusionCoeff p l m =
+      ∑ q, fusionCoeff (k := k) j l q * fusionCoeff i q m := by
+    -- Remaining debt: derive associativity from semisimple tensor-product
+    -- decomposition and finite Hom-space additivity.
+    sorry
+  exact hAssoc
 
 /-- Frobenius reciprocity for fusion coefficients.
 
@@ -366,6 +391,13 @@ Current status: tracked as an explicit theorem-level proof gap. -/
 theorem fusionCoeff_frobenius
     (i j m : Idx (k := k) (C := C)) :
     fusionCoeff (k := k) i j m = fusionCoeff m (dualIdx j) i := by
+  -- Remaining closure route (no assumption smuggling):
+  -- 1. derive `CategoryTheory.MonoidalLinear k C` from current core assumptions;
+  -- 2. rewrite both sides via
+  --    `fusionCoeff_eq_finrank_hom_tensor_dualIdx` and
+  --    `fusionCoeff_dualIdx_right_eq_finrank_hom_tensor_dualDualIdx`;
+  -- 3. close the resulting finrank comparison by rigid-adjunction transport
+  --    plus dual-index involutivity transport.
   sorry
 
 /-- Duality/swap symmetry of fusion coefficients.
@@ -374,6 +406,9 @@ Current status: tracked as an explicit theorem-level proof gap. -/
 theorem fusionCoeff_dual_swap
     (i j m : Idx (k := k) (C := C)) :
     fusionCoeff (k := k) i j m = fusionCoeff (dualIdx j) (dualIdx i) (dualIdx m) := by
+  -- Remaining closure route (no assumption smuggling):
+  -- combine Frobenius reciprocity with index-level dual involutivity and
+  -- transport along chosen dual-representative isomorphisms.
   sorry
 
 end FusionCategory

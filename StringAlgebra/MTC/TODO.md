@@ -14,8 +14,13 @@
   finrank transport layer (`homTensorAdjointLinearEquiv`,
   `finrank_hom_tensor_eq_finrank_hom_tensor_rightDual`,
   `finrank_hom_tensor_eq_finrank_hom_tensor_dualIdx`,
-  `fusionCoeff_eq_finrank_hom_tensor_dualIdx`) to support future closure of
-  `fusionCoeff_frobenius` without assumption bundles.
+  `fusionCoeff_eq_finrank_hom_tensor_rightDual`,
+  `fusionCoeff_eq_finrank_hom_tensor_dualIdx`,
+  `fusionCoeff_dualIdx_right_eq_finrank_hom_tensor_dualDualIdx`) to support
+  future closure of `fusionCoeff_frobenius` without assumption bundles.
+- Remaining `FusionCategory` theorem gaps now carry explicit closure-route comments
+  (monoidal-linearity derivation + rigid-adjunction finrank transport + dual-index
+  involutivity transport), so no hidden design-level assumptions are being introduced.
 
 ## Proof-Gap Inventory (16)
 
