@@ -356,6 +356,15 @@ structure DGLAMorphismLInftyLift {R : Type u} [CommRing R]
   /-- All non-unary higher components vanish in this canonical DGLA lift model. -/
   higher_other_zero : ∀ k : ℕ, k ≠ 1 → ∀ n : ℤ, morphism.higher k n = 0
 
+/-- In any explicit DGLA→L∞ lift package, the linear and unary higher parts
+    agree degreewise via the shared DGLA component map witness. -/
+theorem DGLAMorphismLInftyLift.linear_eq_higher_one {R : Type u} [CommRing R]
+    {L L' : DGLAData R} {f : DGLAMorphism R L L'}
+    (F : DGLAMorphismLInftyLift f) :
+    ∀ n : ℤ, F.morphism.linear n = F.morphism.higher 1 n := by
+  intro n
+  rw [F.linear_spec n, F.higher_one_spec n]
+
 /-- Canonical L∞ morphism associated to a DGLA morphism in the current
     `LInftyMorphism` interface. -/
 def DGLAMorphism.toLInftyMorphism {R : Type u} [CommRing R]
@@ -468,5 +477,30 @@ theorem DGLAMorphism.toLInftyQuasiIso {R : Type u} [CommRing R]
     F.morphism.isQuasiIso := by
   intro n
   simpa [LInftyMorphism.isQuasiIso, F.linear_spec n] using hf n
+
+/-- Converse criterion for explicit DGLA→L∞ lift packages:
+    quasi-isomorphism of the lifted L∞ morphism implies degreewise-linear
+    quasi-isomorphism of the originating DGLA morphism. -/
+theorem DGLAMorphism.isLinearQuasiIso_of_toLInftyQuasiIso
+    {R : Type u} [CommRing R]
+    {L L' : DGLAData R} (f : DGLAMorphism R L L')
+    (F : DGLAMorphismLInftyLift f)
+    (hF : F.morphism.isQuasiIso) :
+    f.isLinearQuasiIso := by
+  intro n
+  simpa [LInftyMorphism.isQuasiIso, F.linear_spec n] using hF n
+
+/-- For any explicit DGLA→L∞ lift package, L∞ quasi-isomorphism is equivalent
+    to degreewise-linear quasi-isomorphism of the original DGLA morphism. -/
+theorem DGLAMorphism.toLInftyQuasiIso_iff
+    {R : Type u} [CommRing R]
+    {L L' : DGLAData R} (f : DGLAMorphism R L L')
+    (F : DGLAMorphismLInftyLift f) :
+    F.morphism.isQuasiIso ↔ f.isLinearQuasiIso := by
+  constructor
+  · intro hF
+    exact f.isLinearQuasiIso_of_toLInftyQuasiIso F hF
+  · intro hf
+    exact f.toLInftyQuasiIso F hf
 
 end StringAlgebra.Linfinity
