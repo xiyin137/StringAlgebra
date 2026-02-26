@@ -411,6 +411,14 @@ def differential (D : Coderivation R V) (E : ExtractedBrackets D) (_hD : D.degre
     GradedLinMap R V V 1 :=
   E.differential
 
+theorem differential_spec_from_bracket (D : Coderivation R V) (E : ExtractedBrackets D)
+    (hD : D.degree = 1) (k : ℤ) (x : V k) :
+    (D.differential E hD).toFun k x =
+      cast (congrArg V (by
+        simp))
+        ((D.bracket E 1 (by omega)).component (fun _ : Fin 1 => k) (fun _ => x)) := by
+  simpa [differential, bracket] using E.differential_spec k x
+
 /-- The binary bracket l₂ as a bilinear map -/
 def binaryBracket (D : Coderivation R V) (E : ExtractedBrackets D) (hn : (2 : ℕ) ≥ 1 := by omega) :
     GradedMultilinearMap R V 2 0 :=
