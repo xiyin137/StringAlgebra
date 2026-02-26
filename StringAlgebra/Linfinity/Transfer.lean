@@ -303,9 +303,9 @@ theorem minimal_model_unique {R : Type u} [CommRing R]
     (_f : LInftyHom R L_H L) (_f' : LInftyHom R L_H' L)
     (_hf : _f.isQuasiIso) (_hf' : _f'.isQuasiIso)
     (comparison : LInftyHom R L_H L_H')
-    (_hcomparison : comparison.isQuasiIso) :
-    Nonempty (LInftyHom R L_H L_H') :=  -- And this is a quasi-iso
-  ⟨comparison⟩
+    (hcomparison : comparison.isQuasiIso) :
+    ∃ comparison' : LInftyHom R L_H L_H', comparison'.isQuasiIso :=
+  ⟨comparison, hcomparison⟩
 
 /-! ## Formality -/
 

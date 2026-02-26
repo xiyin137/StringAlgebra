@@ -16,6 +16,7 @@ This file tracks formal soundness debt for `StringAlgebra/Linfinity` under `agen
 3. `rg` scans show no `axiom`, `admit`, `Classical.choose`, or placeholder markers in Linfinity Lean files.
 4. Recent hardening completed:
    - `Transfer.lean`: removed fabricated transfer outputs and `Classical.choose` inversion; now uses explicit transfer witness packages.
+   - `Transfer.lean`: tightened `minimal_model_unique` output from bare `Nonempty` to an explicit quasi-isomorphic comparison witness.
    - `Formality.lean`: removed hardcoded zero graph/quantization outputs; now requires explicit witness data for formality, MC transport, and quantization outputs.
    - `Basic.lean`: removed tautological Jacobi fields; now carries explicit law interfaces.
    - `LInfinityAlgebra.lean`: removed fake twisted/Lie conversion fallbacks and synthetic transfer morphism defaults; transfer morphisms are now explicit witness fields, and core `LInftyMorphism` composition now uses explicit composition data with canonical identity instances.
