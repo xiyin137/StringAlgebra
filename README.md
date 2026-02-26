@@ -33,13 +33,15 @@ StringAlgebra/
 │   ├── IteratedIntegral.lean
 │   ├── Polylogarithm.lean
 │   ├── Associator.lean
-│   └── Motivic.lean
+│   ├── Motivic.lean
+│   └── TODO.md                      # Dependency-driven closure plan
 ├── VOA/                             # Vertex operator algebras
 │   ├── VertexAlgebra.lean
 │   ├── FormalDistributions.lean
 │   ├── Modules.lean
 │   ├── Virasoro.lean
-│   └── Examples.lean
+│   ├── Examples.lean
+│   └── TODO.md                      # Dependency-driven closure plan
 └── MTC/                             # Modular tensor categories
     ├── Pivotal.lean                 # Pivotal categories (j : X ≅ Xᘁᘁ)
     ├── Trace.lean                   # Left/right categorical traces
@@ -66,7 +68,7 @@ Current audited status (2026-02-26):
 1. `lake build StringAlgebra.Linfinity` passes.
 2. `StringAlgebra/Linfinity` is currently `sorry`-free.
 3. No `axiom`/`admit`/`Classical.choose`/`Classical.epsilon` usage in Linfinity Lean files.
-4. Recent hardening removed fabricated transfer/formality outputs; nontrivial constructions now require explicit witness data rather than hidden defaults.
+4. Recent hardening removed fabricated transfer/formality/BV outputs and tautological bridge shells; nontrivial constructions now require explicit witness data rather than hidden defaults.
 5. Remaining semantic debt is tracked explicitly in `StringAlgebra/Linfinity/TODO.md`.
 
 Current dependency flow toward `Formality.lean`:
@@ -102,9 +104,39 @@ Detailed dependency debt tracking, anti-smuggling gates, and closure order are m
 
 Shuffle and stuffle algebras, double shuffle relations, iterated integrals, polylogarithms, Drinfeld associators, and motivic MZVs.
 
+Current audited status (2026-02-26):
+
+1. `lake build StringAlgebra.MZV` passes.
+2. `StringAlgebra/MZV` is `sorry`-free.
+3. No `axiom`/`admit`/`Classical.choose`/`Classical.epsilon` usage in MZV Lean files.
+4. Remaining semantic/proof debt is tracked in `StringAlgebra/MZV/TODO.md`.
+
+Current dependency flow:
+
+```text
+Basic -> ShuffleAlgebra -> DoubleShuffle -> Motivic -> Associator
+Basic -> StuffleAlgebra -> DoubleShuffle -> Relations
+Basic -> Polylogarithm
+ShuffleAlgebra -> IteratedIntegral
+```
+
 ### Vertex Operator Algebras
 
 Vertex algebras, formal distributions, modules, the Virasoro algebra, and examples.
+
+Current audited status (2026-02-26):
+
+1. `lake build StringAlgebra.VOA` passes.
+2. `StringAlgebra/VOA` is `sorry`-free.
+3. No `axiom`/`admit`/`Classical.choose`/`Classical.epsilon` usage in VOA Lean files.
+4. Recent hardening removed `Classical.choose`-based conformal-weight extraction and replaced fabricated Dong/antibracket-style outputs with explicit witness-driven contracts.
+5. Remaining semantic/proof debt is tracked in `StringAlgebra/VOA/TODO.md`.
+
+Current dependency flow:
+
+```text
+Basic -> FormalDistributions -> VertexAlgebra -> Virasoro -> Modules -> Examples
+```
 
 ### Modular Tensor Categories
 

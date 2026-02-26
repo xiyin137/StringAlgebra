@@ -18,9 +18,11 @@ This file tracks formal soundness debt for `StringAlgebra/Linfinity` under `agen
    - `Transfer.lean`: removed fabricated transfer outputs and `Classical.choose` inversion; now uses explicit transfer witness packages.
    - `Formality.lean`: removed hardcoded zero graph/quantization outputs; now requires explicit witness data for formality, MC transport, and quantization outputs.
    - `Basic.lean`: removed tautological Jacobi fields; now carries explicit law interfaces.
-   - `LInfinityAlgebra.lean`: removed fake twisted/Lie conversion fallbacks; now requires explicit twisting and Lie-to-L∞ model data.
+   - `LInfinityAlgebra.lean`: removed fake twisted/Lie conversion fallbacks and synthetic transfer morphism defaults; transfer morphisms are now explicit witness fields.
    - `GradedInfrastructure.lean`: removed `Classical.epsilon` degree selector; degree extraction now requires a homogeneity witness.
-   - `Morphisms.lean`: quasi-isomorphism surrogate strengthened to degreewise bijectivity; tautological structural fields removed.
+   - `Morphisms.lean`: quasi-isomorphism criterion strengthened to degreewise bijectivity; composition now requires explicit `CompositionData` rather than synthetic higher-zero defaults.
+   - `DGLA.lean`: replaced tautological `toLInftyQuasiIso` shell with an explicit `DGLAMorphismLInftyLift` bridge and degreewise linear quasi-isomorphism criterion.
+   - `BVAlgebra.lean`: `CyclicLInfty.antibracket` now uses explicit `l2` and cyclicity law instead of a fabricated zero output.
    - `Coderivations.lean`: component extraction no longer aliases the global map; explicit component maps are part of reduced coderivation data.
 
 ## Linfinity Dependency Graph
@@ -69,13 +71,13 @@ PolyvectorFieldsDGLA.toDGLAData
 6. `Coderivations.lean`: medium-high risk. Core interfaces hardened; constructive co-Leibniz/component derivation remains pending.
 7. `GradedInfrastructure.lean`: medium-high risk. Extraction interfaces are explicit; internal constructive realization still pending.
 8. `ChainComplex.lean`: low risk.
-9. `LInfinityAlgebra.lean`: high risk. Core object definitions compile and are explicit, but semantically nontrivial constructions still depend on provided witness data and fallback models remain in some places.
-10. `Morphisms.lean`: medium-high risk. Better quasi-iso surrogate (bijectivity), but full homology-level and homotopy-equation semantics are pending.
-11. `DGLA.lean`: medium-high risk. Packaging is explicit and no longer injects hidden fallback in `toLInftyAlgebra`; canonical constructive bridge from bracket/differential data to L∞ model is still pending.
+9. `LInfinityAlgebra.lean`: medium-high risk. Core object definitions compile and transfer morphisms are explicit witnesses; semantically nontrivial constructions still depend on supplied transfer/twisting data.
+10. `Morphisms.lean`: medium risk. Composition and quasi-isomorphism interfaces are explicit, but full homology-level and homotopy-equation semantics are pending.
+11. `DGLA.lean`: medium risk. Tautological bridge shells removed; canonical constructive bridge from bracket/differential data to L∞ model is still pending.
 12. `MaurerCartan.lean`: medium-high risk. MC/gauge/twisting operations are explicit interface data; canonical constructive formulas remain pending.
 13. `Transfer.lean`: high risk. Fabricated outputs removed, but transferred brackets/structures are witness-driven and not yet constructed from trees internally.
 14. `Formality.lean`: high risk. Placeholder outputs removed; theorem-level bridge is witness-driven and awaits constructive graph-weight/operator machinery.
-15. `BVAlgebra.lean`: medium-high risk. No `sorry`; key BV-to-Gerstenhaber/CME bridge pieces still rely on explicit assumptions pending derivation.
+15. `BVAlgebra.lean`: medium risk. No `sorry`; cyclic antibracket interface is explicit, while key BV-to-Gerstenhaber/CME derivations still rely on explicit assumptions pending closure.
 16. `TODO.md`: active audit ledger.
 
 ## Open Work Packages
@@ -93,8 +95,9 @@ Targets: `GradedInfrastructure.lean`, `Coderivations.lean`
 Targets: `LInfinityAlgebra.lean`, `Morphisms.lean`
 
 1. Replace fallback/trivial model uses in semantically nontrivial APIs.
-2. Introduce homology-level quasi-isomorphism interface (or a tightly scoped bridge to chain-level cohomology).
-3. Add nontrivial homotopy-equation semantics for `LInftyHomotopy`.
+2. Internalize concrete higher-component composition formulas so `CompositionData` can be derived, not externally supplied.
+3. Introduce homology-level quasi-isomorphism interface (or a tightly scoped bridge to chain-level cohomology).
+4. Add nontrivial homotopy-equation semantics for `LInftyHomotopy`.
 
 ### WP3 - Canonical DGLA -> L∞ Bridge
 

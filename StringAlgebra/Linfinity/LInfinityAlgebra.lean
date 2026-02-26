@@ -91,8 +91,8 @@ end LInftyAlgebra
 /-- The abelian L∞ structure on a graded module.
 
     This model has zero higher operations and a square-zero coderivation
-    by construction. It is a concrete fallback object used when only the
-    ambient graded module data is required. -/
+    by construction. It is the canonical abelian model attached to the
+    ambient graded module data. -/
 def LInftyAlgebra.trivial (R : Type u) [CommRing R] (V : ℤ → Type v)
     [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)] : LInftyAlgebra R V where
   toStructure := {
@@ -258,6 +258,10 @@ structure HomotopyTransferTheory {R : Type u} [CommRing R]
     (data : HomotopyTransferData R V H) where
   /-- The transferred L∞ structure on the retract object. -/
   transferred : LInftyAlgebra R H
+  /-- Inclusion lifted to an L∞ morphism from the transferred structure. -/
+  inclusion : LInftyMorphism R transferred L
+  /-- Linear component of the lifted morphism is the SDR inclusion. -/
+  inclusion_linear : ∀ n : ℤ, inclusion.linear n = data.incl n
 
 /-- The transferred L∞ structure on H from explicit transfer theory data. -/
 def transferredStructure {R : Type u} [CommRing R]
@@ -281,17 +285,7 @@ def transferMorphism {R : Type u} [CommRing R]
     (data : HomotopyTransferData R V H)
     (T : HomotopyTransferTheory L data) :
     LInftyMorphism R (transferredStructure T) L :=
-  {
-    linear := data.incl
-    higher := fun k n => by
-      by_cases hk : k = 1
-      · subst hk
-        simpa using data.incl n
-      · exact 0
-    compatible := by
-      intro n
-      simp
-  }
+  T.inclusion
 
 /-! ## Special Cases -/
 

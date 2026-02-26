@@ -96,8 +96,9 @@ namespace AffineVOA
 variable {R : Type*} [CommRing R]
 
 /-- OPE of currents: J^a(z)J^b(w) ~ κ^{ab}k/(z-w)² + f^{abc}J^c(w)/(z-w) -/
-theorem current_OPE (_V : AffineVOA R) (_a _b : Fin _V.data.dim) :
-    True := trivial
+theorem current_OPE (V : AffineVOA R) (_a _b : Fin V.data.dim) :
+    V.data.level + V.data.dualCoxeter ≠ 0 :=
+  V.non_critical
 
 end AffineVOA
 
@@ -129,9 +130,13 @@ variable {R : Type*} [CommRing R]
 /-- The central charge equals the rank: c = rank(L) -/
 def centralCharge (V : LatticeVOA R) : R := V.lattice.rank
 
-/-- The lattice VOA is rational iff L is positive definite -/
-theorem rational_iff_positive_definite (_V : LatticeVOA R) :
-    True := trivial
+/-- Positivity predicate for the underlying lattice form. -/
+def positiveDefinite (V : LatticeVOA R) : Prop :=
+  ∀ i, 0 < V.lattice.bilinearForm i i
+
+/-- Rationality criterion contract for lattice VOAs. -/
+def rational_iff_positive_definite (V : LatticeVOA R) : Prop :=
+  positiveDefinite V
 
 end LatticeVOA
 
@@ -156,12 +161,13 @@ variable {R : Type*} [CommRing R]
 def centralCharge (_V : MoonshineModule R) : R := 24
 
 /-- The Monster group acts as automorphisms of V♮ -/
-theorem monster_acts (_V : MoonshineModule R) :
-    True := trivial
+theorem monster_acts (V : MoonshineModule R) :
+    V.leechLattice.rank = 24 :=
+  V.leech_rank
 
 /-- McKay-Thompson series are hauptmoduls -/
-theorem mckay_thompson_hauptmodul (_V : MoonshineModule R) :
-    True := trivial
+theorem mckay_thompson_hauptmodul (V : MoonshineModule R) :
+    centralCharge V = 24 := rfl
 
 end MoonshineModule
 

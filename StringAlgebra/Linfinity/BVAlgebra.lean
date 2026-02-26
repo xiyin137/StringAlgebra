@@ -95,18 +95,16 @@ structure CyclicLInfty (R : Type u) [CommRing R]
   pairing : GradedPairing R V
   /-- The pairing is non-degenerate -/
   nondegenerate : pairing.isNondegenerate
-  /-- Cyclicity condition for l₂: expressed as an equality of pairings.
-      ⟨l₂(x, y), z⟩ = ε ⟨l₂(y, z), x⟩ for appropriate sign ε.
-      This is the fundamental cyclicity that makes l₂ an antibracket.
-
-      The actual condition involves the l₂ bracket from the L∞ structure
-      and the pairing. When l₂ infrastructure is available, this should be:
-      ⟨l₂(x,y), z⟩ = (-1)^{|x|(|y|+|z|)} ⟨l₂(y,z), x⟩
-
-      For now we require a concrete zero-compatibility condition for the pairing. -/
-  cyclic_l2_witness :
-    ∀ m : ℤ, ∀ x : V m,
-      pairing.pair m (-m - pairing.degree) (by ring) x 0 = 0
+  /-- A binary bracket `l₂` on the graded module. -/
+  l2 : ∀ m n : ℤ, V m → V n → V (m + n)
+  /-- Cyclicity of `l₂` against the pairing:
+      `⟨l₂(x,y), z⟩ = ε ⟨l₂(y,z), x⟩` with explicit Koszul sign. -/
+  cyclic_l2 :
+    ∀ m n p (x : V m) (y : V n) (z : V p),
+      ∀ h₁ : (m + n) + p = -pairing.degree,
+      ∀ h₂ : (n + p) + m = -pairing.degree,
+        pairing.pair (m + n) p h₁ (l2 m n x y) z =
+          koszulSign m (n + p) * pairing.pair (n + p) m h₂ (l2 n p y z) x
 
 /-! ## BV Algebras -/
 
@@ -288,7 +286,7 @@ def satisfiesQME {R : Type u} [CommRing R]
   let delta_S : A 1 := BV.delta 0 S
   let SS : A 1 := cast (congrArg A (by decide : (0 : ℤ) + 0 + 1 = 1)) (BV.gerstenhaberBracket 0 0 S S)
   -- Need (1/2) which requires R to have characteristic ≠ 2
-  -- For now, express as 2*ΔS + [S,S] = 0
+  -- We encode the denominator-free equivalent equation 2*ΔS + [S,S] = 0
   (2 : R) • delta_S + SS = 0
 
 /-- The QME implies CME: if Δ(S) + (1/2)[S,S] = 0 and Δ² = 0, then
@@ -358,11 +356,8 @@ theorem QME_implies_CME_obstruction {R : Type u} [CommRing R]
 def CyclicLInfty.antibracket {R : Type u} [CommRing R]
     {V : ℤ → Type v}
     [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
-    (_L : CyclicLInfty R V) (m n : ℤ) (_x : V m) (_y : V n) : Σ (d : ℤ), V d :=
-  -- The antibracket is l₂, extracted from the L∞ structure
-  -- Use the coderivation element infrastructure from SymmetricAlgebra
-  -- For now, returns zero - needs actual l₂ extraction when implemented
-  ⟨m + n, (0 : V (m + n))⟩
+    (L : CyclicLInfty R V) (m n : ℤ) (x : V m) (y : V n) : Σ (d : ℤ), V d :=
+  ⟨m + n, L.l2 m n x y⟩
 
 /-!
 ### Cyclic L∞ and Classical BV Correspondence

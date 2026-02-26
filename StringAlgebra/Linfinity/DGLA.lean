@@ -97,6 +97,12 @@ variable {R}
 def DGLAMorphism.isQuasiIso {L L' : DGLAData R} (f : DGLAMorphism R L L') : Prop :=
   Chain.DGMorphism.isQuasiIso f.toDGMorphism
 
+/-- Degreewise-linear quasi-isomorphism criterion used for L∞ lifting.
+
+    This tracks bijectivity of the underlying graded-linear components. -/
+def DGLAMorphism.isLinearQuasiIso {L L' : DGLAData R} (f : DGLAMorphism R L L') : Prop :=
+  ∀ n : ℤ, Function.Bijective (f.toDGMorphism.componentMap n)
+
 /-! ## The Schouten Bracket
 
 The Schouten bracket on polyvector fields T_poly(M) = Γ(∧*TM).
@@ -288,10 +294,22 @@ def DGLAData.toLInftyAlgebra {R : Type u} [CommRing R] (L : DGLAData R) :
     LInftyAlgebra R (fun n => (L.toModule.toComplex.X n)) :=
   L.linftyModel
 
-/-- A DGLA quasi-isomorphism gives an L∞ quasi-isomorphism. -/
+/-- Explicit lift data from a DGLA morphism to an L∞ morphism. -/
+structure DGLAMorphismLInftyLift {R : Type u} [CommRing R]
+    {L L' : DGLAData R} (f : DGLAMorphism R L L') where
+  /-- Lifted L∞ morphism between the chosen DGLA-associated L∞ models. -/
+  morphism :
+    LInftyMorphism R L.toLInftyAlgebra L'.toLInftyAlgebra
+  /-- Linear component agrees with the underlying DGLA map degreewise. -/
+  linear_spec : ∀ n : ℤ, morphism.linear n = f.toDGMorphism.componentMap n
+
+/-- A degreewise-linear DGLA quasi-isomorphism lift gives an L∞ quasi-isomorphism. -/
 theorem DGLAMorphism.toLInftyQuasiIso {R : Type u} [CommRing R]
-    {L L' : DGLAData R} (f : DGLAMorphism R L L') (_hf : f.isQuasiIso) :
-    f.isQuasiIso := -- The induced L∞ morphism is a quasi-isomorphism
-  _hf
+    {L L' : DGLAData R} (f : DGLAMorphism R L L')
+    (F : DGLAMorphismLInftyLift f)
+    (hf : f.isLinearQuasiIso) :
+    F.morphism.isQuasiIso := by
+  intro n
+  simpa [LInftyMorphism.isQuasiIso, F.linear_spec n] using hf n
 
 end StringAlgebra.Linfinity

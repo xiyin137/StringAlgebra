@@ -101,17 +101,21 @@ def id (L : LInftyAlgebra R V) : LInftyHom R L L where
 
     (G ∘ F)_n = ∑_{k≥1} ∑_{i₁+...+i_k=n} G_k ∘ (F_{i₁} ⊗ ... ⊗ F_{i_k})
 
-    This is a sum over trees. -/
+    This is a sum over trees; we encode it through explicit composition data. -/
+structure CompositionData
+    {L : LInftyAlgebra R V} {L' : LInftyAlgebra R W} {L'' : LInftyAlgebra R U}
+    (G : LInftyHom R L' L'') (F : LInftyHom R L L') where
+  /-- Composite L∞ morphism. -/
+  composite : LInftyHom R L L''
+  /-- The linear component matches ordinary composition of linear parts. -/
+  linear_spec :
+    ∀ i : ℤ, ((composite.components 1 (by omega)).map i) =
+      ((G.components 1 (by omega)).map i).comp ((F.components 1 (by omega)).map i)
+
 def comp {L : LInftyAlgebra R V} {L' : LInftyAlgebra R W} {L'' : LInftyAlgebra R U}
-    (_G : LInftyHom R L' L'') (_F : LInftyHom R L L') : LInftyHom R L L'' where
-  components := fun n _hn => {
-    degree := 1 - n
-    map := fun i => by
-      by_cases h1 : n = 1
-      · subst h1
-        exact ((_G.components 1 (by omega)).map i).comp ((_F.components 1 (by omega)).map i)
-      · exact 0
-  }
+    (G : LInftyHom R L' L'') (F : LInftyHom R L L')
+    (C : CompositionData G F) : LInftyHom R L L'' :=
+  C.composite
 
 end LInftyHom
 
@@ -152,7 +156,7 @@ def StrictMorphism.toLInftyHom {R : Type u} [CommRing R]
     isomorphism on homology H(V, l₁) → H(W, l'₁).
 
     At the current interface level, we track degreewise bijectivity of `f₁`
-    as the concrete surrogate for quasi-isomorphism data. -/
+    as the working criterion for quasi-isomorphism data. -/
 def LInftyHom.isQuasiIso {R : Type u} [CommRing R]
     {V W : ℤ → Type v}
     [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
@@ -182,14 +186,17 @@ theorem quasiIso_comp {R : Type u} [CommRing R]
     [∀ i, AddCommGroup (U i)] [∀ i, Module R (U i)]
     {L : LInftyAlgebra R V} {L' : LInftyAlgebra R W} {L'' : LInftyAlgebra R U}
     (G : LInftyHom R L' L'') (F : LInftyHom R L L')
+    (C : LInftyHom.CompositionData G F)
     (hG : G.isQuasiIso) (hF : F.isQuasiIso) :
-    (G.comp F).isQuasiIso :=
+    (G.comp F C).isQuasiIso :=
   by
     intro i
     let G1 : W i →ₗ[R] U i := (G.components 1 (by omega)).map i
     let F1 : V i →ₗ[R] W i := (F.components 1 (by omega)).map i
     have hcomp : Function.Bijective (fun x : V i => G1 (F1 x)) := (hG i).comp (hF i)
-    simpa [LInftyHom.comp, G1, F1] using hcomp
+    have hlin : ((C.composite.components 1 (by omega)).map i) = G1.comp F1 := by
+      simpa [G1, F1] using C.linear_spec i
+    simpa [LInftyHom.comp, G1, F1, hlin] using hcomp
 
 /-! ## L∞ Homotopies -/
 

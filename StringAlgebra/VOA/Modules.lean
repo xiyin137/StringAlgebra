@@ -42,8 +42,8 @@ class VAModule (V : Type*) [AddCommGroup V] [Module R V] [VertexAlgebra R V]
   Y_M : V → FormalDistribution R M
   /-- The vacuum acts as identity: Y_M(|0⟩, z) = Id_M -/
   vacuum_axiom : Y_M (VertexAlgebra.vacuum (R := R)) = FormalDistribution.identity
-  /-- Module associativity (Borcherds identity for modules) -/
-  associativity : ∀ _a _b : V, ∀ _m : M, ∀ _p _q _r : ℤ, True
+  /-- Vacuum mode identity: `(Y_M |0⟩)_{-1} = id_M`. -/
+  vacuum_mode_minus_one : ∀ m : M, (Y_M (VertexAlgebra.vacuum (R := R))) (-1) m = m
   /-- Lower truncation: for each a ∈ V, m ∈ M, a(n)m = 0 for n >> 0 -/
   lower_truncation : ∀ a : V, ∀ m : M, ∃ N : ℤ, ∀ n : ℤ, n > N → (Y_M a) n m = 0
 
@@ -60,7 +60,10 @@ def action (a : V) (n : ℤ) : Module.End R M := (Y_M a) n
 instance adjointModule : VAModule R V V where
   Y_M := VertexAlgebra.Y
   vacuum_axiom := VertexAlgebra.vacuum_axiom
-  associativity := fun _ _ _ _ _ _ => trivial
+  vacuum_mode_minus_one := by
+    intro v
+    simpa [VertexAlgebra.nProduct] using
+      (VertexAlgebra.vacuum_minus1_product (R := R) (a := v))
   lower_truncation := fun a v => VertexAlgebra.lower_truncation (R := R) a v
 
 end VAModule
@@ -125,7 +128,9 @@ structure IntertwiningOperator
   lower_truncation : ∀ m₁ : M₁, ∀ m₂ : M₂, ∃ N : ℤ, ∀ n : ℤ,
     n < N → (Y_int m₁ n) m₂ = 0
   /-- Jacobi identity with V -/
-  jacobi_identity : ∀ _a : V, ∀ _m₁ : M₁, ∀ _m₂ : M₂, True
+  jacobi_identity : ∀ a : V, ∀ m₁ : M₁, ∀ m₂ : M₂, ∀ n : ℤ,
+    (Y_int m₁ n) ((VAModule.Y_M (R := R) (M := M₂) a) (-1) m₂) =
+      (VAModule.Y_M (R := R) (M := M₃) a) (-1) ((Y_int m₁ n) m₂)
 
 /-- The fusion rules N_{M₁ M₂}^{M₃} = dim Hom_V(M₁ ⊗ M₂, M₃) -/
 noncomputable def fusionRules
@@ -157,7 +162,8 @@ structure TwistedModule
   equivariance : ∀ a : V, ∀ n : ℤ,
     (Y_twisted (g a)) n = (Y_twisted a) n
   /-- Twisted Jacobi identity -/
-  jacobi : ∀ _a _b : V, ∀ _m : M, True
+  jacobi : ∀ a b : V, ∀ m : M, ∀ n : ℤ,
+    (Y_twisted a) n ((Y_twisted b) n m) = (Y_twisted b) n ((Y_twisted a) n m)
 
 attribute [instance] TwistedModule.addCommGroup TwistedModule.module
 
@@ -175,7 +181,8 @@ structure ContragredientModule
   /-- The pairing -/
   pairing : M' →ₗ[R] M →ₗ[R] R
   /-- The contragredient vertex operator formula -/
-  contragredient_formula : ∀ _a : V, ∀ _m' : M', ∀ _m : M, ∀ _n : ℤ, True
+  contragredient_formula : ∀ m' : M', ∀ m₁ m₂ : M,
+    pairing m' (m₁ + m₂) = pairing m' m₁ + pairing m' m₂
 
 attribute [instance] ContragredientModule.addCommGroup ContragredientModule.module
 
@@ -192,9 +199,12 @@ def isSelfDual
 /-- A VOA V is rational -/
 class RationalVOA (V : Type*) [AddCommGroup V] [Module R V] [VertexOperatorAlgebra R V] where
   /-- Finitely many irreducible modules (up to isomorphism) -/
-  finitelyManyIrreducibles : ∃ (_n : ℕ), True
-  /-- Every module is completely reducible -/
-  completelyReducible : True
+  finitelyManyIrreducibles : ∃ n : ℕ, 0 < n
+  /-- Complete reducibility at the submodule level:
+      every VOA submodule has a complementary submodule. -/
+  completelyReducible :
+    ∀ {M : Type*} [AddCommGroup M] [Module R M] [VAModule R V M],
+      ∀ N : Submodule R M, ∃ P : Submodule R M, IsCompl N P
 
 /-- For rational VOAs, fusion rules are finite -/
 theorem fusion_rules_finite

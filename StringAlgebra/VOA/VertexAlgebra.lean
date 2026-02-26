@@ -149,9 +149,25 @@ theorem L_minus1 : L (R := R) (V := V) (-1) = VertexAlgebra.translation (R := R)
   unfold L
   exact ConformalVertexAlgebra.L_minus1_eq_translation (R := R) (V := V)
 
-/-- The conformal weight of a state -/
-noncomputable def conformalWeight (a : V) : ℤ :=
-  Classical.choose (ConformalVertexAlgebra.L0_grading (R := R) (V := V)) a
+/-- Explicit witness of the `L(0)`-grading action. -/
+structure L0Grading where
+  /-- Weight function on states. -/
+  weight : V → ℤ
+  /-- `L(0)` acts by the weight on each state. -/
+  weight_spec : ∀ a : V,
+    (VertexAlgebra.Y (R := R)
+      (ConformalVertexAlgebra.conformalVector (R := R) (V := V))) 1 a = (weight a : ℤ) • a
+
+/-- The conformal weight of a state from explicit grading data. -/
+def conformalWeight (G : L0Grading (R := R) (V := V)) (a : V) : ℤ :=
+  G.weight a
+
+/-- `L(0)`-eigenvalue relation for the explicit conformal weight. -/
+theorem conformalWeight_spec (G : L0Grading (R := R) (V := V)) (a : V) :
+    (VertexAlgebra.Y (R := R)
+      (ConformalVertexAlgebra.conformalVector (R := R) (V := V))) 1 a =
+      (conformalWeight (R := R) (V := V) G a : ℤ) • a :=
+  G.weight_spec a
 
 /-- A primary state of weight h: L(n)a = 0 for n > 0, L(0)a = ha -/
 structure PrimaryState where
