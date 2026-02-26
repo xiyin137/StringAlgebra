@@ -135,30 +135,6 @@ def gaugeAction {R : Type u} [CommRing R]
     {L : LInftyAlgebra R V} (T : MCTheory R L) (g : V 0) (a : V 1) : V 1 :=
   T.gaugeAction g a
 
-/-- Gauge action by the neutral parameter is the identity. -/
-theorem gaugeAction_zero {R : Type u} [CommRing R]
-    {V : ℤ → Type v}
-    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
-    {L : LInftyAlgebra R V} (T : MCTheory R L) (a : V 1) :
-    gaugeAction T 0 a = a :=
-  T.gaugeAction_zero a
-
-/-- Gauge action lands in the supplied gauge-equivalence relation. -/
-theorem gaugeAction_gaugeEquivalent {R : Type u} [CommRing R]
-    {V : ℤ → Type v}
-    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
-    {L : LInftyAlgebra R V} (T : MCTheory R L) (g : V 0) (a : V 1) :
-    T.gaugeEquivalent a (gaugeAction T g a) :=
-  T.gaugeAction_sound g a
-
-/-- Gauge action preserves the Maurer-Cartan equation. -/
-theorem gaugeAction_preservesMC {R : Type u} [CommRing R]
-    {V : ℤ → Type v}
-    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
-    {L : LInftyAlgebra R V} (T : MCTheory R L) (g : V 0) (a : V 1) :
-    satisfiesMC L T a → satisfiesMC L T (gaugeAction T g a) :=
-  T.gaugeAction_preserves_curvature_zero g a
-
 /-- Gauge-equivalence relation on MC elements from explicit `MCTheory` data.
 
     Classical gauge-flow interpretations motivate this relation, but this
@@ -169,32 +145,6 @@ def GaugeEquivalent {R : Type u} [CommRing R]
     {L : LInftyAlgebra R V} (T : MCTheory R L) (a b : MCElement R T) : Prop :=
   T.gaugeEquivalent a.element b.element
 
-/-- Reflexivity of MC gauge equivalence. -/
-theorem gaugeEquivalent_refl {R : Type u} [CommRing R]
-    {V : ℤ → Type v}
-    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
-    {L : LInftyAlgebra R V} (T : MCTheory R L) (a : MCElement R T) :
-    GaugeEquivalent T a a :=
-  T.gauge_equiv.refl a.element
-
-/-- Symmetry of MC gauge equivalence. -/
-theorem gaugeEquivalent_symm {R : Type u} [CommRing R]
-    {V : ℤ → Type v}
-    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
-    {L : LInftyAlgebra R V} (T : MCTheory R L)
-    {a b : MCElement R T} :
-    GaugeEquivalent T a b → GaugeEquivalent T b a :=
-  T.gauge_equiv.symm
-
-/-- Transitivity of MC gauge equivalence. -/
-theorem gaugeEquivalent_trans {R : Type u} [CommRing R]
-    {V : ℤ → Type v}
-    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
-    {L : LInftyAlgebra R V} (T : MCTheory R L)
-    {a b c : MCElement R T} :
-    GaugeEquivalent T a b → GaugeEquivalent T b c → GaugeEquivalent T a c :=
-  T.gauge_equiv.trans
-
 /-- Gauge equivalence is an equivalence relation -/
 theorem gauge_equiv_equivalence {R : Type u} [CommRing R]
     {V : ℤ → Type v}
@@ -202,13 +152,13 @@ theorem gauge_equiv_equivalence {R : Type u} [CommRing R]
     {L : LInftyAlgebra R V} (T : MCTheory R L) : Equivalence (GaugeEquivalent T) where
   refl := by
     intro a
-    exact gaugeEquivalent_refl T a
+    exact T.gauge_equiv.refl a.element
   symm := by
     intro a b hab
-    exact gaugeEquivalent_symm T hab
+    exact T.gauge_equiv.symm hab
   trans := by
     intro a b c hab hbc
-    exact gaugeEquivalent_trans T hab hbc
+    exact T.gauge_equiv.trans hab hbc
 
 instance gaugeEquivalentSetoid {R : Type u} [CommRing R]
     {V : ℤ → Type v}
@@ -233,7 +183,8 @@ def gaugeAct {R : Type u} [CommRing R]
     {L : LInftyAlgebra R V} {T : MCTheory R L}
     (g : V 0) (a : MCElement R T) : MCElement R T where
   element := gaugeAction T g a.element
-  mc := gaugeAction_preservesMC T g a.element a.mc
+  mc := by
+    simpa [gaugeAction] using (T.gaugeAction_preserves_curvature_zero g a.element a.mc)
 
 /-- Projection of an MC element to its moduli class. -/
 def toModuli {R : Type u} [CommRing R]
