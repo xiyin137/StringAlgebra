@@ -385,6 +385,26 @@ theorem minimal_model_exists_with_linear_bijectivity {R : Type u} [CommRing R]
   refine ⟨minimalModelMorphism M, minimalModelMorphism_isQuasiIso M, ?_⟩
   simpa using minimalModelMorphism_linear_isBijective M
 
+/-- The strengthened minimal-model existence statement is equivalent to the
+    base existence statement because `isQuasiIso` already encodes arity-1
+    degreewise bijectivity. -/
+theorem minimal_model_exists_with_linear_bijectivity_iff {R : Type u} [CommRing R]
+    {V : ℤ → Type v}
+    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
+    (L : LInftyAlgebra R V)
+    (M : MinimalModelResult L) :
+    (∃ F : LInftyHom R M.model L,
+      F.isQuasiIso ∧
+      (∀ n : ℤ, Function.Bijective (((F.components 1 (by omega)).map n)))) ↔
+    (∃ F : LInftyHom R M.model L, F.isQuasiIso) := by
+  constructor
+  · intro h
+    rcases h with ⟨F, hq, _hlin⟩
+    exact ⟨F, hq⟩
+  · intro h
+    rcases h with ⟨F, hq⟩
+    exact ⟨F, hq, hq⟩
+
 /-- Conditional minimal-model comparison packaging.
 
     If a quasi-isomorphic comparison morphism between two candidate minimal
@@ -516,6 +536,35 @@ theorem isFormal_unpacked_with_linear_bijectivity {R : Type u} [CommRing R]
   rcases h with ⟨F⟩
   exact ⟨F.H, F.instAddCommGroup, F.instModule, F.model, F.minimal,
     formalityMorphism F, formalityMorphism_isQuasiIso F, formalityMorphism_linear_isBijective F⟩
+
+/-- The strengthened unpacked formality statement is equivalent to the base
+    unpacked statement because `q.isQuasiIso` already carries linear-part
+    degreewise bijectivity. -/
+theorem unpacked_with_linear_bijectivity_iff_unpacked {R : Type u} [CommRing R]
+    {V : ℤ → Type v}
+    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
+    {L : LInftyAlgebra R V} :
+    (∃ (H : ℤ → Type v),
+      ∃ (_instAdd : ∀ i, AddCommGroup (H i)),
+      ∃ (_instModule : ∀ i, Module R (H i)),
+      ∃ (model : LInftyAlgebra R H),
+      ∃ (_minimal : isMinimal model),
+      ∃ (q : LInftyHom R model L),
+        q.isQuasiIso ∧
+        (∀ n : ℤ, Function.Bijective (((q.components 1 (by omega)).map n)))) ↔
+    (∃ (H : ℤ → Type v),
+      ∃ (_instAdd : ∀ i, AddCommGroup (H i)),
+      ∃ (_instModule : ∀ i, Module R (H i)),
+      ∃ (model : LInftyAlgebra R H),
+      ∃ (_minimal : isMinimal model),
+      ∃ (q : LInftyHom R model L), q.isQuasiIso) := by
+  constructor
+  · intro h
+    rcases h with ⟨H, instAdd, instModule, model, minimal, q, hq, _hlin⟩
+    exact ⟨H, instAdd, instModule, model, minimal, q, hq⟩
+  · intro h
+    rcases h with ⟨H, instAdd, instModule, model, minimal, q, hq⟩
+    exact ⟨H, instAdd, instModule, model, minimal, q, hq, hq⟩
 
 /-- Formality yields a witness package whose explicit linear part is
     degreewise bijective. -/

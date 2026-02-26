@@ -73,7 +73,8 @@ Current audited status (2026-02-26):
 6. Minimal/formality witness packages now also expose canonical accessor-level linear bridges (`minimalModelMorphism_linear_isBijective`, `formalityMorphism_linear_isBijective`) plus simp identification lemmas to the packaged linear maps, so degreewise bijectivity can be consumed uniformly from accessor morphisms.
 7. Transfer extraction interfaces now include linear-bijectivity-preserving existence theorems (`minimal_model_exists_with_linear_bijectivity`, `isFormal_unpacked_with_linear_bijectivity`, `isFormal_exists_formalityLinear_isBijective`) so witness unpacking does not lose arity-1 isomorphism data.
 8. Transfer formality extraction now has explicit reverse/iff bridges (`isFormal_of_unpacked_with_linear_bijectivity`, `isFormal_iff_unpacked_with_linear_bijectivity`, `isFormal_iff_exists_formalityLinear_isBijective`) so strengthened unpacked/package-level views are theorem-level equivalent to `isFormal`.
-9. Remaining semantic debt is tracked explicitly in `StringAlgebra/Linfinity/TODO.md`.
+9. Transfer extraction conservativity is now explicit (`minimal_model_exists_with_linear_bijectivity_iff`, `unpacked_with_linear_bijectivity_iff_unpacked`): strengthened “with linear bijectivity” statements are equivalent to base quasi-isomorphism existence/unpacked statements.
+10. Remaining semantic debt is tracked explicitly in `StringAlgebra/Linfinity/TODO.md`.
 
 Current dependency flow toward `Formality.lean`:
 
@@ -103,6 +104,8 @@ MinimalModelResult.quasiIso_property + minimalModelMorphism_linear_eq -> minimal
 FormalityResult.quasiIso_property + formalityMorphism_linear_eq -> formalityMorphism_linear_isBijective -> formalityLinear_isBijective
 MinimalModelResult + canonical accessor bridges -> minimal_model_exists_with_linear_bijectivity
 isFormal -> isFormal_unpacked_with_linear_bijectivity -> isFormal_exists_formalityLinear_isBijective
+minimal_model_exists_with_linear_bijectivity <-> minimal_model_exists_with_linear_bijectivity_iff
+isFormal_unpacked_with_linear_bijectivity <-> unpacked_with_linear_bijectivity_iff_unpacked
 isFormal_of_unpacked_with_linear_bijectivity -> isFormal
 isFormal <-> isFormal_iff_unpacked_with_linear_bijectivity <-> isFormal_iff_exists_formalityLinear_isBijective
 -> linfty_preserves_mc (with MCPreservation witness)
