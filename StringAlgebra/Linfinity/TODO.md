@@ -30,6 +30,7 @@ This file tracks formal soundness debt for `StringAlgebra/Linfinity` under `agen
    - `BVAlgebra.lean`: `CyclicLInfty.antibracket` now uses explicit `l2` and cyclicity law instead of a fabricated zero output.
    - `MaurerCartan.lean`: removed hardcoded zero Kuranishi map; Kuranishi local model now requires explicit `KuranishiTheory` data with base-point normalization.
    - `MaurerCartan.lean`: gauge equivalence now has explicit reflexive/symmetric/transitive lemmas and a canonical `Setoid`; smoothness now exposes an explicit moduli-point constructor (`smoothPoint_when_unobstructed`) with a `Nonempty` wrapper theorem.
+   - `MaurerCartan.lean`: added explicit MC-to-moduli projection with exact characterization `a.toModuli = b.toModuli ↔ GaugeEquivalent T a b`.
    - `Coderivations.lean`: component extraction no longer aliases the global map; explicit component maps are part of reduced coderivation data.
 
 ## Linfinity Dependency Graph
