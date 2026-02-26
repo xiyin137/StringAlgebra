@@ -39,6 +39,8 @@ Detailed staged plan:
 
 Current Phase-1 status: local isolated dry-run extraction checks pass for all
 four domains via `split/dry_run_extract.sh`.
+Current Phase-2 local status: all four domains were extracted with
+`split/extract_domain.sh` and passed build/boundary/smuggling checks.
 
 ## Structure
 

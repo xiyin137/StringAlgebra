@@ -128,9 +128,16 @@ For each extraction:
 
 Current local execution status:
 
-1. `MZV` was extracted with `split/extract_domain.sh` to a standalone local repo
-   (`/tmp/StringAlgebra-MZV-20260226-164100`) and passed build + boundary +
-   anti-smuggling checks.
+1. `MZV` extracted to `/tmp/StringAlgebra-MZV-20260226-164100`.
+2. `VOA` extracted to `/tmp/StringAlgebra-VOA-20260226-164206`.
+3. `Linfinity` extracted to `/tmp/StringAlgebra-Linfinity-20260226-164229`.
+4. `MTC` extracted to `/tmp/StringAlgebra-MTC-20260226-164300`.
+
+Each extracted repo passed:
+
+1. Domain build (`lake build StringAlgebra.<Domain>`).
+2. Anti-smuggling scans (no assumption-bundle classes, no axiom/admit/choose/epsilon/unsafe hits).
+3. Import boundary checks (no cross-domain imports).
 
 ### Phase 3 - Monorepo Transition Cleanup
 

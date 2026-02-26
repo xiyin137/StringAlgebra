@@ -42,3 +42,6 @@ bash split/extract_domain.sh MZV /tmp/StringAlgebra-MZV
 ```
 
 Add `--no-checks` to only scaffold files without running build/audits.
+
+Validated in this monorepo on 2026-02-26 for all four domains:
+`MZV`, `VOA`, `Linfinity`, `MTC`.
