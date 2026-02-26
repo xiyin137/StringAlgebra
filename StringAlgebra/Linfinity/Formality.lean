@@ -245,6 +245,14 @@ structure FormalityMorphism (data : FormalityData R) where
     (data.dPoly.toDGLAData.toLInftyAlgebra)
   /-- The components U_n given by sums over Kontsevich graphs -/
   components : ∀ n : ℕ, (hn : n ≥ 1) → FormalityComponent data n hn
+  /-- Component-level consistency with the bundled L∞ morphism data. -/
+  component_spec :
+    ∀ n : ℕ, ∀ hn : n ≥ 1, ∀ k : ℤ, ∀ x : data.tPoly.fields k,
+      ((morphism.components n hn).map k) x = (components n hn).graphSum k x
+  /-- Arity-1 graph component recovers the HKR linear term. -/
+  linear_hkr_spec :
+    ∀ k : ℤ, ∀ x : data.tPoly.fields k,
+      (components 1 (by omega)).graphSum k x = data.hkr.component k x
   /-- U is a quasi-isomorphism: U₁ induces iso on cohomology -/
   is_quasi_iso : morphism.isQuasiIso
 
@@ -258,6 +266,18 @@ structure FormalityMorphism (data : FormalityData R) where
 def FormalityMorphism.linearIsHKR (data : FormalityData R) (U : FormalityMorphism data) : Prop :=
   ∀ n : ℤ, ∀ x : data.tPoly.fields n,
     ((U.morphism.components 1 (by omega)).map n) x = data.hkr.component n x
+
+/-- The linear HKR compatibility follows from the explicit
+    component-consistency and HKR-normalization fields. -/
+theorem FormalityMorphism.linearIsHKR_of_specs
+    (data : FormalityData R) (U : FormalityMorphism data) :
+    FormalityMorphism.linearIsHKR data U := by
+  intro n x
+  calc
+    ((U.morphism.components 1 (by omega)).map n) x
+        = (U.components 1 (by omega)).graphSum n x := by
+          simpa using U.component_spec 1 (by omega) n x
+    _ = data.hkr.component n x := U.linear_hkr_spec n x
 
 /-! ## The Formality Theorem
 

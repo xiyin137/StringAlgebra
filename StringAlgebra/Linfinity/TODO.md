@@ -24,6 +24,7 @@ This file tracks formal soundness debt for `StringAlgebra/Linfinity` under `agen
    - `Formality.lean`: added explicit star-product gauge-class quotient interface (`StarProductGaugeClass`, projection, and exact equality↔gauge-equivalence bridge lemmas).
    - `Formality.lean`: added classification bridge theorem on quotient classes (`starProductClassification_toGaugeClass`) to consume assumptions directly at the `toGaugeClass` level.
    - `Formality.lean`: gauge transformations are now identity-normalized (`T₀ = 0`) and composition/symmetry preserve and combine explicit transformation data instead of discarding components; the local `ConfigurationSpace` model also enforces collision-freeness via injectivity.
+   - `Formality.lean`: strengthened `FormalityMorphism` with explicit component consistency against the bundled `LInftyHom` at every arity (`component_spec`) and explicit arity-1 HKR normalization (`linear_hkr_spec`); added the derived theorem `FormalityMorphism.linearIsHKR_of_specs`.
    - `Formality.lean`: aligned theorem naming/documentation with witness-level semantics (`hkr_chain_equation`, `canonicalCommutator_firstOrder`, `poissonSigmaModel_witness`) while retaining compatibility aliases for historical names.
    - `Basic.lean`: removed tautological Jacobi fields; now carries explicit law interfaces.
    - `LInfinityAlgebra.lean`: removed fake twisted/Lie conversion fallbacks and synthetic transfer morphism defaults; transfer morphisms are now explicit witness fields, and core `LInftyMorphism` composition now uses explicit composition data with canonical identity instances.
@@ -101,7 +102,7 @@ PolyvectorFieldsDGLA.toDGLAData
 11. `DGLA.lean`: medium risk. Tautological bridge shells removed, canonical lift/compose wiring has bidirectional quasi-isomorphism criterion equivalence, and lift witnesses now explicitly constrain higher-component shape; full bracket-sensitive constructive bridge from DGLA structure to higher L∞ components is still pending.
 12. `MaurerCartan.lean`: medium risk. MC/gauge/twisting operations are explicit interface data with witness-aligned theorem/docs, and Kuranishi outputs are no longer fabricated; canonical constructive formulas and cohomological quotient realization remain pending.
 13. `Transfer.lean`: high risk. Fabricated outputs removed, witness-return theorems now preserve supplied comparison data explicitly, but transferred brackets/structures are still witness-driven and not yet constructed from trees internally.
-14. `Formality.lean`: high risk. Placeholder outputs removed; MC transport plus gauge-equivalence/gauge-class interfaces are explicit, theorem naming now reflects witness-level semantics, and gauge-transformation normalization/composition are data-preserving, while the theorem-level bridge still remains witness-driven and awaits constructive graph-weight/operator machinery.
+14. `Formality.lean`: high risk. Placeholder outputs removed; `FormalityMorphism` now enforces arity-wise component consistency with bundled L∞ data and explicit HKR normalization at arity 1, MC transport plus gauge-equivalence/gauge-class interfaces are explicit, theorem naming now reflects witness-level semantics, and gauge-transformation normalization/composition are data-preserving, while the theorem-level bridge still remains witness-driven and awaits constructive graph-weight/operator machinery.
 15. `BVAlgebra.lean`: medium risk. No `sorry`; cyclic antibracket interface is explicit, `Δ`-closure is tracked via an explicit trilinear vanishing witness (`triple_delta_zero`), and key BV-to-Gerstenhaber/CME derivations still rely on explicit assumptions pending closure.
 16. `TODO.md`: active audit ledger.
 
@@ -146,6 +147,7 @@ Target: `Formality.lean`
 
 1. Add constructive graph-weight/operator infrastructure.
 2. Tie `FormalityMorphism` components to graph systems via explicit equations.
+   Partial closure: arity-wise consistency with bundled L∞ data and arity-1 HKR normalization are now encoded; remaining work is constructive graph-operator equations for higher arities.
 3. Strengthen quantization theorem from witness-driven existence to graph-derived existence.
 
 ### WP6 - BV Closure
