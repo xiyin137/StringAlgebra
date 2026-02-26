@@ -183,6 +183,8 @@ structure LInftyMorphism (R : Type u) [CommRing R]
   linear : (n : ℤ) → V n →ₗ[R] W n
   /-- Higher components f_n : V^⊗n → W (degree 1-n) -/
   higher : ℕ → (n : ℤ) → V n →ₗ[R] W n
+  /-- Normalization: there is no arity-0 component in this interface. -/
+  higher_zero : ∀ n : ℤ, higher 0 n = 0
   /-- Compatibility: D' ∘ F = F ∘ D as coalgebra morphisms -/
   compatible : ∀ n : ℤ, higher 1 n = linear n
 
@@ -202,6 +204,10 @@ def id {L : LInftyAlgebra R V} : LInftyMorphism R L L where
     · subst hk
       simpa using (LinearMap.id : V _ →ₗ[R] V _)
     · exact 0
+  higher_zero := by
+    intro n
+    have hk : (0 : ℕ) ≠ 1 := by decide
+    simp [hk]
   compatible := by
     intro n
     simp

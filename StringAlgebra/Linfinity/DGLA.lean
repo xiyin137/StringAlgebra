@@ -363,6 +363,10 @@ def DGLAMorphism.toLInftyMorphism {R : Type u} [CommRing R]
     · subst hk
       simpa using f.toDGMorphism.componentMap n
     · exact 0
+  higher_zero := by
+    intro n
+    have hk : (0 : ℕ) ≠ 1 := by decide
+    simp [hk]
   compatible := by
     intro n
     simp

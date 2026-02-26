@@ -149,6 +149,9 @@ def toCoreMorphism {L : LInftyAlgebra R V} {L' : LInftyAlgebra R W}
     by_cases hk : k = 0
     · exact 0
     · exact (F.components k (Nat.succ_le_of_lt (Nat.pos_iff_ne_zero.mpr hk))).map n
+  higher_zero := by
+    intro n
+    simp
   compatible := by
     intro n
     have hk : (1 : ℕ) ≠ 0 := by decide
