@@ -95,29 +95,6 @@ theorem quantumDim_vacuum_of_sMatrix_unit_ne_zero [IsAlgClosed k] [HasKernels C]
 noncomputable def totalDimSq [IsAlgClosed k] [HasKernels C] : k :=
   ∑ i : FusionCategory.Idx (k := k) (C := C), quantumDim (C := C) i ^ 2
 
-/-- Temporary proof-debt contract for deep S-matrix identities. -/
-class SMatrixAxioms (k : Type u₁) [Field k]
-    (C : Type u₁) [Category.{v₁} C] [MonoidalCategory C] [BraidedCategory C]
-    [Preadditive C] [Linear k C] [MonoidalPreadditive C]
-    [HasFiniteBiproducts C] [RigidCategory C] [RibbonFusionCategory k C] where
-  sMatrixEnd_symmetric :
-    ∀ (i j : FusionCategory.Idx (k := k) (C := C)),
-      sMatrixEnd (C := C) i j = sMatrixEnd (C := C) j i
-  totalDimSq_ne_zero :
-    ∀ [IsAlgClosed k] [HasKernels C], totalDimSq (C := C) ≠ (0 : k)
-  quantumDim_fusion :
-    ∀ [IsAlgClosed k] [HasKernels C]
-      (i j : FusionCategory.Idx (k := k) (C := C)),
-      quantumDim (C := C) i * quantumDim (C := C) j =
-      ∑ m : FusionCategory.Idx (k := k) (C := C),
-        (FusionCategory.fusionCoeff (k := k) i j m : k) * quantumDim (C := C) m
-  sMatrix_orthogonality :
-    ∀ [IsAlgClosed k] [HasKernels C]
-      (i j : FusionCategory.Idx (k := k) (C := C)),
-      ∑ m : FusionCategory.Idx (k := k) (C := C),
-        sMatrix (C := C) i m * sMatrix (C := C) (FusionCategory.dualIdx m) j =
-      if i = j then totalDimSq (C := C) else 0
-
 /-- The End(𝟙)-valued S-matrix is symmetric: S_{ij} = S_{ji}. -/
 theorem sMatrixEnd_symmetric
     (i j : FusionCategory.Idx (k := k) (C := C)) :

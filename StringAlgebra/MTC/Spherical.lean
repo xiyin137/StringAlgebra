@@ -62,18 +62,6 @@ theorem spherical_dim (X : C) : leftDim X = rightDim X :=
 
 end
 
-/-! ### Placeholder proof obligations (explicit assumptions) -/
-
-/-- Temporary proof-debt contract for spherical quantum-dimension identities. -/
-class SphericalDimAxioms (C : Type u₁) [Category.{v₁} C] [MonoidalCategory C]
-    [RigidCategory C] [PivotalCategory C] [SphericalCategory C] where
-  qdim_dual :
-    ∀ (X : C), dim Xᘁ = dim X
-  qdim_unit :
-    dim (𝟙_ C) = 𝟙 (𝟙_ C)
-  qdim_tensor :
-    ∀ (X Y : C), dim (X ⊗ Y) = dim X ≫ dim Y
-
 /-- Quantum-dimension duality.
 
 Current status: tracked as an explicit theorem-level proof gap. -/

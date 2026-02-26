@@ -1,304 +1,104 @@
 # MTC Module TODO
 
-## Status (2026-02-26): Core infrastructure compiles; 24 theorem-level sorrys remain, with explicit policy debt from temporary axiom classes
+## Status (2026-02-26)
 
-All files compile via `lake build StringAlgebra.MTC`; current proof-gap count is 24 theorem-level `sorry` markers.
-Definitions are sound and non-placeholder; unresolved obligations are either explicit theorem-level `sorry`s or temporary `*Axioms` contracts that remain scheduled for replacement.
-`Endomorphism.scalarOfEndo` now uses a canonical linear equivalence
-`k ≃ₗ[k] End(X)` (no `.choose` extraction path remains in `StringAlgebra/MTC`).
+- `lake build StringAlgebra.MTC` passes.
+- Proof-gap count: **22 theorem-level `sorry` markers** in `StringAlgebra/MTC`.
+- No local MTC assumption-bundle/axiom-class wrappers remain (`*Axioms`, `*Assumptions`, `RibbonSphericalAxiom` removed).
+- Open debt is represented directly at theorem sites.
 
-- Phase 1 (easy algebraic wins): **complete** — 11 sorrys proved
-- Phase 2 (duality / Drinfeld infrastructure): **complete** — Drinfeld helpers
-  plus `Pivotal.leftRightDualIso` via exact pairing uniqueness
-- Phase 3 (pivotal structure from ribbon): **complete** — naturality proved,
-  both zigzag identities proved (pivotalIso_leftDuality, pivotalIso_leftDuality_dual)
-- Phase 4 (spherical from ribbon): **temporarily assumption-backed** — `toSphericalCategory`
-  now depends on explicit `RibbonSphericalAxiom` proof contract
-- Phase 5 (deep modular theorems): **in progress** — hard results remain explicit debt
-  via theorem-level `sorry` and temporary `*Axioms` contracts
+## Proof-Gap Inventory (22)
 
-## Recent Audit Fixes
-- DevelopmentHarness.lean: removed unused placeholder-assumption theorems
-  (`has_foundation_assumptions`, `has_modular_assumptions`) that were pure
-  `sorry` stubs with no downstream Lean usage.
-- Pivotal.lean: replaced ad-hoc `leftRightDualIso` inverse proofs with
-  `pivotalExactPairing` + `leftDualIso`, eliminating 2 sorrys
-- PivotalCategory: added both zigzag identities (pivotalIso_leftDuality,
-  pivotalIso_leftDuality_dual) for full monoidal condition on pivotal iso
-- Ribbon.lean: pivotal iso now includes twist correction (j = u ∘ θ⁻¹), Drinfeld iso factored out
-- FusionCategory.lean: replaced incorrect fusionCoeff_dual_symmetry with correct
-  Frobenius reciprocity (fusionCoeff_frobenius) and duality swap (fusionCoeff_dual_swap)
-- FusionCategory.lean: added optional index-coherence contract
-  `CanonicalSimpleIndex` and vacuum normalization lemmas
-  (`fusionCoeff_vacuum_iso`, `fusionCoeff_vacuum_kronecker`)
-- FusionMatrices.lean: added matrix packaging of fusion coefficients
-  (`leftFusionMatrix`, `leftFusionMatrixK`) with matrix-form associativity identities
-  (`leftFusionMatrix_mul_assoc_entry`,
-  `leftFusionMatrix_mul_eq_linearCombination`,
-  `leftFusionMatrixK_mul_eq_linearCombination`)
-- FusionMatrices.lean: added canonical `Idx ≃ Fin rank` reindexing
-  (`idxEquivFin`, `idxOfFin`, `finOfIdx`) and Fin-indexed matrix APIs
-  (`leftFusionMatrixFinNat`, `leftFusionMatrixFin`,
-  `leftFusionMatrixByFinNat`, `leftFusionMatrixByFin`)
-- FusionMatrices.lean: proved vacuum matrix normalization under canonical indexing
-  (`leftFusionMatrix_unit`, `leftFusionMatrixK_unit`,
-  `leftFusionMatrixFinNat_unit`, `leftFusionMatrixFin_unit`,
-  `leftFusionMatrixByFinNat_unit`, `leftFusionMatrixByFin_unit`)
-- FusionMatrices.lean: added braided commutativity theorem
-  `leftFusionMatrix_mul_comm` (`N_i N_j = N_j N_i`) under
-  `BraidedCategory C` + `FusionRuleAxioms`, then lifted to
-  `leftFusionMatrixK_mul_comm`, `leftFusionMatrixFinNat_mul_comm`,
-  `leftFusionMatrixFin_mul_comm`, `leftFusionMatrixByFinNat_mul_comm`,
-  `leftFusionMatrixByFin_mul_comm`
-- FusionMatrices.lean: added symmetry of fusion linear-combination matrices
-  in braided setting:
-  `leftFusionProductLinearCombination_comm`,
-  `leftFusionProductLinearCombinationK_comm`,
-  `leftFusionProductLinearCombinationFinNat_comm`,
-  `leftFusionProductLinearCombinationFin_comm`
-- FusionSpectral.lean: added spectral-radius FP-dimension candidate wrappers
-  on Fin-reindexed fusion matrices and vacuum normalization
-  (`leftFusionSpectralRadius_unit`, `fpDimCandidate_unit`)
-- FusionPF.lean: added explicit Perron-Frobenius assumption contract
-  `PerronFrobeniusAxioms` plus wrapper theorems on both `Idx` and `Fin`-indexed
-  FPdim candidates
-- FusionPF.lean: split PF proof debt into reduced contracts
-  `PerronFrobeniusPosAxiom` and `PerronFrobeniusFusionAxiom`, with
-  constructor `perronFrobeniusAxiomsOfPosFusion` deriving full
-  `PerronFrobeniusAxioms` from reduced contracts + canonical vacuum normalization
-- Semisimple.lean: removed .choose-based multiplicity definition
-- Endomorphism.lean: proved scalarOfEndUnit_spec and scalarOfEndSimple_spec
-- Endomorphism.lean: replaced `.choose`-based `scalarOfEndo` with
-  `smulIdLinearEquiv : k ≃ₗ[k] (X ⟶ X)` built from `c ↦ c • 𝟙 X`
-- Bridge/VOAToMTC.lean: fusion_symmetry now proved via BraidedFusionCategory.fusionCoeff_symmetric
-- Bridge/VOAToMTC.lean: bridge proofs remain explicit theorem-level debt
-  (`huang_nondegeneracy_of_assumptions`, `twist_roots_of_unity_of_assumptions`,
-  `twist_roots_of_unity_of_bridge_assumptions`) with no bridge-local
-  assumption bundle classes.
-- Bridge/VOAToMTC.lean + Bridge/Harness.lean: removed forwarding aliases
-  (`modularTensorCategoryOfAssumptions`,
-  `modularTensorCategoryOfBridgeAssumptions`,
-  `huang_nondegeneracy_of_bridge_assumptions`,
-  `twist_roots_of_unity_of_bundle`, bundle/form-contract harness aliases);
-  harness now checks only direct theorem interfaces.
-- SMatrix.lean: proved `sMatrix_symmetric` from End(𝟙)-symmetry helper and proved
-  `quantumDim_vacuum` by reduction to `totalDimSq_ne_zero`
-- Spherical/Ribbon/Fusion/SMatrix/Modular/Verlinde: moved placeholder assumptions
-  into explicit contract classes (`*Axioms` / `RibbonSphericalAxiom`) and kept
-  theorem wrappers stable
-- Added `MTC/Assumptions.lean` with bundle classes:
-  `FoundationAssumptions`, `ModularAssumptions`, `DevelopmentAssumptions`
-  to reduce downstream instance clutter
-- Added automatic bundle-constructor instances in `Assumptions.lean`:
-  component contracts ⇒ `FoundationAssumptions` / `ModularAssumptions`,
-  plus `FoundationAssumptions` + `ModularAssumptions` ⇒ `DevelopmentAssumptions`
-- Added `ProofIdeas/AssumptionContracts.md` with a contract-to-wrapper matrix
-  for systematic proof-discharge tracking
-- Added `MTC/DevelopmentHarness.lean` integration checks proving key
-  cross-layer theorems from a single `[DevelopmentAssumptions k C]` context
-- Expanded `MTC/DevelopmentHarness.lean` to exercise the full current contract
-  surface (qdim, fusion, S-matrix, modular relations, Verlinde diagonalization)
-- Added `MTC/Bridge/Harness.lean` integration checks for VOA bridge contracts
-  (now direct theorem interfaces without bridge bundle classes)
-- Added explicit layer aggregators:
-  `FoundationLayer.lean`, `FusionLayer.lean`, `ModularLayer.lean`,
-  and rewired top-level `MTC.lean` imports accordingly
+1. `Spherical.lean`
+- `qdim_dual`
+- `qdim_unit`
+- `qdim_tensor`
 
-## File Structure
+2. `FusionCategory.lean`
+- `fusionCoeff_assoc`
+- `fusionCoeff_frobenius`
+- `fusionCoeff_dual_swap`
 
+3. `SMatrix.lean`
+- `sMatrixEnd_symmetric`
+- `totalDimSq_ne_zero`
+- `quantumDim_fusion`
+- `sMatrix_orthogonality`
+
+4. `ModularTensorCategory.lean`
+- `sMatrix_squared`
+- `modular_relation`
+
+5. `Verlinde.lean`
+- `verlinde_formula`
+- `sMatrix_diagonalizes_fusion`
+
+6. `FusionPF.lean`
+- `fpDimCandidate_unit_gap`
+- `fpDimCandidate_pos_gap`
+- `fpDimCandidate_fusion_gap`
+- `fpDimCandidateByFin_pos`
+- `fpDimCandidateByFin_fusion`
+
+7. `Bridge/VOAToMTC.lean`
+- `huang_nondegeneracy_of_assumptions`
+- `twist_roots_of_unity_of_assumptions`
+- `twist_roots_of_unity_of_bridge_assumptions`
+
+## Smuggling Cleanup Completed
+
+1. Removed `MTC/Assumptions.lean` and all bundle classes (`FoundationAssumptions`, `ModularAssumptions`, `DevelopmentAssumptions`).
+2. Removed theorem-wrapper axiom classes from core files:
+- `SphericalDimAxioms`
+- `FusionRuleAxioms`
+- `SMatrixAxioms`
+- `ModularDataAxioms`
+- `VerlindeAxioms`
+- `PerronFrobeniusPosAxiom`, `PerronFrobeniusFusionAxiom`, `PerronFrobeniusAxioms`
+3. Removed ribbon spherical assumption shim:
+- `RibbonSphericalAxiom`
+- `toSphericalCategory`
+4. Updated `DevelopmentHarness.lean` to consume direct theorem-gap interfaces.
+5. Removed bridge assumption-bundle layer earlier (`Bridge/Assumptions.lean`) and kept bridge debt theorem-local.
+
+## Build-Verified Import Surface
+
+Top-level MTC entry is now:
+- `FoundationLayer`
+- `FusionLayer`
+- `ModularLayer`
+- `DevelopmentHarness`
+- `Bridge.Layer`
+
+(no assumption-bundle import)
+
+## Closure Order (Recommended)
+
+1. `Spherical.lean`
+- prove `qdim_unit`, `qdim_dual`, `qdim_tensor`
+
+2. `FusionCategory.lean`
+- derive associativity/Frobenius/dual-swap from semisimple tensor-Hom infrastructure
+
+3. `SMatrix.lean`
+- prove end-valued symmetry and orthogonality, then total-dimension non-vanishing and fusion-character identity
+
+4. `ModularTensorCategory.lean`
+- prove `S²` charge-conjugation and `(ST)^3` relation
+
+5. `Verlinde.lean`
+- derive Verlinde and diagonalization from established modular identities
+
+6. `FusionPF.lean`
+- discharge PF candidate positivity and fusion character theorems
+
+7. `Bridge/VOAToMTC.lean`
+- replace VOA-interface theorem gaps when VOA analytic infrastructure is formalized
+
+## Audit Commands
+
+```bash
+rg -n '^\s*sorry\b' StringAlgebra/MTC --glob '*.lean'
+rg -n '^\s*class\s+.*(Axioms|Assumptions|Axiom)' StringAlgebra/MTC --glob '*.lean'
+lake build StringAlgebra.MTC
 ```
-MTC/
-  Pivotal.lean              -- PivotalCategory class (with monoidal conditions)
-  Trace.lean                -- leftTrace, rightTrace
-  Spherical.lean            -- SphericalCategory, trace, dim
-  Ribbon.lean               -- RibbonCategory, twist axioms, Drinfeld iso
-  Semisimple.lean           -- SemisimpleCategory, FinitelySemisimple
-  FoundationLayer.lean      -- foundation-layer aggregator
-  FusionCategory.lean       -- FusionCategory class, fusionCoeff
-  FusionMatrices.lean       -- fusion matrices and matrix-form associativity
-  FusionSpectral.lean       -- spectral-radius FP-dimension candidates
-  FusionPF.lean             -- PF assumption contracts for FPdim candidates
-  Endomorphism.lean         -- scalarOfEndo infrastructure (Schur's lemma)
-  BraidedFusion.lean        -- BraidedFusionCategory, Müger center
-  RibbonFusion.lean         -- RibbonFusionCategory, twistValue, tMatrix
-  FusionLayer.lean          -- fusion-layer aggregator
-  SMatrix.lean              -- S-matrix (End-valued and k-valued)
-  ModularTensorCategory.lean -- MTC class, modular relations
-  Verlinde.lean             -- Verlinde formula, TQFT dimensions
-  ModularLayer.lean         -- modular-layer aggregator
-  Assumptions.lean          -- grouped temporary axiom bundles (policy debt)
-  DevelopmentHarness.lean   -- integration theorems for bundled assumptions
-  Bridge/
-    VOAToMTC.lean           -- Huang's theorem (interface contract)
-    Harness.lean            -- bridge theorem-interface integration checks
-    Layer.lean              -- bridge-layer aggregator
-```
-
-## Priority 1: Infrastructure sorrys (blocking other proofs)
-
-Legend:
-- `[x]` proved
-- `[~]` currently routed through a temporary `*Axioms` contract (explicit policy debt)
-- `[ ]` not yet formalized
-
-### Pivotal.lean
-- [x] `leftRightDualIso.hom_inv_id` - resolved via `leftDualIso` uniqueness
-- [x] `leftRightDualIso.inv_hom_id` - resolved via `leftDualIso` uniqueness
-
-### Ribbon.lean
-- [x] `toPivotalCategory.hom_inv_id` - j = u∘θ⁻¹ is an iso (**proved** via rightDualIso.symm)
-- [x] `toPivotalCategory.inv_hom_id` - j = u∘θ⁻¹ is an iso (**proved** via rightDualIso.symm)
-- [x] `toPivotalCategory.pivotalIso_naturality` - naturality of j (**proved** via drinfeldIsoIso_naturality)
-- [x] `toPivotalCategory.pivotalIso_leftDuality` - first zigzag (**proved** via swap pairing zigzag)
-- [x] `toPivotalCategory.pivotalIso_leftDuality_dual` - second zigzag (**proved** via swap pairing zigzag)
-- [~] `toSphericalCategory` instance - requires `Ribbon.RibbonSphericalAxiom`
-- [x] `twist_unit` - θ_{𝟙} = id (**proved**)
-
-### Endomorphism.lean
-- [x] `scalarOfEndo_id` - proved
-- [x] `scalarOfEndUnit_spec` - proved
-- [x] `scalarOfEndSimple_spec` - proved
-
-## Priority 2: Core theorem sorrys
-
-### FusionCategory.lean
-- [x] `dual_simple` - dual of a simple is simple (**proved** via `Simple.of_iso`)
-- [x] `fusionCoeff_vacuum_eq/ne` - fusion with vacuum gives δ (**proved** via Schur + `Linear.homCongr`)
-- [~] `fusionCoeff_assoc` - via `FusionCategory.FusionRuleAxioms`
-- [~] `fusionCoeff_frobenius` - via `FusionCategory.FusionRuleAxioms`
-- [~] `fusionCoeff_dual_swap` - via `FusionCategory.FusionRuleAxioms`
-
-### BraidedFusion.lean
-- [x] `unit_transparent` - tensor unit is transparent (**proved**)
-- [x] `transparent_tensor` - transparent closed under tensor (**proved** via hexagon decomposition)
-- [x] `transparent_dual` - transparent closed under duals (**proved** via hexagon + transparency transfer)
-- [x] `fusionCoeff_symmetric` - N^m_{ij} = N^m_{ji} (**proved** via braiding + `LinearEquiv.finrank_eq`)
-
-### RibbonFusion.lean
-- [x] `twistValue_vacuum` - θ_0 = 1 (**proved** via `twist_unit` + `scalarOfEndo_id`)
-- [x] `monodromy_eq_twist_ratio` - monodromy = twist ratio (**proved**)
-
-### Semisimple.lean
-- [x] `hom_simple_eq_zero` - nonzero hom between simples is iso (**proved** via Schur)
-- [x] `hom_simple_eq_zero'` - reverse direction (**proved**)
-
-### SMatrix.lean
-- [~] `sMatrixEnd_symmetric` - via `SMatrix.SMatrixAxioms`
-- [x] `sMatrix_symmetric` - k-valued version (reduced to End(𝟙)-symmetry helper)
-- [x] `quantumDim_vacuum` - d_0 = 1 (reduced to `totalDimSq_ne_zero`)
-- [~] `quantumDim_fusion` - via `SMatrix.SMatrixAxioms`
-- [~] `totalDimSq_ne_zero` - via `SMatrix.SMatrixAxioms`
-- [~] `sMatrix_orthogonality` - via `SMatrix.SMatrixAxioms`
-
-### ModularTensorCategory.lean
-- [x] `transparent_iff_unit` (backward) - transparent simple ≅ unit (**proved** via braiding naturality)
-- [x] `transparent_iff_unit` (forward) - unit is transparent (follows from `unit_transparent`)
-- [~] `sMatrix_squared` - via `ModularTensorCategory.ModularDataAxioms`
-- [~] `modular_relation` - via `ModularTensorCategory.ModularDataAxioms`
-
-### Verlinde.lean
-- [~] `verlinde_formula` - via `Verlinde.VerlindeAxioms`
-- [~] `sMatrix_diagonalizes_fusion` - via `Verlinde.VerlindeAxioms`
-- [x] `dimTQFTSpace_torus` - dim V(T²) = rank (**proved**)
-
-### Spherical.lean
-- [~] `qdim_dual` - via `Spherical.SphericalDimAxioms`
-- [~] `qdim_unit` - via `Spherical.SphericalDimAxioms`
-- [~] `qdim_tensor` - via `Spherical.SphericalDimAxioms`
-
-## Assumption Contract Inventory (2026-02-25)
-
-The following classes currently carry the unresolved proof obligations:
-
-- `Spherical.SphericalDimAxioms` (3 obligations)
-- `Ribbon.RibbonSphericalAxiom` (1 obligation)
-- `FusionCategory.FusionRuleAxioms` (3 obligations)
-- `SMatrix.SMatrixAxioms` (4 obligations)
-- `ModularTensorCategory.ModularDataAxioms` (2 obligations)
-- `Verlinde.VerlindeAxioms` (2 obligations)
-- `FusionCategory.PerronFrobeniusPosAxiom` (1 obligation)
-- `FusionCategory.PerronFrobeniusFusionAxiom` (1 obligation)
-
-Bundle convenience classes:
-- `FoundationAssumptions`
-- `ModularAssumptions`
-- `DevelopmentAssumptions`
-
-Bundle constructor instances:
-- `foundationAssumptionsOfComponents`
-- `modularAssumptionsOfComponents`
-- `developmentAssumptionsOfBundles`
-
-Optional coherence assumptions (not proof-debt placeholders):
-- `FusionCategory.CanonicalSimpleIndex` for strict `Idx`-level
-  isoclass uniqueness (`Nonempty (X_i ≅ X_j) ↔ i = j`)
-
-### Bridge/VOAToMTC.lean
-- [x] `huang_nondegeneracy` - now takes explicit Huang nondegeneracy hypothesis argument
-- [x] `twist_roots_of_unity` - now takes explicit twist-root hypothesis argument
-- [~] Direct bridge theorem-level gaps remain:
-  `huang_nondegeneracy_of_assumptions`, `twist_roots_of_unity_of_assumptions`
-- [x] `modularTensorCategoryOfHuang` retained as the direct constructor from
-  explicit nondegeneracy input.
-- [x] Removed bridge assumption-bundle class layer and bundle-forwarding aliases.
-
-## Priority 3: Missing infrastructure
-
-### Frobenius-Perron dimension
-- Spectral-radius wrappers are now available in `FusionSpectral.lean`:
-  `leftFusionSpectralRadius`, `leftFusionSpectralRadiusByFin`,
-  `fpDimCandidate`, `fpDimCandidateByFin`
-- Vacuum normalization proved under canonical indexing:
-  `leftFusionSpectralRadius_unit = 1`, `fpDimCandidate_unit = 1`
-- PF theorem wrappers are staged in `FusionPF.lean` via
-  `PerronFrobeniusAxioms` (`fpDimCandidate_unit_of_axioms`,
-  `fpDimCandidate_pos_of_axioms`, `fpDimCandidate_fusion_of_axioms`)
-- Reduced PF contracts now isolate the remaining debt:
-  `PerronFrobeniusPosAxiom`, `PerronFrobeniusFusionAxiom`
-- Next theorem layer:
-  1. Perron-Frobenius positivity/existence for each `leftFusionMatrixByFin i`
-  2. Uniqueness of positive eigenvector up to scaling
-  3. Identification `fpDim =` Perron root (not just generic spectral radius)
-
-### HasKernels derivation
-- Prove that fusion categories have kernels (semisimple → abelian → has kernels)
-- Currently assumed as `[HasKernels C]` where needed
-
-### End(X) ≅ k linear equiv
-- **implemented** in `Endomorphism.lean` via:
-  - `smulIdLinearMap`
-  - `smulIdLinearMap_injective`
-  - `smulIdLinearMap_finrank_eq`
-  - `smulIdLinearEquiv`
-
-## Architectural Restructuring Roadmap
-
-1. Layer the module graph explicitly:
-   - `MTC/Foundation/` (duality, pivotal, trace, scalar extraction, semisimple)
-   - `MTC/Fusion/` (fusion coeffs, braided/ribbon fusion)
-   - `MTC/Modular/` (S-matrix, modular relations, Verlinde)
-2. Move heavy proof infrastructure out of statement files:
-   - e.g. split long private lemmas from `Ribbon.lean` into
-     `MTC/Foundation/RibbonLemmas.lean`
-3. Keep bridge debt explicit at theorem sites: **completed for bridge layer**
-   - removed bridge-local bundle classes and forwarding wrappers; open bridge
-     obligations are now tracked directly as theorem-level `sorry`
-4. Split long theorem statements from proof bodies where helpful:
-   - keep short API files and move long scripts into sibling `.../Proofs/*.lean`
-5. Factor FPdim development into explicit tiers:
-   - `FusionMatrices` (algebraic packaging, no analysis)
-   - `FusionSpectral` (spectral-radius interface)
-   - future `FusionPF` (Perron-Frobenius existence/uniqueness proofs)
-
-## Priority 4: Examples (Phase 6)
-- [ ] Examples/Ising.lean - 3 objects {1, σ, ψ}
-- [ ] Examples/SUTwoLevel.lean - SU(2)_k with k+1 simples
-- [ ] Examples/VecG.lean - Rep(G) and Drinfeld center Z(Rep(G))
-
-## Notes
-
-- All definitions require `[IsAlgClosed k]` and `[HasKernels C]` for
-  k-valued S-matrix/T-matrix (via Schur's lemma)
-- End(𝟙)-valued S-matrix (`sMatrixEnd`) works without these assumptions
-- The `fusionCoeff` definition uses `Module.finrank k (X_i ⊗ X_j ⟶ X_m)`
-  which is the proper mathematical definition

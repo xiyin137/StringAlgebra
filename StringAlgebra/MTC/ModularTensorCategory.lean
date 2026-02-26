@@ -152,29 +152,6 @@ noncomputable def gaussSum : k :=
     RibbonFusionCategory.twistValue (C := C) i *
     SMatrix.quantumDim (C := C) i ^ 2
 
-/-- Temporary proof-debt contract for modular `S,T` relations. -/
-class ModularDataAxioms (k : Type u₁) [Field k]
-    (C : Type u₁) [Category.{v₁} C] [MonoidalCategory C] [BraidedCategory C]
-    [Preadditive C] [Linear k C] [MonoidalPreadditive C]
-    [HasFiniteBiproducts C] [RigidCategory C] [ModularTensorCategory k C]
-    [IsAlgClosed k] [HasKernels C] where
-  sMatrix_squared :
-    ∀ (i j : FusionCategory.Idx (k := k) (C := C)),
-      matMul (SMatrix.sMatrix (C := C)) (SMatrix.sMatrix (C := C)) i j =
-      if i = FusionCategory.dualIdx j
-      then SMatrix.totalDimSq (C := C)
-      else 0
-  modular_relation :
-    ∀ (i j : FusionCategory.Idx (k := k) (C := C)),
-      matMul (matMul (matMul (SMatrix.sMatrix (C := C))
-        (RibbonFusionCategory.tMatrix (C := C) (k := k)))
-        (matMul (SMatrix.sMatrix (C := C))
-          (RibbonFusionCategory.tMatrix (C := C) (k := k))))
-        (matMul (SMatrix.sMatrix (C := C))
-          (RibbonFusionCategory.tMatrix (C := C) (k := k))) i j =
-      gaussSum (C := C) *
-        matMul (SMatrix.sMatrix (C := C)) (SMatrix.sMatrix (C := C)) i j
-
 /-- S² is the charge conjugation matrix: (S²)_{ij} = δ_{i, j*} · D²
     where j* = dualIdx j and D² is the total quantum dimension squared.
 

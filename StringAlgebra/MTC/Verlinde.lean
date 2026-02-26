@@ -44,30 +44,6 @@ variable [ModularTensorCategory k C]
 
 namespace Verlinde
 
-/-! ### Placeholder proof obligations (explicit assumptions) -/
-
-/-- Temporary proof-debt contract for Verlinde and diagonalization identities. -/
-class VerlindeAxioms (k : Type u₁) [Field k] [IsAlgClosed k]
-    (C : Type u₁) [Category.{v₁} C] [MonoidalCategory C] [BraidedCategory C]
-    [Preadditive C] [Linear k C] [MonoidalPreadditive C]
-    [HasFiniteBiproducts C] [RigidCategory C] [HasKernels C]
-    [ModularTensorCategory k C] where
-  verlinde_formula :
-    ∀ (i j m : FusionCategory.Idx (k := k) (C := C)),
-      (FusionCategory.fusionCoeff (k := k) i j m : k) =
-      ∑ ℓ : FusionCategory.Idx (k := k) (C := C),
-        SMatrix.sMatrix (C := C) i ℓ * SMatrix.sMatrix (C := C) j ℓ *
-        SMatrix.sMatrix (C := C) (FusionCategory.dualIdx m) ℓ /
-        SMatrix.sMatrix (C := C) FusionCategory.unitIdx ℓ
-  sMatrix_diagonalizes_fusion :
-    ∀ (i j j' : FusionCategory.Idx (k := k) (C := C)),
-      ∑ m : FusionCategory.Idx (k := k) (C := C),
-        SMatrix.sMatrix (C := C) j m *
-        (FusionCategory.fusionCoeff (k := k) i j' m : k) =
-      (SMatrix.sMatrix (C := C) i j /
-       SMatrix.sMatrix (C := C) FusionCategory.unitIdx j) *
-      SMatrix.sMatrix (C := C) j j'
-
 /-- The Verlinde formula: the fusion coefficients are determined by the S-matrix.
 
     N^m_{ij} = ∑_ℓ S_{iℓ} · S_{jℓ} · S_{m*,ℓ} / S_{0ℓ}

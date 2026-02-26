@@ -1,37 +1,24 @@
 # Proof Ideas: SMatrix.lean
 
-## Status (2026-02-25)
+## Status (2026-02-26)
 
 Proved:
-- `sMatrix_symmetric` (k-valued) via helper
-  `sMatrix_symmetric_of_end_symmetric`.
-- `quantumDim_vacuum` via helper
-  `quantumDim_vacuum_of_sMatrix_unit_ne_zero` and reduction to
-  `totalDimSq_ne_zero`.
+- `sMatrix_symmetric` (k-valued via end-valued symmetry reduction)
+- `quantumDim_vacuum`
 
-Temporarily assumption-backed placeholders:
-- `SMatrixAxioms.sMatrixEnd_symmetric`
-- `SMatrixAxioms.totalDimSq_ne_zero`
-- `SMatrixAxioms.quantumDim_fusion`
-- `SMatrixAxioms.sMatrix_orthogonality`
+Open theorem-level gaps:
+- `sMatrixEnd_symmetric`
+- `totalDimSq_ne_zero`
+- `quantumDim_fusion`
+- `sMatrix_orthogonality`
 
-## Main Proof Debt
+## Main Blocker
 
-The central blocker remains `sMatrixEnd_symmetric`, which reduces to:
-```
-trace (β_XY ≫ β_YX) = trace (β_YX ≫ β_XY)
-```
-for simple representatives `X = simpleObj i`, `Y = simpleObj j`.
+`SMatrix.sMatrixEnd_symmetric` is the key upstream identity.
 
-This suggests proving a reusable trace-cyclicity/conjugation lemma:
-```
-trace (f ≫ g) = trace (g ≫ f)
-```
-or at least an iso-conjugation invariance lemma for trace.
+## Suggested Order
 
-## Proposed development order
-
-1. Add trace cyclicity/conjugation lemmas in `Trace.lean`.
-2. Replace `SMatrixAxioms.sMatrixEnd_symmetric`.
-3. Replace `SMatrixAxioms.sMatrix_orthogonality`.
-4. Derive `totalDimSq_ne_zero` and `quantumDim_fusion`, then remove the remaining axioms.
+1. Add cyclicity/conjugation lemmas for categorical trace in `Trace.lean`.
+2. Prove `sMatrixEnd_symmetric`.
+3. Prove `sMatrix_orthogonality`.
+4. Derive `totalDimSq_ne_zero` and `quantumDim_fusion`.

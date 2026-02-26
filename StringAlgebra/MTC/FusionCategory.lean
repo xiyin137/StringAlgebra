@@ -198,25 +198,6 @@ theorem fusionCoeff_vacuum_kronecker
 
 end FusionVacuum
 
-/-! ### Placeholder proof obligations (explicit assumptions) -/
-
-/-- Temporary proof-debt contract for deep fusion-rule identities.
-    Replace this class with actual proofs and remove downstream assumptions. -/
-class FusionRuleAxioms (k : Type u₁) [Field k]
-    (C : Type u₁) [Category.{v₁} C]
-    [MonoidalCategory C] [Preadditive C] [Linear k C] [MonoidalPreadditive C]
-    [HasFiniteBiproducts C] [RigidCategory C] [FusionCategory k C] where
-  fusionCoeff_assoc :
-    ∀ (i j l m : Idx (k := k) (C := C)),
-      ∑ p, fusionCoeff (k := k) i j p * fusionCoeff p l m =
-      ∑ q, fusionCoeff (k := k) j l q * fusionCoeff i q m
-  fusionCoeff_frobenius :
-    ∀ (i j m : Idx (k := k) (C := C)),
-      fusionCoeff (k := k) i j m = fusionCoeff m (dualIdx j) i
-  fusionCoeff_dual_swap :
-    ∀ (i j m : Idx (k := k) (C := C)),
-      fusionCoeff (k := k) i j m = fusionCoeff (dualIdx j) (dualIdx i) (dualIdx m)
-
 /-- Associativity of fusion coefficients.
 
 Current status: tracked as an explicit theorem-level proof gap. -/

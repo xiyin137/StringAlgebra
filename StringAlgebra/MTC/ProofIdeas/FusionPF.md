@@ -1,37 +1,23 @@
 # Proof Ideas: FusionPF.lean
 
-## Current status
+## Status (2026-02-26)
 
-`FusionPF.lean` introduces:
-- `FusionCategory.PerronFrobeniusPosAxiom`
-- `FusionCategory.PerronFrobeniusFusionAxiom`
-- `FusionCategory.PerronFrobeniusAxioms`
-- constructor `perronFrobeniusAxiomsOfPosFusion`
-- wrappers:
-  - `fpDimCandidate_unit_of_axioms`
-  - `fpDimCandidate_pos_of_axioms`
-  - `fpDimCandidate_fusion_of_axioms`
-  - Fin-indexed convenience theorems
+Open theorem-level gaps:
+- `fpDimCandidate_unit_gap`
+- `fpDimCandidate_pos_gap`
+- `fpDimCandidate_fusion_gap`
+- `fpDimCandidateByFin_pos`
+- `fpDimCandidateByFin_fusion`
 
-This keeps FPdim APIs usable while Perron-Frobenius proofs are not yet formalized.
-The remaining PF proof debt is now split into two targeted obligations
-(positivity + fusion character), with unit normalization derived from the
-existing spectral vacuum theorem under canonical indexing.
+No PF assumption classes remain.
 
-## Discharge plan for `PerronFrobeniusAxioms`
+## Proof Plan
 
-1. Positivity:
-   - Show `leftFusionMatrixByFin i` has a nonnegative real representative.
-   - Prove existence of a positive eigenvector under irreducibility.
-2. Fusion character identity:
-   - Use eigenvector equations for all `N_i`.
-   - Show multiplicativity against fusion products and identify coefficients.
-3. Unit normalization:
-   - Already available from `FusionSpectral.leftFusionSpectralRadius_unit`
-     under canonical indexing; bridge this to the axiom-free path as the default.
+1. Establish positivity of spectral-radius candidates from nonnegative fusion matrices.
+2. Prove fusion-character identity for `fpDimCandidate`.
+3. Transport results to Fin-indexed forms.
 
-## Suggested next formal module split
+## Structural Direction
 
-- `FusionPF/Core.lean`: nonnegative matrix and irreducibility lemmas.
-- `FusionPF/Perron.lean`: Perron root/vector existence/uniqueness.
-- `FusionPF/Character.lean`: fusion-ring character theorem for FP dimensions.
+- Keep algebraic matrix facts in `FusionMatrices`/`FusionSpectral`.
+- Keep PF analytic lemmas in `FusionPF` (or split into `FusionPF/Core`, `FusionPF/Perron`, `FusionPF/Character`).

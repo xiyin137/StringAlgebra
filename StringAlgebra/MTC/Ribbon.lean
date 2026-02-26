@@ -23,13 +23,12 @@ A ribbon category (also called a tortile category) is a braided rigid monoidal
 category equipped with a twist (or balancing) natural automorphism θ satisfying
 compatibility conditions with the braiding and duals.
 
-Every ribbon category has a canonical pivotal structure and is spherical.
+Every ribbon category has a canonical pivotal structure.
 
 ## Main Definitions
 
 * `RibbonCategory` - Braided rigid category with twist
 * `RibbonCategory.toPivotalCategory` - Canonical pivotal structure from twist
-* `RibbonCategory.toSphericalCategory` - Ribbon categories are spherical
 
 ## References
 
@@ -338,16 +337,6 @@ private theorem eval_twist_sq_monodromy (X : C) :
   rw [← braiding_naturality_left_assoc, ← braiding_naturality_right_assoc]
   -- Goal: θ_{Xᘁ} ▷ X ≫ Xᘁ ◁ θ_X ≫ β ≫ β' ≫ ε = ε
   exact h_nat
-
-/-- Temporary proof-debt contract for sphericality of the ribbon pivotal structure. -/
-class RibbonSphericalAxiom (C : Type u₁) [Category.{v₁} C] [MonoidalCategory C]
-    [BraidedCategory C] [RigidCategory C] [RibbonCategory C] where
-  spherical :
-    ∀ {X : C} (f : X ⟶ X), leftTrace f = rightTrace f
-
-/-- A ribbon category is spherical with respect to its canonical pivotal structure. -/
-noncomputable instance toSphericalCategory [RibbonSphericalAxiom C] : SphericalCategory C where
-  spherical := RibbonSphericalAxiom.spherical (C := C)
 
 /-- The monodromy (double braiding) of X with Y:
     c_{Y,X} ∘ c_{X,Y} : X ⊗ Y → X ⊗ Y -/
