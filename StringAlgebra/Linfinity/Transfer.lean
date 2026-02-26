@@ -232,7 +232,29 @@ theorem transfer_is_quasiIso {R : Type u} [CommRing R]
     (L : LInftyAlgebra R V) (data : SDR R V H)
     (T : TransferResult L data) :
     (transferInclusion L data T).isQuasiIso := by
-  sorry
+  let dataCore : HomotopyTransferData R V H :=
+    { proj := data.proj
+      incl := data.incl
+      homotopy := data.homotopy
+      proj_incl := data.proj_incl
+      annihilation := ⟨data.h_squared, data.h_incl, data.proj_h⟩ }
+  let theoryCore : HomotopyTransferTheory L dataCore :=
+    { transferred := T.transferred
+      inclusion := T.inclusion.toCoreMorphism
+      inclusion_linear := by
+        intro n
+        simpa [LInftyHom.toCoreMorphism, dataCore] using T.inclusion_linear n }
+  have hcore :
+      (transferMorphism (L := L) (data := dataCore) (T := theoryCore)).isQuasiIso :=
+    transferMorphism_isQuasiIso (L := L) (data := dataCore) (T := theoryCore)
+  have hhom :
+      (LInftyHom.ofCoreMorphism
+        (transferMorphism (L := L) (data := dataCore) (T := theoryCore))).isQuasiIso :=
+    ofCoreMorphism_isQuasiIso
+      (F := transferMorphism (L := L) (data := dataCore) (T := theoryCore))
+      hcore
+  intro n
+  simpa [transferInclusion, dataCore, theoryCore] using hhom n
 
 /-- The SDR inclusion maps are degreewise bijective when the transferred
     inclusion is a quasi-isomorphism. -/

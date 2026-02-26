@@ -369,7 +369,16 @@ theorem hkr_chain_equation (data : FormalityData R) :
 theorem kontsevichFormality_is_quasi_iso
     (data : FormalityData R) (U : FormalityMorphism data) :
     (kontsevichFormality data U).isQuasiIso := by
-  sorry
+  intro n
+  have hlin :
+      ((kontsevichFormality data U).components 1 (by omega)).map n = data.hkr.component n := by
+    ext x
+    calc
+      (((kontsevichFormality data U).components 1 (by omega)).map n) x
+          = (U.components 1 (by omega)).graphSum n x := by
+              simpa [kontsevichFormality] using U.component_spec 1 (by omega) n x
+      _ = data.hkr.component n x := U.linear_hkr_spec n x
+  simpa [hlin] using data.hkr.induces_iso n
 
 /-! ## Transfer of Maurer-Cartan Elements
 
