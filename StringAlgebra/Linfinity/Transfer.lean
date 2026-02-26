@@ -372,6 +372,19 @@ theorem minimal_model_exists {R : Type u} [CommRing R]
     ∃ F : LInftyHom R M.model L, F.isQuasiIso :=
   ⟨minimalModelMorphism M, minimalModelMorphism_isQuasiIso M⟩
 
+/-- Existence of a minimal-model quasi-isomorphism together with
+    degreewise bijectivity of its arity-1 component. -/
+theorem minimal_model_exists_with_linear_bijectivity {R : Type u} [CommRing R]
+    {V : ℤ → Type v}
+    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
+    (L : LInftyAlgebra R V)
+    (M : MinimalModelResult L) :
+    ∃ F : LInftyHom R M.model L,
+      F.isQuasiIso ∧
+      (∀ n : ℤ, Function.Bijective (((F.components 1 (by omega)).map n))) := by
+  refine ⟨minimalModelMorphism M, minimalModelMorphism_isQuasiIso M, ?_⟩
+  simpa using minimalModelMorphism_linear_isBijective M
+
 /-- Conditional minimal-model comparison packaging.
 
     If a quasi-isomorphic comparison morphism between two candidate minimal
@@ -485,6 +498,34 @@ theorem isFormal_unpacked {R : Type u} [CommRing R]
       ∃ (q : LInftyHom R model L), q.isQuasiIso := by
   rcases h with ⟨F⟩
   exact ⟨F.H, F.instAddCommGroup, F.instModule, F.model, F.minimal, F.quasiIso, F.quasiIso_property⟩
+
+/-- Unpack formality into explicit model/quasi-isomorphism data together with
+    degreewise bijectivity of the arity-1 component. -/
+theorem isFormal_unpacked_with_linear_bijectivity {R : Type u} [CommRing R]
+    {V : ℤ → Type v}
+    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
+    {L : LInftyAlgebra R V} (h : isFormal L) :
+    ∃ (H : ℤ → Type v),
+      ∃ (_instAdd : ∀ i, AddCommGroup (H i)),
+      ∃ (_instModule : ∀ i, Module R (H i)),
+      ∃ (model : LInftyAlgebra R H),
+      ∃ (_minimal : isMinimal model),
+      ∃ (q : LInftyHom R model L),
+        q.isQuasiIso ∧
+        (∀ n : ℤ, Function.Bijective (((q.components 1 (by omega)).map n))) := by
+  rcases h with ⟨F⟩
+  exact ⟨F.H, F.instAddCommGroup, F.instModule, F.model, F.minimal,
+    formalityMorphism F, formalityMorphism_isQuasiIso F, formalityMorphism_linear_isBijective F⟩
+
+/-- Formality yields a witness package whose explicit linear part is
+    degreewise bijective. -/
+theorem isFormal_exists_formalityLinear_isBijective {R : Type u} [CommRing R]
+    {V : ℤ → Type v}
+    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
+    {L : LInftyAlgebra R V} (h : isFormal L) :
+    ∃ F : FormalityResult L, ∀ n : ℤ, Function.Bijective (F.linear n) := by
+  rcases h with ⟨F⟩
+  exact ⟨F, formalityLinear_isBijective F⟩
 
 /-- Build formality from explicit model-and-quasi-isomorphism data. -/
 theorem isFormal_of_unpacked {R : Type u} [CommRing R]
