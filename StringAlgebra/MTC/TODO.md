@@ -26,6 +26,14 @@
   for `totalDimSq`, fusion-character identity route for `quantumDim_fusion`, and
   orthogonality derivation route via trace/dual-index transport), with theorem-local
   `sorry` only.
+- Remaining `ModularTensorCategory` theorem gaps now also carry explicit
+  closure-route comments (`sMatrix_squared` via orthogonality + dual-index transport,
+  `modular_relation` via `(ST)^3` expansion and Gauss-sum collapse), with
+  theorem-local `sorry` only.
+- Remaining `Verlinde` theorem gaps now also carry explicit closure-route comments
+  (`verlinde_formula` via orthogonality/modular inversion + denominator nonvanishing,
+  `sMatrix_diagonalizes_fusion` via Verlinde substitution + sum exchange +
+  orthogonality evaluation), with theorem-local `sorry` only.
 
 ## Proof-Gap Inventory (16)
 

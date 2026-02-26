@@ -60,7 +60,17 @@ theorem verlinde_formula
       SMatrix.sMatrix (C := C) i ℓ * SMatrix.sMatrix (C := C) j ℓ *
       SMatrix.sMatrix (C := C) (FusionCategory.dualIdx m) ℓ /
       SMatrix.sMatrix (C := C) FusionCategory.unitIdx ℓ := by
-  sorry
+  have hVerlindeExpansion :
+      (FusionCategory.fusionCoeff (k := k) i j m : k) =
+      ∑ ℓ : FusionCategory.Idx (k := k) (C := C),
+        SMatrix.sMatrix (C := C) i ℓ * SMatrix.sMatrix (C := C) j ℓ *
+        SMatrix.sMatrix (C := C) (FusionCategory.dualIdx m) ℓ /
+        SMatrix.sMatrix (C := C) FusionCategory.unitIdx ℓ := by
+    -- Remaining Verlinde debt:
+    -- combine S-matrix orthogonality, modular inversion, and nonvanishing
+    -- vacuum-column denominators to rewrite fusion coefficients explicitly.
+    sorry
+  exact hVerlindeExpansion
 
 /-- The S-matrix diagonalizes the fusion rules.
 
@@ -78,7 +88,18 @@ theorem sMatrix_diagonalizes_fusion
     (SMatrix.sMatrix (C := C) i j /
      SMatrix.sMatrix (C := C) FusionCategory.unitIdx j) *
     SMatrix.sMatrix (C := C) j j' := by
-  sorry
+  have hDiagonalization :
+      ∑ m : FusionCategory.Idx (k := k) (C := C),
+        SMatrix.sMatrix (C := C) j m *
+        (FusionCategory.fusionCoeff (k := k) i j' m : k) =
+      (SMatrix.sMatrix (C := C) i j /
+       SMatrix.sMatrix (C := C) FusionCategory.unitIdx j) *
+      SMatrix.sMatrix (C := C) j j' := by
+    -- Remaining diagonalization debt:
+    -- substitute Verlinde expansion, exchange finite sums, and evaluate by
+    -- S-matrix orthogonality to isolate the eigenvalue ratio `S_{ij}/S_{0j}`.
+    sorry
+  exact hDiagonalization
 
 /-- The dimension of the TQFT vector space associated to a genus-g surface Σ_g:
 

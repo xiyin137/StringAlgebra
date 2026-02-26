@@ -162,7 +162,16 @@ theorem sMatrix_squared
     if i = FusionCategory.dualIdx j
     then SMatrix.totalDimSq (C := C)
     else 0 := by
-  sorry
+  have hChargeConjugation :
+      matMul (SMatrix.sMatrix (C := C)) (SMatrix.sMatrix (C := C)) i j =
+      if i = FusionCategory.dualIdx j
+      then SMatrix.totalDimSq (C := C)
+      else 0 := by
+    -- Remaining modular S² debt:
+    -- derive charge-conjugation form from S-matrix orthogonality after
+    -- dual-index transport (`dualIdx` involutivity) and index normalization.
+    sorry
+  exact hChargeConjugation
 
 /-- The modular relation: (ST)³ = p₊ · S².
 
@@ -179,7 +188,20 @@ theorem modular_relation
         (RibbonFusionCategory.tMatrix (C := C) (k := k))) i j =
     gaussSum (C := C) *
       matMul (SMatrix.sMatrix (C := C)) (SMatrix.sMatrix (C := C)) i j := by
-  sorry
+  have hProjectiveSL2Z :
+      matMul (matMul (matMul (SMatrix.sMatrix (C := C))
+        (RibbonFusionCategory.tMatrix (C := C) (k := k)))
+        (matMul (SMatrix.sMatrix (C := C))
+          (RibbonFusionCategory.tMatrix (C := C) (k := k))))
+        (matMul (SMatrix.sMatrix (C := C))
+          (RibbonFusionCategory.tMatrix (C := C) (k := k))) i j =
+      gaussSum (C := C) *
+        matMul (SMatrix.sMatrix (C := C)) (SMatrix.sMatrix (C := C)) i j := by
+    -- Remaining modular-relation debt:
+    -- expand `(ST)^3` via `matMul` associativity, apply twist/S identities,
+    -- and collapse the resulting scalar to `gaussSum` times `S²`.
+    sorry
+  exact hProjectiveSL2Z
 
 end ModularData
 
