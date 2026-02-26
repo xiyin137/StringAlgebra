@@ -356,14 +356,6 @@ theorem twisted_diff_sq_zero_witness {R : Type u} [CommRing R]
     satisfiesMC L T a.element :=  -- The MC condition gives (l₁^a)² = 0
   a.mc
 
-/-- Compatibility alias for historical theorem naming. -/
-theorem twisted_diff_sq_zero {R : Type u} [CommRing R]
-    {V : ℤ → Type v}
-    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
-    {L : LInftyAlgebra R V} (T : MCTheory R L) (a : MCElement R T) :
-    satisfiesMC L T a.element :=
-  twisted_diff_sq_zero_witness T a
-
 /-! ## Deformation Theory -/
 
 /-- A formal deformation of an L∞ algebra is an MC element

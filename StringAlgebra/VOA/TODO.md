@@ -7,7 +7,7 @@ This file tracks semantic and proof debt for `StringAlgebra/VOA` under `agent.md
 ## Current Verified State
 
 1. `lake build StringAlgebra.VOA` passes.
-2. `StringAlgebra/VOA/*.lean` is `sorry`-free.
+2. `StringAlgebra/VOA/*.lean` is `sorry`-free (proof-level `sorry` count: 0).
 3. No `axiom`/`admit`/`Classical.choose`/`Classical.epsilon` usage in VOA Lean files.
 4. Placeholder `True := trivial` stubs in core module/formal-distribution/example interfaces have been removed.
 5. Conformal-weight extraction and lattice rationality criteria now use explicit witness packages (`L0Grading`, `RationalityCriterion`) instead of implicit selection.

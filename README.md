@@ -4,6 +4,16 @@ Rigorous formalization of algebraic structures in string theory in Lean 4 with M
 
 Previously part of [ModularPhysics](https://github.com/xiyin137/ModularPhysics).
 
+## Proof-Gap Counts (2026-02-26)
+
+Counted as lines matching `^\s*sorry` in Lean files.
+
+1. `StringAlgebra/Linfinity`: 7
+2. `StringAlgebra/MZV`: 0
+3. `StringAlgebra/VOA`: 0
+4. `StringAlgebra/MTC`: 26
+5. Total (`StringAlgebra/**/*.lean`): 33
+
 ## Structure
 
 ```
@@ -66,7 +76,7 @@ Core infrastructure for L-infinity (strong homotopy Lie) algebras, including the
 Current audited status (2026-02-26):
 
 1. `lake build StringAlgebra.Linfinity` passes.
-2. `StringAlgebra/Linfinity` currently carries explicit theorem-level `sorry` markers for active proof gaps; no `sorry` appears in `def`/`structure`/`abbrev` bodies.
+2. `StringAlgebra/Linfinity` currently has 7 explicit theorem-level `sorry` markers for active proof gaps (`LInfinityAlgebra.lean`: 1, `Transfer.lean`: 3, `Formality.lean`: 3); no `sorry` appears in `def`/`structure`/`abbrev` bodies.
 3. No `axiom`/`admit`/`Classical.choose`/`Classical.epsilon` usage in Linfinity Lean files.
 4. Recent hardening removed fabricated transfer/formality/BV outputs and tautological bridge shells; nontrivial constructions now require explicit witness data rather than hidden defaults, both `LInftyHom` and core `LInftyMorphism` composition have explicit identity/derived composition data and core morphisms enforce arity-0 normalization (`higher_zero`), and transfer/formality quasi-isomorphism obligations are now tracked explicitly at theorem sites (`transferMorphism_isQuasiIso`, `transfer_is_quasiIso`, `minimalModelMorphism_isQuasiIso`, `formalityMorphism_isQuasiIso`) instead of being carried as hidden proof fields in witness structures.
 5. Transfer hardening now also exports `transferInclusionLinear_isBijective`, making degreewise bijectivity of SDR inclusions explicit from `transfer_is_quasiIso` plus arity-1 coherence (`transferInclusion_linear`).
@@ -145,7 +155,7 @@ Shuffle and stuffle algebras, double shuffle relations, iterated integrals, poly
 Current audited status (2026-02-26):
 
 1. `lake build StringAlgebra.MZV` passes.
-2. `StringAlgebra/MZV` is `sorry`-free.
+2. `StringAlgebra/MZV` is `sorry`-free (proof-level `sorry` count: 0).
 3. No `axiom`/`admit`/`Classical.choose`/`Classical.epsilon` usage in MZV Lean files.
 4. Remaining semantic/proof debt is tracked in `StringAlgebra/MZV/TODO.md` (including finite-basis double-shuffle interfaces and explicit Ihara-derivation structural lemmas).
 
@@ -165,7 +175,7 @@ Vertex algebras, formal distributions, modules, the Virasoro algebra, and exampl
 Current audited status (2026-02-26):
 
 1. `lake build StringAlgebra.VOA` passes.
-2. `StringAlgebra/VOA` is `sorry`-free.
+2. `StringAlgebra/VOA` is `sorry`-free (proof-level `sorry` count: 0).
 3. No `axiom`/`admit`/`Classical.choose`/`Classical.epsilon` usage in VOA Lean files.
 4. Recent hardening removed `Classical.choose`-based conformal-weight extraction and replaced fabricated Dong/antibracket-style outputs with explicit witness-driven contracts, including explicit lattice rationality criterion packages, positive fusion-rule bound theorems under rationality assumptions, and derived locality symmetry constructors.
 5. Remaining semantic/proof debt is tracked in `StringAlgebra/VOA/TODO.md`.
@@ -183,3 +193,5 @@ Full hierarchy from pivotal categories to the Verlinde formula:
 **Pivotal** → **Trace** → **Spherical** → **Ribbon** → **Semisimple** → **Fusion** → **Endomorphism** → **Braided Fusion** → **Ribbon Fusion** → **S-Matrix** → **Modular Tensor Category** → **Verlinde**
 
 Definitions include fusion coefficients N^m\_{ij}, the S-matrix, T-matrix, quantum dimensions, the Mueger center, and TQFT dimensions. All definitions are proper (no axiom smuggling, no placeholders). Key proofs completed include the twist on the unit, braiding symmetry of fusion coefficients, closure of transparent objects under tensor products, Schur's lemma applications, and the Verlinde genus-1 dimension formula. A bridge module connects VOA representation categories to MTCs via Huang's theorem.
+
+Current audited gap count (2026-02-26): proof-level `sorry` count in `StringAlgebra/MTC/*.lean` is 26.

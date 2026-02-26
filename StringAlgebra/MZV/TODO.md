@@ -7,7 +7,7 @@ This file tracks semantic and proof debt for `StringAlgebra/MZV` under `agent.md
 ## Current Verified State
 
 1. `lake build StringAlgebra.MZV` passes.
-2. `StringAlgebra/MZV/*.lean` is `sorry`-free.
+2. `StringAlgebra/MZV/*.lean` is `sorry`-free (proof-level `sorry` count: 0).
 3. No `axiom`/`admit`/`Classical.choose`/`Classical.epsilon` usage in MZV Lean files.
 4. Placeholder `True := trivial` stubs have been removed from the main MZV interfaces.
 5. `DoubleShuffle.lean` end-stage contracts were tightened: coaction/motivic compatibility are explicit map-parameterized properties, finite-generation is phrased via finite bases, and the implemented Ihara derivation now has explicit additive and basic structural lemmas.

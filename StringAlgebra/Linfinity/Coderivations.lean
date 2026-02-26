@@ -208,12 +208,6 @@ theorem l1_is_differential_witness (L : LInfinityStructure R V) :
   intro x hx
   exact L.square_zero x
 
-/-- Compatibility alias for historical theorem naming. -/
-theorem l1_is_differential (L : LInfinityStructure R V) :
-    ∀ x : ReducedSymCoalg R (Shift V 1), x.wordLength = 1 →
-      (L.D.square x).isZero = true :=
-  l1_is_differential_witness L
-
 /-- Word-length-2 square-zero witness extracted from `L.square_zero`. -/
 theorem l1_derivation_of_l2_witness (L : LInfinityStructure R V) :
     ∀ x : ReducedSymCoalg R (Shift V 1), x.wordLength = 2 →
@@ -221,24 +215,12 @@ theorem l1_derivation_of_l2_witness (L : LInfinityStructure R V) :
   intro x hx
   exact L.square_zero x
 
-/-- Compatibility alias for historical theorem naming. -/
-theorem l1_derivation_of_l2 (L : LInfinityStructure R V) :
-    ∀ x : ReducedSymCoalg R (Shift V 1), x.wordLength = 2 →
-      (L.D.square x).isZero = true :=
-  l1_derivation_of_l2_witness L
-
 /-- Word-length-`n` square-zero witness extracted from `L.square_zero`. -/
 theorem generalized_jacobi_witness (L : LInfinityStructure R V) (n : ℕ) (_hn : n ≥ 1) :
     ∀ x : ReducedSymCoalg R (Shift V 1), x.wordLength = n →
       (L.D.square x).isZero = true := by
   intro x hx
   exact L.square_zero x
-
-/-- Compatibility alias for historical theorem naming. -/
-theorem generalized_jacobi (L : LInfinityStructure R V) (n : ℕ) (_hn : n ≥ 1) :
-    ∀ x : ReducedSymCoalg R (Shift V 1), x.wordLength = n →
-      (L.D.square x).isZero = true :=
-  generalized_jacobi_witness L n _hn
 
 /-! ## Special Cases -/
 

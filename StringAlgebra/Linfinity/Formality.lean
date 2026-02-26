@@ -1001,14 +1001,6 @@ theorem canonicalCommutator_firstOrder (data : FormalityData R)
     star.poissonBracket = data.hkr.component 1 π.bivector :=
   hstar
 
-/-- Compatibility alias for historical theorem naming. -/
-theorem canonicalCommutator (data : FormalityData R)
-    (star : StarProduct R data.dPoly)
-    (π : PoissonStructure R data.tPoly)
-    (hstar : star.poissonBracket = data.hkr.component 1 π.bivector) :
-    star.poissonBracket = data.hkr.component 1 π.bivector :=
-  canonicalCommutator_firstOrder data star π hstar
-
 /-- The Cattaneo-Felder interpretation (1999):
 
     Kontsevich's formula arises from the perturbative expansion of
@@ -1044,13 +1036,5 @@ theorem poissonSigmaModel_witness (data : FormalityData R)
       -- The induced star product quantizes `π` at first order.
       _star.poissonBracket = data.hkr.component 1 π.bivector :=
   ⟨P.star, P.bracket_spec⟩
-
-/-- Compatibility alias for historical theorem naming. -/
-theorem poissonSigmaModel (data : FormalityData R)
-    (π : PoissonStructure R data.tPoly)
-    (P : PoissonSigmaModelResult (R := R) data π) :
-    ∃ (_star : StarProduct R data.dPoly),
-      _star.poissonBracket = data.hkr.component 1 π.bivector :=
-  poissonSigmaModel_witness data π P
 
 end StringAlgebra.Linfinity
