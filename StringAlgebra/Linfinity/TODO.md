@@ -34,6 +34,7 @@ This file tracks formal soundness debt for `StringAlgebra/Linfinity` under `agen
    - `Morphisms.lean`: added data-level `LInftyHomotopy.refl/symm/trans` constructors and rewired relation lemmas to these canonical constructors.
    - `Morphisms.lean`: added explicit homotopy-class quotient interface (`LInftyHomotopyClass`, projection, and exact equality↔homotopy bridge lemmas).
    - `DGLA.lean`: replaced tautological `toLInftyQuasiIso` shell with an explicit `DGLAMorphismLInftyLift` bridge and degreewise linear quasi-isomorphism criterion; added canonical DGLA-to-L∞ lift, DGLA morphism identity/composition, and composition-aware lift transport in the current `LInftyMorphism` interface.
+   - `DGLA.lean`: added converse/iff theorems for the canonical DGLA→L∞ quasi-isomorphism criterion (`isLinearQuasiIso ↔ toLInftyMorphism.isQuasiIso`) and its canonical-lift restatement.
    - `BVAlgebra.lean`: `CyclicLInfty.antibracket` now uses explicit `l2` and cyclicity law instead of a fabricated zero output.
    - `MaurerCartan.lean`: removed hardcoded zero Kuranishi map; Kuranishi local model now requires explicit `KuranishiTheory` data with base-point normalization.
    - `MaurerCartan.lean`: gauge equivalence now has explicit reflexive/symmetric/transitive lemmas and a canonical `Setoid`; smoothness now exposes an explicit moduli-point constructor (`smoothPoint_when_unobstructed`) with a `Nonempty` wrapper theorem.
@@ -88,7 +89,7 @@ PolyvectorFieldsDGLA.toDGLAData
 8. `ChainComplex.lean`: low risk.
 9. `LInfinityAlgebra.lean`: medium risk. Core object definitions compile and transfer morphisms now carry explicit linear and quasi-isomorphism certification in the homotopy-transfer interface; semantically nontrivial constructions still depend on supplied transfer/twisting data.
 10. `Morphisms.lean`: medium risk. Composition/quasi-isomorphism interfaces are explicit and include canonical strict/identity composition data; first-order homotopy-equation semantics now exist with explicit symmetry/transitivity constructors, while higher coherence equations and homology-level semantics remain pending.
-11. `DGLA.lean`: medium risk. Tautological bridge shells removed and canonical lift/compose wiring exists; full bracket-sensitive constructive bridge from DGLA structure to higher L∞ components is still pending.
+11. `DGLA.lean`: medium risk. Tautological bridge shells removed and canonical lift/compose wiring now has bidirectional quasi-isomorphism criterion equivalence; full bracket-sensitive constructive bridge from DGLA structure to higher L∞ components is still pending.
 12. `MaurerCartan.lean`: medium risk. MC/gauge/twisting operations are explicit interface data, and Kuranishi outputs are no longer fabricated; canonical constructive formulas and cohomological quotient realization remain pending.
 13. `Transfer.lean`: high risk. Fabricated outputs removed, but transferred brackets/structures are witness-driven and not yet constructed from trees internally.
 14. `Formality.lean`: high risk. Placeholder outputs removed; MC transport plus gauge-equivalence/gauge-class interfaces are explicit, while the theorem-level bridge still remains witness-driven and awaits constructive graph-weight/operator machinery.

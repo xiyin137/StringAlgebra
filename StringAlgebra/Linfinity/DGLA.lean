@@ -402,6 +402,36 @@ theorem DGLAMorphism.toLInftyMorphism_isQuasiIso {R : Type u} [CommRing R]
   intro n
   simpa [LInftyMorphism.isQuasiIso, DGLAMorphism.toLInftyMorphism] using hf n
 
+/-- Quasi-isomorphism of the canonical DGLA→L∞ lift implies
+    degreewise-linear DGLA quasi-isomorphism criterion. -/
+theorem DGLAMorphism.isLinearQuasiIso_of_toLInftyMorphism_isQuasiIso
+    {R : Type u} [CommRing R]
+    {L L' : DGLAData R} (f : DGLAMorphism R L L')
+    (hf : (f.toLInftyMorphism).isQuasiIso) :
+    f.isLinearQuasiIso := by
+  intro n
+  simpa [LInftyMorphism.isQuasiIso, DGLAMorphism.toLInftyMorphism] using hf n
+
+/-- The linear quasi-isomorphism criterion is equivalent to quasi-isomorphism
+    of the canonical DGLA→L∞ lift. -/
+theorem DGLAMorphism.isLinearQuasiIso_iff_toLInftyMorphism_isQuasiIso
+    {R : Type u} [CommRing R]
+    {L L' : DGLAData R} (f : DGLAMorphism R L L') :
+    f.isLinearQuasiIso ↔ (f.toLInftyMorphism).isQuasiIso := by
+  constructor
+  · intro hf
+    exact f.toLInftyMorphism_isQuasiIso hf
+  · intro hf
+    exact f.isLinearQuasiIso_of_toLInftyMorphism_isQuasiIso hf
+
+/-- Equivalent criterion restated on the canonical explicit lift package. -/
+theorem DGLAMorphism.canonicalLInftyLift_isQuasiIso_iff
+    {R : Type u} [CommRing R]
+    {L L' : DGLAData R} (f : DGLAMorphism R L L') :
+    (f.canonicalLInftyLift.morphism).isQuasiIso ↔ f.isLinearQuasiIso := by
+  simpa [DGLAMorphism.canonicalLInftyLift] using
+    (DGLAMorphism.isLinearQuasiIso_iff_toLInftyMorphism_isQuasiIso (f := f)).symm
+
 /-- Quasi-isomorphism transport for the canonical lift is stable under
     DGLA morphism composition. -/
 theorem DGLAMorphism.comp_toLInftyMorphism_isQuasiIso {R : Type u} [CommRing R]
