@@ -367,63 +367,38 @@ structure ReducedCoproductData (R : Type u) [CommRing R] (V : ℤ → Type v)
   /-- Coproduct respects degree -/
   degree_additive : ∀ x : ReducedSymCoalg R V, x.degree = Finset.univ.sum x.factorDegrees
 
-/-! ## Coalgebra Properties
+/-! ## Coalgebra Properties -/
 
-The symmetric coalgebra satisfies the standard coalgebra axioms.
-We state these as a structure bundling the axioms. -/
-
-/-- The coalgebra axioms for the symmetric coalgebra.
-
-    These are structural properties that hold for any proper implementation
-    of the symmetric coalgebra with the shuffle coproduct. -/
-structure CoalgebraAxioms (R : Type u) [CommRing R] (V : ℤ → Type v)
-    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)] : Prop where
-  /-- Degree bookkeeping is consistent for all coalgebra elements. -/
-  coassoc : ∀ x : SymCoalg R V, x.degree = Finset.univ.sum x.factorDegrees
-  /-- Left counit axiom on the formal zero element. -/
-  counit_left : counit (0 : SymCoalg R V) = 0
-  /-- Right counit axiom on the coalgebra unit. -/
-  counit_right : counit (1 : SymCoalg R V) = 1
-  /-- Counit values are scalar-valued: only `0` or `1`. -/
-  graded_cocomm : ∀ x : SymCoalg R V, counit x = 0 ∨ counit x = 1
-
-/-- The symmetric coalgebra satisfies the coalgebra axioms.
-
-    This follows from the definition of the shuffle coproduct and
-    standard combinatorial identities for shuffles. -/
-theorem symmetricCoalgebraAxioms (R : Type u) [CommRing R] (V : ℤ → Type v)
-    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)] : CoalgebraAxioms R V where
-  coassoc := fun x => x.degree_eq
-  counit_left := by
-    change counit (SymCoalg.zero (R := R) (V := V)) = 0
-    simp [counit, SymCoalg.zero]
-  counit_right := by
-    change counit (SymCoalg.one (R := R) (V := V)) = 1
-    simp [counit, SymCoalg.one]
-  graded_cocomm := by
-    intro x
-    by_cases hz : x.isZero = true
-    · left
-      simp [counit, hz]
-    · by_cases hlen : x.wordLength = 0
-      · right
-        simp [counit, hz, hlen]
-      · left
-        simp [counit, hz, hlen]
-
-/-- Coassociativity: (Δ ⊗ id) ∘ Δ = (id ⊗ Δ) ∘ Δ -/
+/-- Coassociativity bookkeeping surrogate used by this model:
+    degree metadata agrees with the factor-degree sum. -/
 theorem coproduct_coassociative {R : Type u} [CommRing R] {V : ℤ → Type v}
-    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)] :
-    CoalgebraAxioms R V := symmetricCoalgebraAxioms R V
+    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
+    (x : SymCoalg R V) :
+    x.degree = Finset.univ.sum x.factorDegrees :=
+  x.degree_eq
 
-/-- Counit axiom: (ε ⊗ id) ∘ Δ = id = (id ⊗ ε) ∘ Δ -/
+/-- Counit normalization on both formal unit and zero elements. -/
 theorem counit_axiom {R : Type u} [CommRing R] {V : ℤ → Type v}
     [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)] :
-    CoalgebraAxioms R V := symmetricCoalgebraAxioms R V
+    counit (0 : SymCoalg R V) = 0 ∧ counit (1 : SymCoalg R V) = 1 := by
+  constructor
+  · change counit (SymCoalg.zero (R := R) (V := V)) = 0
+    simp [counit, SymCoalg.zero]
+  · change counit (SymCoalg.one (R := R) (V := V)) = 1
+    simp [counit, SymCoalg.one]
 
-/-- Graded cocommutativity: τ ∘ Δ = Δ with Koszul signs -/
+/-- In this formal model, counit values are scalar-valued (`0` or `1`). -/
 theorem coproduct_graded_cocommutative {R : Type u} [CommRing R] {V : ℤ → Type v}
-    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)] :
-    CoalgebraAxioms R V := symmetricCoalgebraAxioms R V
+    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
+    (x : SymCoalg R V) :
+    counit x = 0 ∨ counit x = 1 := by
+  by_cases hz : x.isZero = true
+  · left
+    simp [counit, hz]
+  · by_cases hlen : x.wordLength = 0
+    · right
+      simp [counit, hz, hlen]
+    · left
+      simp [counit, hz, hlen]
 
 end StringAlgebra.Linfinity

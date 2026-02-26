@@ -39,7 +39,7 @@ This file tracks formal soundness debt for `StringAlgebra/Linfinity` under `agen
    - `Formality.lean`: added converse and iff classification bridges (`starProductClassification_of_toGaugeClass`, `starProductClassification_iff_toGaugeClass`) so gauge-equivalence and quotient-class formulations are explicitly inter-derivable.
    - `Formality.lean`: added directional extraction lemmas from classification bridges (`starProductClassification_gaugeEquivalent_of_poisson_eq`, `starProductClassification_poisson_eq_of_gaugeEquivalent`, `starProductClassification_toGaugeClass_eq_of_poisson_eq`, `starProductClassification_poisson_eq_of_toGaugeClass_eq`) for direct forward/backward use in downstream proofs.
    - `Formality.lean`: added directional extraction lemmas from quotient-class classification assumptions (`starProductClassification_toGaugeClass_eq_of_poisson_eq_of_toGaugeClass`, `starProductClassification_poisson_eq_of_toGaugeClass_eq_of_toGaugeClass`, `starProductClassification_gaugeEquivalent_of_poisson_eq_of_toGaugeClass`, `starProductClassification_poisson_eq_of_gaugeEquivalent_of_toGaugeClass`) to use `toGaugeClass`-level hypotheses without manual conversion.
-   - `Formality.lean`: introduced explicit classification-contract aliases (`StarProductClassificationByGauge`, `StarProductClassificationByGaugeClass`) with conversion lemmas (`starProductClassificationByGauge_toGaugeClass`, `starProductClassificationByGaugeClass_toGauge`) and alias-level directional extraction theorems.
+   - `Formality.lean`: removed redundant classification-contract alias layer; classification is now tracked directly through theorem-level gauge/quotient bridge statements.
    - `Formality.lean`: gauge transformations are now identity-normalized (`T₀ = 0`) and composition/symmetry preserve and combine explicit transformation data instead of discarding components; the local `ConfigurationSpace` model also enforces collision-freeness via injectivity.
    - `Formality.lean`: strengthened `KontsevichGraph.ordering` by replacing the tautological ground-target branch with an explicit finite-index bound (`j.val < groundVertices`).
    - `Formality.lean`: strengthened `FormalityComponent` with explicit degree-consistency proof (`degree_spec`) and exported simp lemma (`FormalityComponent.degree_eq`), eliminating unconstrained arity/degree metadata.
@@ -54,6 +54,7 @@ This file tracks formal soundness debt for `StringAlgebra/Linfinity` under `agen
    - `SymmetricCoalgebra.lean`: strengthened `SymPower` zero-marker semantics with explicit degree-vanishing constraint (`isZero_degrees_zero`) and derived theorems (`degrees_eq_zero_of_isZero`, `totalDegree_eq_zero_of_isZero`), preventing inconsistent zero-flag payloads.
    - `SymmetricCoalgebra.lean`: strengthened `SymCoalg` zero-marker semantics with explicit factor-degree vanishing constraint (`isZero_factorDegrees_zero`) and derived theorems (`factorDegrees_eq_zero_of_isZero`, `degree_eq_zero_of_isZero`).
    - `SymmetricCoalgebra.lean`: strengthened `ReducedSymCoalg` zero-marker semantics with explicit word-length normalization (`isZero_wordLength_one`), matching all current reduced-zero constructors/usages.
+   - `SymmetricCoalgebra.lean`: removed `CoalgebraAxioms` contract bundling; coalgebra properties are now exposed as direct theorem statements (`coproduct_coassociative`, `counit_axiom`, `coproduct_graded_cocommutative`).
    - `GradedInfrastructure.lean`: removed `Classical.epsilon` degree selector; degree extraction now requires a homogeneity witness.
    - `GradedInfrastructure.lean`: strengthened `ReducedSymCoalgElem` with explicit total-degree consistency proof (`totalDegree_eq`) and exported simp lemma (`ReducedSymCoalgElem.totalDegree_eq_sum`), eliminating unconstrained stored total-degree metadata.
    - `GradedInfrastructure.lean`: strengthened coderivation/L∞ extracted-bracket witness bundles with explicit unary consistency constraints (arity-1 multilinear component must match provided linear differential/bracket views), preventing silent drift between parallel unary interfaces; added explicit exported bridge theorem (`Coderivation.differential_spec_from_bracket`) so downstream proofs consume this consistency directly.
@@ -168,14 +169,6 @@ starProductClassification
 -> starProductClassification_gaugeEquivalent_of_poisson_eq_of_toGaugeClass
 -> starProductClassification_poisson_eq_of_gaugeEquivalent_of_toGaugeClass
 
-StarProductClassificationByGauge
-<-> (via `starProductClassificationByGauge_toGaugeClass` and `starProductClassificationByGaugeClass_toGauge`)
--> starProductClassificationByGauge_toGaugeClass
--> starProductClassificationByGaugeClass_toGauge
--> starProductClassificationByGauge_gaugeEquivalent_of_poisson_eq
--> starProductClassificationByGauge_poisson_eq_of_gaugeEquivalent
--> starProductClassificationByGaugeClass_gaugeEquivalent_of_poisson_eq
--> starProductClassificationByGaugeClass_poisson_eq_of_gaugeEquivalent
 ```
 
 ## Soundness Audit Matrix (All Linfinity Files)
