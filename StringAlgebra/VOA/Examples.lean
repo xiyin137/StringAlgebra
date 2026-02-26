@@ -61,9 +61,6 @@ namespace HeisenbergVOA
 
 variable {R : Type*} [CommRing R]
 
-/-- The central charge of the Heisenberg VOA is c = 1 -/
-theorem centralCharge (_F : HeisenbergVOA R) : (1 : R) = 1 := rfl
-
 end HeisenbergVOA
 
 /-! ## Affine VOA
@@ -171,10 +168,6 @@ variable {R : Type*} [CommRing R]
 
 /-- The central charge is c = 24 -/
 def centralCharge (_V : MoonshineModule R) : R := 24
-
-/-- McKay-Thompson series are hauptmoduls -/
-theorem mckay_thompson_hauptmodul (V : MoonshineModule R) :
-    centralCharge V = 24 := rfl
 
 end MoonshineModule
 
