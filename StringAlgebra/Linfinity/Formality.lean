@@ -767,20 +767,6 @@ theorem starProductClassification_iff_toGaugeClass (data : FormalityData R)
     **Proof**: From the star product formula f ⋆ g = fg + ℏB₁(f,g) + O(ℏ²),
     where B₁⁻(f,g) = {f,g}/2 is the antisymmetric part.
     So f ⋆ g - g ⋆ f = 2ℏB₁⁻(f,g) + O(ℏ²) = ℏ{f,g} + O(ℏ²). -/
-/-- First-order compatibility restatement used by the physical-interpretation section.
-
-    This theorem does not derive commutator asymptotics; it records the
-    supplied first-order Poisson compatibility witness. -/
-theorem canonicalCommutator_firstOrder (data : FormalityData R)
-    (star : StarProduct R data.dPoly)
-    (π : PoissonStructure R data.tPoly)
-    (hstar : star.poissonBracket = data.hkr.component 1 π.bivector) :
-    -- The commutator [f,g]_⋆ = f ⋆ g - g ⋆ f equals ℏ{f,g} + O(ℏ²)
-    -- where {f,g} is the Poisson bracket corresponding to π
-    -- (This is encoded in the relationship between star and π via hstar)
-    star.poissonBracket = data.hkr.component 1 π.bivector :=
-  hstar
-
 /-- The Cattaneo-Felder interpretation (1999):
 
     Kontsevich's formula arises from the perturbative expansion of
@@ -805,16 +791,5 @@ structure PoissonSigmaModelResult (data : FormalityData R)
   star : StarProduct R data.dPoly
   /-- Compatibility with the original Poisson bivector at first order. -/
   bracket_spec : star.poissonBracket = data.hkr.component 1 π.bivector
-
-/-- Witness-level Poisson sigma model packaging theorem. -/
-theorem poissonSigmaModel_witness (data : FormalityData R)
-    (π : PoissonStructure R data.tPoly)
-    (P : PoissonSigmaModelResult (R := R) data π) :
-    -- The Kontsevich star product equals the Poisson sigma model correlator
-    -- (This is a structural statement: the graph formula = path integral)
-    ∃ (_star : StarProduct R data.dPoly),
-      -- The induced star product quantizes `π` at first order.
-      _star.poissonBracket = data.hkr.component 1 π.bivector :=
-  ⟨P.star, P.bracket_spec⟩
 
 end StringAlgebra.Linfinity
