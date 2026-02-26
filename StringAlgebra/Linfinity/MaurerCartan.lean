@@ -71,6 +71,9 @@ structure MCTheory (R : Type u) [CommRing R]
   gaugeEquivalent : V 1 → V 1 → Prop
   /-- Gauge action produces gauge-equivalent points. -/
   gaugeAction_sound : ∀ g : V 0, ∀ a : V 1, gaugeEquivalent a (gaugeAction g a)
+  /-- Gauge action preserves vanishing curvature (MC equation). -/
+  gaugeAction_preserves_curvature_zero :
+    ∀ g : V 0, ∀ a : V 1, curvature a = 0 → curvature (gaugeAction g a) = 0
   /-- Gauge-equivalence is an equivalence relation. -/
   gauge_equiv : Equivalence gaugeEquivalent
   /-- Twisted higher brackets indexed by arity. -/
@@ -167,6 +170,14 @@ theorem gaugeAction_gaugeEquivalent {R : Type u} [CommRing R]
     T.gaugeEquivalent a (gaugeAction T g a) :=
   T.gaugeAction_sound g a
 
+/-- Gauge action preserves the Maurer-Cartan equation. -/
+theorem gaugeAction_preservesMC {R : Type u} [CommRing R]
+    {V : ℤ → Type v}
+    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
+    {L : LInftyAlgebra R V} (T : MCTheory R L) (g : V 0) (a : V 1) :
+    satisfiesMC L T a → satisfiesMC L T (gaugeAction T g a) :=
+  T.gaugeAction_preserves_curvature_zero g a
+
 /-- Gauge-equivalence relation on MC elements from explicit `MCTheory` data.
 
     Classical gauge-flow interpretations motivate this relation, but this
@@ -233,6 +244,24 @@ def MCModuli (R : Type u) [CommRing R]
   Quotient (gaugeEquivalentSetoid (R := R) T)
 
 namespace MCElement
+
+/-- Gauge action on Maurer-Cartan elements. -/
+def gaugeAct {R : Type u} [CommRing R]
+    {V : ℤ → Type v}
+    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
+    {L : LInftyAlgebra R V} {T : MCTheory R L}
+    (g : V 0) (a : MCElement R T) : MCElement R T where
+  element := gaugeAction T g a.element
+  mc := gaugeAction_preservesMC T g a.element a.mc
+
+/-- Neutral gauge action fixes Maurer-Cartan elements. -/
+theorem gaugeAct_zero {R : Type u} [CommRing R]
+    {V : ℤ → Type v}
+    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
+    {L : LInftyAlgebra R V} {T : MCTheory R L}
+    (a : MCElement R T) :
+    (gaugeAct (T := T) 0 a).element = a.element :=
+  gaugeAction_zero T a.element
 
 /-- Projection of an MC element to its moduli class. -/
 def toModuli {R : Type u} [CommRing R]
