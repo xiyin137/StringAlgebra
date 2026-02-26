@@ -261,13 +261,11 @@ def FormalityMorphism.linearIsHKR (data : FormalityData R) (U : FormalityMorphis
 
 /-! ## The Formality Theorem
 
-Kontsevich's formality theorem is an **explicit construction**: it provides a
-concrete formula for an L∞ quasi-isomorphism U : T_poly → D_poly.
-
-The construction has three parts:
-1. **Definition**: U_n is defined as a sum over admissible graphs
-2. **L∞ property**: The L∞ equations follow from Stokes' theorem
-3. **Quasi-iso property**: U₁ = HKR induces iso on cohomology
+At this stage, this file packages witness-level interfaces around the
+formality pipeline. In particular, we expose:
+1. Explicit data structures for candidate formality components/morphisms.
+2. The HKR chain equation available directly from `FormalityData`.
+3. Quasi-isomorphism and quantization consequences from supplied witnesses.
 -/
 
 /-- The Kontsevich formality morphism from explicit formality witness data. -/
@@ -283,13 +281,19 @@ def kontsevichFormality (data : FormalityData R) (U : FormalityMorphism data) :
     the `HKRMap` field of `FormalityData`:
 
     `dPoly.differential n (hkr.component n x) = 0`. -/
-theorem kontsevichFormality_is_linfty_morphism (data : FormalityData R) :
+theorem hkr_chain_equation (data : FormalityData R) :
     ∀ n : ℤ, ∀ x : data.tPoly.fields n,
       data.dPoly.differential n (data.hkr.component n x) = 0 := by
   intro n x
   exact data.hkr.chain_map n x
 
-/-- **Kontsevich's Formality Theorem, Part 2**: The formality morphism is a quasi-isomorphism.
+/-- Compatibility alias for historical theorem naming. -/
+theorem kontsevichFormality_is_linfty_morphism (data : FormalityData R) :
+    ∀ n : ℤ, ∀ x : data.tPoly.fields n,
+      data.dPoly.differential n (data.hkr.component n x) = 0 :=
+  hkr_chain_equation data
+
+/-- Witness-level quasi-isomorphism statement for a supplied formality morphism.
 
     The linear part U₁ : T_poly → D_poly induces an isomorphism on cohomology:
     H*(T_poly, d=0) ≅ H*(D_poly, b)
@@ -631,7 +635,7 @@ theorem starProductClassification_toGaugeClass (data : FormalityData R)
 
 /-! ## Physical Interpretation -/
 
-/-- In quantum mechanics, the commutator of observables gives:
+/- In quantum mechanics, the commutator of observables gives:
     [f, g] := f ⋆ g - g ⋆ f = iℏ{f,g} + O(ℏ²)
 
     For canonical coordinates (xⁱ, pⱼ) on T*ℝⁿ with the standard
@@ -644,7 +648,11 @@ theorem starProductClassification_toGaugeClass (data : FormalityData R)
     **Proof**: From the star product formula f ⋆ g = fg + ℏB₁(f,g) + O(ℏ²),
     where B₁⁻(f,g) = {f,g}/2 is the antisymmetric part.
     So f ⋆ g - g ⋆ f = 2ℏB₁⁻(f,g) + O(ℏ²) = ℏ{f,g} + O(ℏ²). -/
-theorem canonicalCommutator (data : FormalityData R)
+/-- First-order compatibility restatement used by the physical-interpretation section.
+
+    This theorem does not derive commutator asymptotics; it records the
+    supplied first-order Poisson compatibility witness. -/
+theorem canonicalCommutator_firstOrder (data : FormalityData R)
     (star : StarProduct R data.dPoly)
     (π : PoissonStructure R data.tPoly)
     (hstar : star.poissonBracket = data.hkr.component 1 π.bivector) :
@@ -653,6 +661,14 @@ theorem canonicalCommutator (data : FormalityData R)
     -- (This is encoded in the relationship between star and π via hstar)
     star.poissonBracket = data.hkr.component 1 π.bivector :=
   hstar
+
+/-- Compatibility alias for historical theorem naming. -/
+theorem canonicalCommutator (data : FormalityData R)
+    (star : StarProduct R data.dPoly)
+    (π : PoissonStructure R data.tPoly)
+    (hstar : star.poissonBracket = data.hkr.component 1 π.bivector) :
+    star.poissonBracket = data.hkr.component 1 π.bivector :=
+  canonicalCommutator_firstOrder data star π hstar
 
 /-- The Cattaneo-Felder interpretation (1999):
 
@@ -679,7 +695,8 @@ structure PoissonSigmaModelResult (data : FormalityData R)
   /-- Compatibility with the original Poisson bivector at first order. -/
   bracket_spec : star.poissonBracket = data.hkr.component 1 π.bivector
 
-theorem poissonSigmaModel (data : FormalityData R)
+/-- Witness-level Poisson sigma model packaging theorem. -/
+theorem poissonSigmaModel_witness (data : FormalityData R)
     (π : PoissonStructure R data.tPoly)
     (P : PoissonSigmaModelResult (R := R) data π) :
     -- The Kontsevich star product equals the Poisson sigma model correlator
@@ -688,5 +705,13 @@ theorem poissonSigmaModel (data : FormalityData R)
       -- The induced star product quantizes `π` at first order.
       _star.poissonBracket = data.hkr.component 1 π.bivector :=
   ⟨P.star, P.bracket_spec⟩
+
+/-- Compatibility alias for historical theorem naming. -/
+theorem poissonSigmaModel (data : FormalityData R)
+    (π : PoissonStructure R data.tPoly)
+    (P : PoissonSigmaModelResult (R := R) data π) :
+    ∃ (_star : StarProduct R data.dPoly),
+      _star.poissonBracket = data.hkr.component 1 π.bivector :=
+  poissonSigmaModel_witness data π P
 
 end StringAlgebra.Linfinity
