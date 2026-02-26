@@ -180,11 +180,33 @@ def ofCoreMorphism {L : LInftyAlgebra R V} {L' : LInftyAlgebra R W}
     (toCoreMorphism (ofCoreMorphism F)).linear i = F.linear i := by
   simp [toCoreMorphism]
 
+@[simp] theorem toCoreMorphism_ofCore_higher {L : LInftyAlgebra R V} {L' : LInftyAlgebra R W}
+    (F : LInftyMorphism R L L') (n : ℕ) (i : ℤ) :
+    (toCoreMorphism (ofCoreMorphism F)).higher n i = F.higher n i := by
+  by_cases h0 : n = 0
+  · subst h0
+    simpa [toCoreMorphism, ofCoreMorphism] using (F.higher_zero i).symm
+  · by_cases h1 : n = 1
+    · subst h1
+      simpa [toCoreMorphism, ofCoreMorphism] using (F.compatible i).symm
+    · simp [toCoreMorphism, ofCoreMorphism, h0, h1]
+
 @[simp] theorem ofCoreMorphism_toCore_linear {L : LInftyAlgebra R V} {L' : LInftyAlgebra R W}
     (F : LInftyHom R L L') (i : ℤ) :
     ((ofCoreMorphism (toCoreMorphism F)).components 1 (by omega)).map i =
       ((F.components 1 (by omega)).map i) := by
   simp [ofCoreMorphism, toCoreMorphism]
+
+@[simp] theorem ofCoreMorphism_toCore_component {L : LInftyAlgebra R V} {L' : LInftyAlgebra R W}
+    (F : LInftyHom R L L') (n : ℕ) (hn : n ≥ 1) (i : ℤ) :
+    ((ofCoreMorphism (toCoreMorphism F)).components n hn).map i =
+      ((F.components n hn).map i) := by
+  by_cases h1 : n = 1
+  · subst h1
+    simp [ofCoreMorphism, toCoreMorphism]
+  · have h0 : n ≠ 0 := by
+      exact Nat.ne_of_gt (lt_of_lt_of_le Nat.zero_lt_one hn)
+    simp [ofCoreMorphism, toCoreMorphism, h1, h0]
 
 /-- Transport explicit composition data to the core `LInftyMorphism` layer. -/
 def toCoreCompositionData
