@@ -9,7 +9,13 @@ This document defines the staged plan for splitting `StringAlgebra` into four re
 3. `VOA`
 4. `MTC`
 
-It is intentionally gate-driven: no split until anti-smuggling and interface stability conditions are met.
+It was intentionally gate-driven; the local cutover has now been executed.
+
+## Cutover Status
+
+1. Local split repos exist and are validated under `split/repos/`.
+2. The old in-repo domain source folders were removed from this repo.
+3. This repo is now split-control/docs/scripts only.
 
 ## Current Audit Snapshot
 
@@ -46,15 +52,13 @@ It is intentionally gate-driven: no split until anti-smuggling and interface sta
 ## Target Repository Boundaries
 
 1. `StringAlgebra-Linfinity`
-   - Source: `StringAlgebra/Linfinity`, `StringAlgebra/Linfinity.lean`
-   - Domain docs: `StringAlgebra/Linfinity/TODO.md` + extracted README section.
+   - Local path: `split/repos/StringAlgebra-Linfinity`
 2. `StringAlgebra-MZV`
-   - Source: `StringAlgebra/MZV`, `StringAlgebra/MZV.lean`
+   - Local path: `split/repos/StringAlgebra-MZV`
 3. `StringAlgebra-VOA`
-   - Source: `StringAlgebra/VOA`, `StringAlgebra/VOA.lean`
+   - Local path: `split/repos/StringAlgebra-VOA`
 4. `StringAlgebra-MTC`
-   - Source: `StringAlgebra/MTC`, `StringAlgebra/MTC.lean`
-   - Keep `MTC/Bridge` here unless/until an explicit standalone bridge package is needed.
+   - Local path: `split/repos/StringAlgebra-MTC`
 
 ## Staged Execution Plan
 
