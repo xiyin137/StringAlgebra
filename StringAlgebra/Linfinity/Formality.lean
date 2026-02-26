@@ -147,14 +147,16 @@ structure KontsevichGraph (n : ℕ) where
   ordering : ∀ i : Fin n, ∀ k : Fin 2,
     match edges i k with
     | Sum.inl j => i.val < j.val
-    | Sum.inr _ => i.val < n
+    | Sum.inr _ => True
 
 /-- The configuration space of n points in the upper half-plane.
 
     Conf_n(H⁺) = {(z₁,...,zₙ) ∈ (H⁺)ⁿ : zᵢ ≠ zⱼ for i ≠ j}
 
-    This is a 2n-dimensional manifold. -/
-def ConfigurationSpace (n : ℕ) : Type := Fin n → ℚ
+    In this file we retain only the collision-free combinatorial constraint
+    needed by graph-indexed formulas. -/
+def ConfigurationSpace (n : ℕ) : Type :=
+  { z : Fin n → ℚ // Function.Injective z }
 
 /-- The angle function φ(z,w) = arg((w-z)/(w̄-z)) / π ∈ [0,1].
 
@@ -487,6 +489,8 @@ structure StarProduct.GaugeTransformation {R : Type u} [CommRing R]
     (star₁ star₂ : StarProduct R D) where
   /-- Coefficients of the formal gauge transformation. -/
   coefficients : ℕ → D.cochains 0
+  /-- Gauge transformations are normalized to start at the identity (`T₀ = 0`). -/
+  zeroOrder : coefficients 0 = 0
   /-- Compatibility constraint tracked at first order. -/
   firstOrder :
     star₁.mc.coefficients 1 = star₂.mc.coefficients 1
@@ -497,6 +501,7 @@ namespace StarProduct.GaugeTransformation
 def refl {R : Type u} [CommRing R] {D : HochschildCochainsDGLA R}
     (star : StarProduct R D) : StarProduct.GaugeTransformation star star where
   coefficients := fun _ => 0
+  zeroOrder := rfl
   firstOrder := rfl
 
 /-- Reverse a gauge transformation. -/
@@ -504,7 +509,9 @@ def symm {R : Type u} [CommRing R] {D : HochschildCochainsDGLA R}
     {star₁ star₂ : StarProduct R D}
     (T : StarProduct.GaugeTransformation star₁ star₂) :
     StarProduct.GaugeTransformation star₂ star₁ where
-  coefficients := T.coefficients
+  coefficients := fun n => -T.coefficients n
+  zeroOrder := by
+    simpa using T.zeroOrder
   firstOrder := T.firstOrder.symm
 
 /-- Compose gauge transformations. -/
@@ -513,7 +520,10 @@ def trans {R : Type u} [CommRing R] {D : HochschildCochainsDGLA R}
     (T₁₂ : StarProduct.GaugeTransformation star₁ star₂)
     (T₂₃ : StarProduct.GaugeTransformation star₂ star₃) :
     StarProduct.GaugeTransformation star₁ star₃ where
-  coefficients := T₁₂.coefficients
+  coefficients := fun n => T₁₂.coefficients n + T₂₃.coefficients n
+  zeroOrder := by
+    rw [T₁₂.zeroOrder, T₂₃.zeroOrder]
+    simp
   firstOrder := Eq.trans T₁₂.firstOrder T₂₃.firstOrder
 
 end StarProduct.GaugeTransformation
