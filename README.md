@@ -24,6 +24,18 @@ echo "MTC $(rg -n '^\s*sorry\\b' StringAlgebra/MTC --glob '*.lean' | wc -l | tr 
 echo "TOTAL $(rg -n '^\s*sorry\\b' StringAlgebra --glob '*.lean' | wc -l | tr -d ' ')"
 ```
 
+## Split-Repo Readiness
+
+The four-domain split (`Linfinity`, `MZV`, `VOA`, `MTC`) is tracked as a gate-driven migration:
+
+1. theorem-level `sorry` is accepted as honest in-progress proof debt,
+2. no smuggling patterns are allowed,
+3. actual split is deferred until boundary/API stability gates are met.
+
+Detailed staged plan:
+
+- `SPLIT_REPO_READINESS.md`
+
 ## Structure
 
 ```
