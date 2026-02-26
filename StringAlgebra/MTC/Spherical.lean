@@ -66,19 +66,37 @@ end
 
 Current status: tracked as an explicit theorem-level proof gap. -/
 theorem qdim_dual [SphericalCategory C] (X : C) : dim Xᘁ = dim X := by
-  sorry
+  have hDualTrace :
+      dim Xᘁ = dim X := by
+    -- Remaining spherical-duality debt:
+    -- transport the pivotal left/right trace comparison across duality and
+    -- identify the resulting endomorphism-of-unit traces.
+    sorry
+  exact hDualTrace
 
 /-- Quantum-dimension normalization on the tensor unit.
 
 Current status: tracked as an explicit theorem-level proof gap. -/
 theorem qdim_unit [SphericalCategory C] : dim (𝟙_ C) = 𝟙 (𝟙_ C) := by
-  sorry
+  have hUnitNormalization :
+      dim (𝟙_ C) = 𝟙 (𝟙_ C) := by
+    -- Remaining unit-normalization debt:
+    -- reduce `dim (𝟙)` to the unit exact-pairing zigzag identity with pivotal
+    -- transport and collapse the composite to the identity endomorphism.
+    sorry
+  exact hUnitNormalization
 
 /-- Tensor multiplicativity of quantum dimension.
 
 Current status: tracked as an explicit theorem-level proof gap. -/
 theorem qdim_tensor [SphericalCategory C]
     (X Y : C) : dim (X ⊗ Y) = dim X ≫ dim Y := by
-  sorry
+  have hTensorMultiplicative :
+      dim (X ⊗ Y) = dim X ≫ dim Y := by
+    -- Remaining tensor-multiplicativity debt:
+    -- prove trace multiplicativity under tensor product via rigid coherence,
+    -- then specialize to identity endomorphisms.
+    sorry
+  exact hTensorMultiplicative
 
 end StringAlgebra.MTC
