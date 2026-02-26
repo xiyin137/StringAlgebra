@@ -25,7 +25,7 @@ variable [BraidedCategory RepV] [Preadditive RepV] [Linear k RepV]
 variable [MonoidalPreadditive RepV] [HasFiniteBiproducts RepV] [RigidCategory RepV]
 variable [RibbonFusionCategory k RepV]
 
-theorem nondegeneracy_gap
+theorem nondegeneracy_from_huang
     (i : FusionCategory.Idx (k := k) (C := RepV))
     (h : BraidedFusionCategory.isTransparent (FusionCategory.simpleObj i))
     (hHuang :
@@ -53,7 +53,7 @@ variable [BraidedCategory RepV] [Preadditive RepV] [Linear k RepV]
 variable [MonoidalPreadditive RepV] [HasFiniteBiproducts RepV] [RigidCategory RepV]
 variable [RibbonFusionCategory k RepV] [HasKernels RepV]
 
-theorem twist_roots_gap
+theorem twist_roots_from_hypothesis
     (i : FusionCategory.Idx (k := k) (C := RepV))
     (hTwistRoots :
       ∀ j : FusionCategory.Idx (k := k) (C := RepV),
