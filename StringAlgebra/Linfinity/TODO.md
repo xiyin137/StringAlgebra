@@ -30,6 +30,7 @@ This file tracks formal soundness debt for `StringAlgebra/Linfinity` under `agen
    - `Morphisms.lean`: `LInftyHomotopy` now carries an explicit first-order linear homotopy equation (`linearDelta`, `linear_spec`) and derived symmetry/transitivity constructors.
    - `Morphisms.lean`: homotopy now exposes an `Equivalence` theorem and a canonical `Setoid` instance on `LInftyHom`.
    - `Morphisms.lean`: added data-level `LInftyHomotopy.refl/symm/trans` constructors and rewired relation lemmas to these canonical constructors.
+   - `Morphisms.lean`: added explicit homotopy-class quotient interface (`LInftyHomotopyClass`, projection, and exact equality↔homotopy bridge lemmas).
    - `DGLA.lean`: replaced tautological `toLInftyQuasiIso` shell with an explicit `DGLAMorphismLInftyLift` bridge and degreewise linear quasi-isomorphism criterion; added canonical DGLA-to-L∞ lift, DGLA morphism identity/composition, and composition-aware lift transport in the current `LInftyMorphism` interface.
    - `BVAlgebra.lean`: `CyclicLInfty.antibracket` now uses explicit `l2` and cyclicity law instead of a fabricated zero output.
    - `MaurerCartan.lean`: removed hardcoded zero Kuranishi map; Kuranishi local model now requires explicit `KuranishiTheory` data with base-point normalization.

@@ -494,6 +494,54 @@ instance LInftyHom.homotopicSetoid {R : Type u} [CommRing R]
   r := LInftyHom.homotopic
   iseqv := homotopic_equivalence (R := R) (L := L) (L' := L')
 
+/-- Homotopy classes of L∞ morphisms. -/
+def LInftyHomotopyClass {R : Type u} [CommRing R]
+    {V W : ℤ → Type v}
+    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
+    [∀ i, AddCommGroup (W i)] [∀ i, Module R (W i)]
+    (L : LInftyAlgebra R V) (L' : LInftyAlgebra R W) : Type _ :=
+  Quotient (LInftyHom.homotopicSetoid (R := R) (L := L) (L' := L'))
+
+namespace LInftyHom
+
+/-- Projection of an L∞ morphism to its homotopy class. -/
+def toHomotopyClass {R : Type u} [CommRing R]
+    {V W : ℤ → Type v}
+    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
+    [∀ i, AddCommGroup (W i)] [∀ i, Module R (W i)]
+    {L : LInftyAlgebra R V} {L' : LInftyAlgebra R W}
+    (F : LInftyHom R L L') : LInftyHomotopyClass L L' :=
+  Quotient.mk _ F
+
+@[simp] theorem toHomotopyClass_eq_iff_homotopic {R : Type u} [CommRing R]
+    {V W : ℤ → Type v}
+    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
+    [∀ i, AddCommGroup (W i)] [∀ i, Module R (W i)]
+    {L : LInftyAlgebra R V} {L' : LInftyAlgebra R W}
+    (F G : LInftyHom R L L') :
+    F.toHomotopyClass = G.toHomotopyClass ↔ F.homotopic G :=
+  Quotient.eq
+
+theorem toHomotopyClass_eq_of_homotopic {R : Type u} [CommRing R]
+    {V W : ℤ → Type v}
+    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
+    [∀ i, AddCommGroup (W i)] [∀ i, Module R (W i)]
+    {L : LInftyAlgebra R V} {L' : LInftyAlgebra R W}
+    {F G : LInftyHom R L L'} (h : F.homotopic G) :
+    F.toHomotopyClass = G.toHomotopyClass :=
+  (toHomotopyClass_eq_iff_homotopic F G).2 h
+
+theorem homotopic_of_toHomotopyClass_eq {R : Type u} [CommRing R]
+    {V W : ℤ → Type v}
+    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
+    [∀ i, AddCommGroup (W i)] [∀ i, Module R (W i)]
+    {L : LInftyAlgebra R V} {L' : LInftyAlgebra R W}
+    {F G : LInftyHom R L L'} (h : F.toHomotopyClass = G.toHomotopyClass) :
+    F.homotopic G :=
+  (toHomotopyClass_eq_iff_homotopic F G).1 h
+
+end LInftyHom
+
 /-! ## The ∞-Category of L∞ Algebras -/
 
 /-- The homotopy category of L∞ algebras.
