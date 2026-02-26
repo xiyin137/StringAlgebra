@@ -29,6 +29,7 @@ This file tracks formal soundness debt for `StringAlgebra/Linfinity` under `agen
    - `DGLA.lean`: replaced tautological `toLInftyQuasiIso` shell with an explicit `DGLAMorphismLInftyLift` bridge and degreewise linear quasi-isomorphism criterion; added canonical DGLA-to-L∞ lift, DGLA morphism identity/composition, and composition-aware lift transport in the current `LInftyMorphism` interface.
    - `BVAlgebra.lean`: `CyclicLInfty.antibracket` now uses explicit `l2` and cyclicity law instead of a fabricated zero output.
    - `MaurerCartan.lean`: removed hardcoded zero Kuranishi map; Kuranishi local model now requires explicit `KuranishiTheory` data with base-point normalization.
+   - `MaurerCartan.lean`: gauge equivalence now has explicit reflexive/symmetric/transitive lemmas and a canonical `Setoid`; smoothness now exposes an explicit moduli-point constructor (`smoothPoint_when_unobstructed`) with a `Nonempty` wrapper theorem.
    - `Coderivations.lean`: component extraction no longer aliases the global map; explicit component maps are part of reduced coderivation data.
 
 ## Linfinity Dependency Graph

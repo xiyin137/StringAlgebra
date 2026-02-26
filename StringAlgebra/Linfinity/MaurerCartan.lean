@@ -162,6 +162,32 @@ def GaugeEquivalent {R : Type u} [CommRing R]
     {L : LInftyAlgebra R V} (T : MCTheory R L) (a b : MCElement R T) : Prop :=
   T.gaugeEquivalent a.element b.element
 
+/-- Reflexivity of MC gauge equivalence. -/
+theorem gaugeEquivalent_refl {R : Type u} [CommRing R]
+    {V : ℤ → Type v}
+    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
+    {L : LInftyAlgebra R V} (T : MCTheory R L) (a : MCElement R T) :
+    GaugeEquivalent T a a :=
+  T.gauge_equiv.refl a.element
+
+/-- Symmetry of MC gauge equivalence. -/
+theorem gaugeEquivalent_symm {R : Type u} [CommRing R]
+    {V : ℤ → Type v}
+    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
+    {L : LInftyAlgebra R V} (T : MCTheory R L)
+    {a b : MCElement R T} :
+    GaugeEquivalent T a b → GaugeEquivalent T b a :=
+  T.gauge_equiv.symm
+
+/-- Transitivity of MC gauge equivalence. -/
+theorem gaugeEquivalent_trans {R : Type u} [CommRing R]
+    {V : ℤ → Type v}
+    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
+    {L : LInftyAlgebra R V} (T : MCTheory R L)
+    {a b c : MCElement R T} :
+    GaugeEquivalent T a b → GaugeEquivalent T b c → GaugeEquivalent T a c :=
+  T.gauge_equiv.trans
+
 /-- Gauge equivalence is an equivalence relation -/
 theorem gauge_equiv_equivalence {R : Type u} [CommRing R]
     {V : ℤ → Type v}
@@ -169,20 +195,27 @@ theorem gauge_equiv_equivalence {R : Type u} [CommRing R]
     {L : LInftyAlgebra R V} (T : MCTheory R L) : Equivalence (GaugeEquivalent T) where
   refl := by
     intro a
-    exact T.gauge_equiv.refl a.element
+    exact gaugeEquivalent_refl T a
   symm := by
     intro a b hab
-    exact T.gauge_equiv.symm hab
+    exact gaugeEquivalent_symm T hab
   trans := by
     intro a b c hab hbc
-    exact T.gauge_equiv.trans hab hbc
+    exact gaugeEquivalent_trans T hab hbc
+
+instance gaugeEquivalentSetoid {R : Type u} [CommRing R]
+    {V : ℤ → Type v}
+    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
+    {L : LInftyAlgebra R V} (T : MCTheory R L) : Setoid (MCElement R T) where
+  r := GaugeEquivalent T
+  iseqv := gauge_equiv_equivalence T
 
 /-- The moduli space of MC elements modulo gauge equivalence -/
 def MCModuli (R : Type u) [CommRing R]
     {V : ℤ → Type v}
     [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
     {L : LInftyAlgebra R V} (T : MCTheory R L) : Type _ :=
-  Quotient (⟨GaugeEquivalent T, gauge_equiv_equivalence T⟩ : Setoid (MCElement R T))
+  Quotient (gaugeEquivalentSetoid (R := R) T)
 
 /-! ## Twisted L∞ Algebras -/
 
@@ -253,13 +286,22 @@ def obstructionSpace {R : Type u} [CommRing R]
   V 2
 
 /-- If H²(L^a) = 0, the moduli space is smooth at [a] -/
-theorem smooth_when_unobstructed {R : Type u} [CommRing R]
+def smoothPoint_when_unobstructed {R : Type u} [CommRing R]
     {V : ℤ → Type v}
     [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
     {L : LInftyAlgebra R V} (T : MCTheory R L) (a : MCElement R T)
     (_h : Subsingleton (obstructionSpace T a)) :
-    Nonempty (MCModuli R T) := by
-  exact ⟨Quotient.mk _ a⟩
+    MCModuli R T :=
+  Quotient.mk _ a
+
+/-- If H²(L^a) = 0, the moduli space is smooth at [a]. -/
+theorem smooth_when_unobstructed {R : Type u} [CommRing R]
+    {V : ℤ → Type v}
+    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
+    {L : LInftyAlgebra R V} (T : MCTheory R L) (a : MCElement R T)
+    (h : Subsingleton (obstructionSpace T a)) :
+    Nonempty (MCModuli R T) :=
+  ⟨smoothPoint_when_unobstructed T a h⟩
 
 /-! ## Kuranishi Map -/
 
