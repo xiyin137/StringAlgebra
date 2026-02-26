@@ -106,6 +106,9 @@ def LInftyAlgebra.trivial (R : Type u) [CommRing R] (V : ℤ → Type v)
         degree_eq := by
           simp only [Finset.univ_unique, Fin.default_eq_zero, Finset.sum_singleton]
         isZero := true
+        isZero_wordLength_one := by
+          intro _
+          rfl
       }
       componentMap := fun _n _hn => fun x => {
         degree := x.degree + 1
@@ -115,6 +118,9 @@ def LInftyAlgebra.trivial (R : Type u) [CommRing R] (V : ℤ → Type v)
         degree_eq := by
           simp only [Finset.univ_unique, Fin.default_eq_zero, Finset.sum_singleton]
         isZero := true
+        isZero_wordLength_one := by
+          intro _
+          rfl
       }
       component_spec := by
         intro n hn x hx
@@ -452,6 +458,9 @@ def ReducedSymCoalg.zeroWithDegree (R : Type u) [CommRing R] (V : ℤ → Type v
   factorDegrees := fun _ => d
   degree_eq := by simp only [Finset.univ_unique, Fin.default_eq_zero, Finset.sum_singleton]
   isZero := true
+  isZero_wordLength_one := by
+    intro _
+    rfl
 
 /-- Every Lie algebra gives an L∞ algebra.
 

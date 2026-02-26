@@ -289,11 +289,17 @@ structure ReducedSymCoalg (R : Type u) [CommRing R] (V : ℤ → Type v)
   degree_eq : degree = Finset.univ.sum factorDegrees
   /-- Whether this is the zero element -/
   isZero : Bool := false
+  /-- In this reduced model, zero markers are carried at word length 1. -/
+  isZero_wordLength_one : isZero = true → wordLength = 1
 
 namespace ReducedSymCoalg
 
 variable {R : Type u} [CommRing R] {V : ℤ → Type v}
     [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
+
+theorem wordLength_eq_one_of_isZero (x : ReducedSymCoalg R V)
+    (hzero : x.isZero = true) : x.wordLength = 1 :=
+  x.isZero_wordLength_one hzero
 
 /-- Zero element in the reduced symmetric coalgebra.
     Note: This is a formal zero, represented with word length 1. -/
@@ -304,6 +310,9 @@ protected def zero : ReducedSymCoalg R V where
   factorDegrees := fun _ => 0
   degree_eq := by simp
   isZero := true
+  isZero_wordLength_one := by
+    intro _
+    rfl
 
 instance : Zero (ReducedSymCoalg R V) := ⟨ReducedSymCoalg.zero⟩
 
@@ -314,6 +323,10 @@ def single (d : ℤ) : ReducedSymCoalg R V where
   wordLength_pos := le_refl 1
   factorDegrees := fun _ => d
   degree_eq := by simp
+  isZero := false
+  isZero_wordLength_one := by
+    intro h
+    cases h
 
 /-- Construct a symmetric tensor from n elements with given degrees (n ≥ 1) -/
 def ofDegrees {n : ℕ} (hn : n ≥ 1) (degrees : Fin n → ℤ) : ReducedSymCoalg R V where
@@ -322,6 +335,10 @@ def ofDegrees {n : ℕ} (hn : n ≥ 1) (degrees : Fin n → ℤ) : ReducedSymCoa
   wordLength_pos := hn
   factorDegrees := degrees
   degree_eq := rfl
+  isZero := false
+  isZero_wordLength_one := by
+    intro h
+    cases h
 
 /-- Check if a reduced coalgebra element is zero -/
 def eqZero (x : ReducedSymCoalg R V) : Prop := x.isZero = true
