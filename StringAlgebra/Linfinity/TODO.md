@@ -22,6 +22,7 @@ This file tracks formal soundness debt for `StringAlgebra/Linfinity` under `agen
    - `Transfer.lean`: strengthened `TransferResult` with explicit linear-consistency constraint (`inclusion_linear`) tying the lifted inclusion's arity-1 component to the underlying SDR inclusion map; added exported theorem `transferInclusion_linear`.
    - `Transfer.lean`: strengthened both `MinimalModelResult` and `FormalityResult` with explicit linear-part fields tied to the arity-1 quasi-isomorphism components (`linear_spec`), and added derived degreewise bijectivity theorems (`minimalModelLinear_isBijective`, `formalityLinear_isBijective`).
    - `Transfer.lean`: added `transferInclusionLinear_isBijective`, deriving degreewise bijectivity of `data.incl` from `TransferResult.inclusion_isQuasiIso` via the exported arity-1 coherence theorem `transferInclusion_linear`.
+   - `Transfer.lean`: added canonical accessor linear-bridge theorems (`minimalModelMorphism_linear_isBijective`, `formalityMorphism_linear_isBijective`) and simp equalities (`minimalModelMorphism_linear_eq`, `formalityMorphism_linear_eq`), so package-level linear bijectivity now explicitly factors through canonical accessor morphisms.
    - `Formality.lean`: removed hardcoded zero graph/quantization outputs; now requires explicit witness data for formality, MC transport, and quantization outputs.
    - `Formality.lean`: strengthened MC transport to explicit element-level output (`linfty_preserves_mc`) with an existence wrapper lemma, and added reflexive/symmetric/transitive gauge-equivalence infrastructure with a `Setoid` instance on star products.
    - `Formality.lean`: added explicit star-product gauge-class quotient interface (`StarProductGaugeClass`, projection, and exact equality↔gauge-equivalence bridge lemmas).
@@ -99,6 +100,16 @@ PolyvectorFieldsDGLA.toDGLAData
 TransferResult.inclusion_isQuasiIso
 + transferInclusion_linear
 -> transferInclusionLinear_isBijective
+
+MinimalModelResult.quasiIso_property
++ minimalModelMorphism_linear_eq
+-> minimalModelMorphism_linear_isBijective
+-> minimalModelLinear_isBijective
+
+FormalityResult.quasiIso_property
++ formalityMorphism_linear_eq
+-> formalityMorphism_linear_isBijective
+-> formalityLinear_isBijective
 
 + MCPreservation witness
 -> linfty_preserves_mc

@@ -329,6 +329,22 @@ theorem minimalModelMorphism_isQuasiIso {R : Type u} [CommRing R]
     (minimalModelMorphism M).isQuasiIso :=
   M.quasiIso_property
 
+/-- The canonical minimal-model morphism has degreewise bijective linear part. -/
+theorem minimalModelMorphism_linear_isBijective {R : Type u} [CommRing R]
+    {V : ℤ → Type v}
+    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
+    {L : LInftyAlgebra R V} (M : MinimalModelResult L) :
+    ∀ n : ℤ, Function.Bijective (((minimalModelMorphism M).components 1 (by omega)).map n) :=
+  minimalModelMorphism_isQuasiIso M
+
+@[simp] theorem minimalModelMorphism_linear_eq {R : Type u} [CommRing R]
+    {V : ℤ → Type v}
+    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
+    {L : LInftyAlgebra R V} (M : MinimalModelResult L) :
+    ∀ n : ℤ, (((minimalModelMorphism M).components 1 (by omega)).map n) = M.linear n := by
+  intro n
+  simpa [minimalModelMorphism] using M.linear_spec n
+
 /-- The explicit linear part in a minimal-model package is degreewise bijective. -/
 theorem minimalModelLinear_isBijective {R : Type u} [CommRing R]
     {V : ℤ → Type v}
@@ -336,7 +352,13 @@ theorem minimalModelLinear_isBijective {R : Type u} [CommRing R]
     {L : LInftyAlgebra R V} (M : MinimalModelResult L) :
     ∀ n : ℤ, Function.Bijective (M.linear n) := by
   intro n
-  simpa [M.linear_spec n] using M.quasiIso_property n
+  have hq :
+      Function.Bijective (((minimalModelMorphism M).components 1 (by omega)).map n) :=
+    minimalModelMorphism_linear_isBijective M n
+  have hlin :
+      (((minimalModelMorphism M).components 1 (by omega)).map n) = M.linear n :=
+    minimalModelMorphism_linear_eq M n
+  simpa [hlin] using hq
 
 /-- Existence of a minimal-model quasi-isomorphism from explicit witness data.
 
@@ -413,6 +435,22 @@ theorem formalityMorphism_isQuasiIso {R : Type u} [CommRing R]
     (formalityMorphism F).isQuasiIso :=
   F.quasiIso_property
 
+/-- The canonical formality morphism has degreewise bijective linear part. -/
+theorem formalityMorphism_linear_isBijective {R : Type u} [CommRing R]
+    {V : ℤ → Type v}
+    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
+    {L : LInftyAlgebra R V} (F : FormalityResult L) :
+    ∀ n : ℤ, Function.Bijective (((formalityMorphism F).components 1 (by omega)).map n) :=
+  formalityMorphism_isQuasiIso F
+
+@[simp] theorem formalityMorphism_linear_eq {R : Type u} [CommRing R]
+    {V : ℤ → Type v}
+    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
+    {L : LInftyAlgebra R V} (F : FormalityResult L) :
+    ∀ n : ℤ, (((formalityMorphism F).components 1 (by omega)).map n) = F.linear n := by
+  intro n
+  simpa [formalityMorphism] using F.linear_spec n
+
 /-- The explicit linear part in a formality package is degreewise bijective. -/
 theorem formalityLinear_isBijective {R : Type u} [CommRing R]
     {V : ℤ → Type v}
@@ -420,7 +458,13 @@ theorem formalityLinear_isBijective {R : Type u} [CommRing R]
     {L : LInftyAlgebra R V} (F : FormalityResult L) :
     ∀ n : ℤ, Function.Bijective (F.linear n) := by
   intro n
-  simpa [F.linear_spec n] using F.quasiIso_property n
+  have hq :
+      Function.Bijective (((formalityMorphism F).components 1 (by omega)).map n) :=
+    formalityMorphism_linear_isBijective F n
+  have hlin :
+      (((formalityMorphism F).components 1 (by omega)).map n) = F.linear n :=
+    formalityMorphism_linear_eq F n
+  simpa [hlin] using hq
 
 def isFormal {R : Type u} [CommRing R]
     {V : ℤ → Type v}
