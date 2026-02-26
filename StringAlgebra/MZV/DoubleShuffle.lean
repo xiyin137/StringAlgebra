@@ -328,12 +328,6 @@ def finiteDoubleShuffleBasis (basis : List (Composition × Composition)) : Prop 
 def fds_generates_relations : Prop :=
   ∃ basis : List (Composition × Composition), finiteDoubleShuffleBasis basis
 
-/-- Reformulation of `fds_generates_relations` via an explicit finite basis witness. -/
-theorem fds_generates_relations_iff :
-    fds_generates_relations ↔
-      ∃ basis : List (Composition × Composition), finiteDoubleShuffleBasis basis :=
-  Iff.rfl
-
 /-! ## Derivations and Ihara Action -/
 
 /-- Modify the i-th element of a composition by adding n to it.
@@ -436,11 +430,5 @@ def zagier_generating_function : Prop :=
     give ALL relations between MZVs. -/
 def goncharov_conjecture : Prop :=
   fds_generates_relations
-
-/-- By definition in this formalization, Goncharov's conjecture is exactly
-    finite generation by finite double-shuffle data. -/
-theorem goncharov_conjecture_iff_fds :
-    goncharov_conjecture ↔ fds_generates_relations :=
-  Iff.rfl
 
 end StringAlgebra.MZV
