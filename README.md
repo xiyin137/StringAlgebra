@@ -80,7 +80,8 @@ Current audited status (2026-02-26):
 13. Transfer minimal-model uniqueness now also has a base-vs-strengthened equivalence bridge (`minimal_model_unique_with_linear_bijectivity_iff_minimal_model_unique`) and a derived arity-1 bijectivity extractor from base uniqueness witnesses (`minimal_model_unique_linear_isBijective_of_unique`).
 14. Transfer formality extraction now has direct bridges from unpacked data views to package-level linear-bijectivity witnesses (`unpacked_with_linear_bijectivity_iff_exists_formalityLinear_isBijective`, `unpacked_iff_exists_formalityLinear_isBijective`).
 15. Formality classification now also exposes directional extraction lemmas (`starProductClassification_gaugeEquivalent_of_poisson_eq`, `starProductClassification_poisson_eq_of_gaugeEquivalent`, `starProductClassification_toGaugeClass_eq_of_poisson_eq`, `starProductClassification_poisson_eq_of_toGaugeClass_eq`) to consume classification bridges without manually unpacking iff statements.
-16. Remaining semantic debt is tracked explicitly in `StringAlgebra/Linfinity/TODO.md`.
+16. Formality classification now also exposes directional extraction lemmas directly from quotient-class assumptions (`starProductClassification_toGaugeClass_eq_of_poisson_eq_of_toGaugeClass`, `starProductClassification_poisson_eq_of_toGaugeClass_eq_of_toGaugeClass`, `starProductClassification_gaugeEquivalent_of_poisson_eq_of_toGaugeClass`, `starProductClassification_poisson_eq_of_gaugeEquivalent_of_toGaugeClass`).
+17. Remaining semantic debt is tracked explicitly in `StringAlgebra/Linfinity/TODO.md`.
 
 Current dependency flow toward `Formality.lean`:
 
@@ -125,6 +126,10 @@ starProductClassification <-> starProductClassification_iff_toGaugeClass -> star
 -> starProductClassification_poisson_eq_of_gaugeEquivalent
 -> starProductClassification_toGaugeClass_eq_of_poisson_eq
 -> starProductClassification_poisson_eq_of_toGaugeClass_eq
+-> starProductClassification_toGaugeClass_eq_of_poisson_eq_of_toGaugeClass
+-> starProductClassification_poisson_eq_of_toGaugeClass_eq_of_toGaugeClass
+-> starProductClassification_gaugeEquivalent_of_poisson_eq_of_toGaugeClass
+-> starProductClassification_poisson_eq_of_gaugeEquivalent_of_toGaugeClass
 -> linfty_preserves_mc (with MCPreservation witness)
 -> MaurerCartan local deformation packaging (explicit KuranishiTheory witness)
 -> deformationQuantization (with QuantizationResult witness)

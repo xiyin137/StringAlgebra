@@ -36,6 +36,7 @@ This file tracks formal soundness debt for `StringAlgebra/Linfinity` under `agen
    - `Formality.lean`: added classification bridge theorem on quotient classes (`starProductClassification_toGaugeClass`) to consume assumptions directly at the `toGaugeClass` level.
    - `Formality.lean`: added converse and iff classification bridges (`starProductClassification_of_toGaugeClass`, `starProductClassification_iff_toGaugeClass`) so gauge-equivalence and quotient-class formulations are explicitly inter-derivable.
    - `Formality.lean`: added directional extraction lemmas from classification bridges (`starProductClassification_gaugeEquivalent_of_poisson_eq`, `starProductClassification_poisson_eq_of_gaugeEquivalent`, `starProductClassification_toGaugeClass_eq_of_poisson_eq`, `starProductClassification_poisson_eq_of_toGaugeClass_eq`) for direct forward/backward use in downstream proofs.
+   - `Formality.lean`: added directional extraction lemmas from quotient-class classification assumptions (`starProductClassification_toGaugeClass_eq_of_poisson_eq_of_toGaugeClass`, `starProductClassification_poisson_eq_of_toGaugeClass_eq_of_toGaugeClass`, `starProductClassification_gaugeEquivalent_of_poisson_eq_of_toGaugeClass`, `starProductClassification_poisson_eq_of_gaugeEquivalent_of_toGaugeClass`) to use `toGaugeClass`-level hypotheses without manual conversion.
    - `Formality.lean`: gauge transformations are now identity-normalized (`T₀ = 0`) and composition/symmetry preserve and combine explicit transformation data instead of discarding components; the local `ConfigurationSpace` model also enforces collision-freeness via injectivity.
    - `Formality.lean`: strengthened `KontsevichGraph.ordering` by replacing the tautological ground-target branch with an explicit finite-index bound (`j.val < groundVertices`).
    - `Formality.lean`: strengthened `FormalityComponent` with explicit degree-consistency proof (`degree_spec`) and exported simp lemma (`FormalityComponent.degree_eq`), eliminating unconstrained arity/degree metadata.
@@ -172,6 +173,10 @@ starProductClassification
 -> starProductClassification_poisson_eq_of_gaugeEquivalent
 -> starProductClassification_toGaugeClass_eq_of_poisson_eq
 -> starProductClassification_poisson_eq_of_toGaugeClass_eq
+-> starProductClassification_toGaugeClass_eq_of_poisson_eq_of_toGaugeClass
+-> starProductClassification_poisson_eq_of_toGaugeClass_eq_of_toGaugeClass
+-> starProductClassification_gaugeEquivalent_of_poisson_eq_of_toGaugeClass
+-> starProductClassification_poisson_eq_of_gaugeEquivalent_of_toGaugeClass
 ```
 
 ## Soundness Audit Matrix (All Linfinity Files)
