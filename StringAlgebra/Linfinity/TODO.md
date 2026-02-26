@@ -25,6 +25,7 @@ This file tracks formal soundness debt for `StringAlgebra/Linfinity` under `agen
    - `Morphisms.lean`: quasi-isomorphism criterion strengthened to degreewise bijectivity; composition now uses explicit `CompositionData`, with derived canonical instances for identity and strict-morphism composition.
    - `Morphisms.lean`: added explicit conversion bridges between bundled `LInftyHom` data and core `LInftyMorphism`, including composition-data transport.
    - `Morphisms.lean`: `LInftyHomotopy` now carries an explicit first-order linear homotopy equation (`linearDelta`, `linear_spec`) and derived symmetry/transitivity constructors.
+   - `Morphisms.lean`: homotopy now exposes an `Equivalence` theorem and a canonical `Setoid` instance on `LInftyHom`.
    - `DGLA.lean`: replaced tautological `toLInftyQuasiIso` shell with an explicit `DGLAMorphismLInftyLift` bridge and degreewise linear quasi-isomorphism criterion; added canonical DGLA-to-L∞ lift, DGLA morphism identity/composition, and composition-aware lift transport in the current `LInftyMorphism` interface.
    - `BVAlgebra.lean`: `CyclicLInfty.antibracket` now uses explicit `l2` and cyclicity law instead of a fabricated zero output.
    - `MaurerCartan.lean`: removed hardcoded zero Kuranishi map; Kuranishi local model now requires explicit `KuranishiTheory` data with base-point normalization.

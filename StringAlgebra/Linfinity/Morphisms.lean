@@ -446,6 +446,29 @@ theorem homotopic_trans {R : Type u} [CommRing R]
     _ = (F.components 1 (by omega)).map i + (HFG.linearDelta i + HGK.linearDelta i) := by
       simp [F1]
 
+theorem homotopic_equivalence {R : Type u} [CommRing R]
+    {V W : ℤ → Type v}
+    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
+    [∀ i, AddCommGroup (W i)] [∀ i, Module R (W i)]
+    {L : LInftyAlgebra R V} {L' : LInftyAlgebra R W} :
+    Equivalence (LInftyHom.homotopic (R := R) (L := L) (L' := L')) := by
+  refine ⟨?_, ?_, ?_⟩
+  · intro F
+    exact homotopic_refl (R := R) F
+  · intro F G h
+    exact homotopic_symm (R := R) h
+  · intro F G K hFG hGK
+    exact homotopic_trans (R := R) hFG hGK
+
+instance LInftyHom.homotopicSetoid {R : Type u} [CommRing R]
+    {V W : ℤ → Type v}
+    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
+    [∀ i, AddCommGroup (W i)] [∀ i, Module R (W i)]
+    {L : LInftyAlgebra R V} {L' : LInftyAlgebra R W} :
+    Setoid (LInftyHom R L L') where
+  r := LInftyHom.homotopic
+  iseqv := homotopic_equivalence (R := R) (L := L) (L' := L')
+
 /-! ## The ∞-Category of L∞ Algebras -/
 
 /-- The homotopy category of L∞ algebras.
