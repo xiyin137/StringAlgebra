@@ -326,17 +326,6 @@ def twistedDifferential {R : Type u} [CommRing R]
     (k : ℤ) → V k →ₗ[R] V (k + 1) :=
   T.twistedDifferential a.element
 
-/-- Witness-level MC condition for the chosen twisting point.
-
-    This theorem returns the stored Maurer-Cartan witness used to justify
-    square-zero claims for the twisted differential. -/
-theorem twisted_diff_sq_zero_witness {R : Type u} [CommRing R]
-    {V : ℤ → Type v}
-    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
-    {L : LInftyAlgebra R V} (T : MCTheory R L) (a : MCElement R T) :
-    satisfiesMC L T a.element :=  -- The MC condition gives (l₁^a)² = 0
-  a.mc
-
 /-! ## Deformation Theory -/
 
 /-- A formal deformation of an L∞ algebra is an MC element

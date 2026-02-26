@@ -199,29 +199,6 @@ theorem LInfinityStructure.bracket_wordLength_one (_L : LInfinityStructure R V)
     (_L.bracket n hn x).wordLength = 1 :=
   coderivationComponent_wordLength_one _L.D n hn x hx
 
-/-! ## Key Properties -/
-
-/-- Word-length-1 square-zero witness extracted from `L.square_zero`. -/
-theorem l1_is_differential_witness (L : LInfinityStructure R V) :
-    ∀ x : ReducedSymCoalg R (Shift V 1), x.wordLength = 1 →
-      (L.D.square x).isZero = true := by
-  intro x hx
-  exact L.square_zero x
-
-/-- Word-length-2 square-zero witness extracted from `L.square_zero`. -/
-theorem l1_derivation_of_l2_witness (L : LInfinityStructure R V) :
-    ∀ x : ReducedSymCoalg R (Shift V 1), x.wordLength = 2 →
-      (L.D.square x).isZero = true := by
-  intro x hx
-  exact L.square_zero x
-
-/-- Word-length-`n` square-zero witness extracted from `L.square_zero`. -/
-theorem generalized_jacobi_witness (L : LInfinityStructure R V) (n : ℕ) (_hn : n ≥ 1) :
-    ∀ x : ReducedSymCoalg R (Shift V 1), x.wordLength = n →
-      (L.D.square x).isZero = true := by
-  intro x hx
-  exact L.square_zero x
-
 /-! ## Special Cases -/
 
 /-- The coderivation vanishes on word length n inputs.
