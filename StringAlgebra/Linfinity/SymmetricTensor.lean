@@ -45,6 +45,14 @@ namespace StringAlgebra.Linfinity
 
 open Graded
 
+private theorem perm_apply_inv_self {α : Type _} (σ : Equiv.Perm α) (x : α) :
+    σ (σ⁻¹ x) = x :=
+  Equiv.apply_symm_apply σ x
+
+private theorem perm_inv_apply_self {α : Type _} (σ : Equiv.Perm α) (x : α) :
+    σ⁻¹ (σ x) = x :=
+  Equiv.symm_apply_apply σ x
+
 /-! ## Symmetric Tensors with Elements -/
 
 /-- A symmetric tensor of n elements from a graded module V.
@@ -147,14 +155,14 @@ theorem Equiv.symm {n : ℕ} {x y : SymTensor R V n} (h : Equiv x y) : Equiv y x
   constructor
   · intro i
     have h1 := hdeg (σ⁻¹ i)
-    simp only [Equiv.Perm.apply_inv_self] at h1
+    simp only [perm_apply_inv_self] at h1
     exact h1.symm
   · intro i
     have h1 := helem (σ⁻¹ i)
     -- h1 : x.elements (σ⁻¹ i) ≍ y.elements (σ (σ⁻¹ i))
     -- After simp: x.elements (σ⁻¹ i) ≍ y.elements i
     -- We need: y.elements i ≍ x.elements (σ⁻¹ i)
-    have h2 : σ (σ⁻¹ i) = i := Equiv.Perm.apply_inv_self σ i
+    have h2 : σ (σ⁻¹ i) = i := perm_apply_inv_self σ i
     rw [h2] at h1
     exact h1.symm
 
@@ -324,7 +332,7 @@ def Equiv.Perm.sumPerm {m n : ℕ} (σ₁ : Equiv.Perm (Fin m)) (σ₂ : Equiv.P
       simp only [h2, dite_true]
       ext
       have key : (⟨(σ₁ ⟨i.val, h1⟩).val, h2⟩ : Fin m) = σ₁ ⟨i.val, h1⟩ := by ext; rfl
-      simp only [key, Equiv.Perm.inv_apply_self, Fin.val_mk]
+      simp only [key, perm_inv_apply_self, Fin.val_mk]
     · -- i.val ≥ m
       simp only [h1, dite_false]
       have hbound : i.val - m < n := Nat.sub_lt_left_of_lt_add (Nat.not_lt.mp h1) i.isLt
@@ -333,7 +341,7 @@ def Equiv.Perm.sumPerm {m n : ℕ} (σ₁ : Equiv.Perm (Fin m)) (σ₂ : Equiv.P
       ext
       have key : (⟨(σ₂ ⟨i.val - m, hbound⟩).val, (σ₂ ⟨i.val - m, hbound⟩).isLt⟩ : Fin n) =
           σ₂ ⟨i.val - m, hbound⟩ := by ext; rfl
-      simp only [key, Equiv.Perm.inv_apply_self, Fin.val_mk]
+      simp only [key, perm_inv_apply_self, Fin.val_mk]
       omega
   right_inv := fun i => by
     simp only
@@ -344,7 +352,7 @@ def Equiv.Perm.sumPerm {m n : ℕ} (σ₁ : Equiv.Perm (Fin m)) (σ₂ : Equiv.P
       simp only [h2, dite_true]
       ext
       have key : (⟨(σ₁⁻¹ ⟨i.val, h1⟩).val, h2⟩ : Fin m) = σ₁⁻¹ ⟨i.val, h1⟩ := by ext; rfl
-      simp only [key, Equiv.Perm.apply_inv_self, Fin.val_mk]
+      simp only [key, perm_apply_inv_self, Fin.val_mk]
     · -- i.val ≥ m
       simp only [h1, dite_false]
       have hbound : i.val - m < n := Nat.sub_lt_left_of_lt_add (Nat.not_lt.mp h1) i.isLt
@@ -353,7 +361,7 @@ def Equiv.Perm.sumPerm {m n : ℕ} (σ₁ : Equiv.Perm (Fin m)) (σ₂ : Equiv.P
       ext
       have key : (⟨(σ₂⁻¹ ⟨i.val - m, hbound⟩).val, (σ₂⁻¹ ⟨i.val - m, hbound⟩).isLt⟩ : Fin n) =
           σ₂⁻¹ ⟨i.val - m, hbound⟩ := by ext; rfl
-      simp only [key, Equiv.Perm.apply_inv_self, Fin.val_mk]
+      simp only [key, perm_apply_inv_self, Fin.val_mk]
       omega
 
 /-! ## Helper Lemmas for sumPerm -/
