@@ -338,6 +338,59 @@ def isFormal {R : Type u} [CommRing R]
     (L : LInftyAlgebra R V) : Prop :=
   Nonempty (FormalityResult L)
 
+/-- Unpack formality into explicit model-and-quasi-isomorphism data. -/
+theorem isFormal_unpacked {R : Type u} [CommRing R]
+    {V : ℤ → Type v}
+    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
+    {L : LInftyAlgebra R V} (h : isFormal L) :
+    ∃ (H : ℤ → Type v),
+      ∃ (_instAdd : ∀ i, AddCommGroup (H i)),
+      ∃ (_instModule : ∀ i, Module R (H i)),
+      ∃ (model : LInftyAlgebra R H),
+      ∃ (_minimal : isMinimal model),
+      ∃ (q : LInftyHom R model L), q.isQuasiIso := by
+  rcases h with ⟨F⟩
+  exact ⟨F.H, F.instAddCommGroup, F.instModule, F.model, F.minimal, F.quasiIso, F.quasiIso_property⟩
+
+/-- Build formality from explicit model-and-quasi-isomorphism data. -/
+theorem isFormal_of_unpacked {R : Type u} [CommRing R]
+    {V : ℤ → Type v}
+    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
+    {L : LInftyAlgebra R V}
+    (h :
+      ∃ (H : ℤ → Type v),
+        ∃ (_instAdd : ∀ i, AddCommGroup (H i)),
+        ∃ (_instModule : ∀ i, Module R (H i)),
+        ∃ (model : LInftyAlgebra R H),
+        ∃ (_minimal : isMinimal model),
+        ∃ (q : LInftyHom R model L), q.isQuasiIso) :
+    isFormal L := by
+  rcases h with ⟨H, instAdd, instModule, model, minimal, q, hq⟩
+  exact ⟨{
+    H := H
+    instAddCommGroup := instAdd
+    instModule := instModule
+    model := model
+    minimal := minimal
+    quasiIso := q
+    quasiIso_property := hq
+  }⟩
+
+theorem isFormal_iff_unpacked {R : Type u} [CommRing R]
+    {V : ℤ → Type v}
+    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
+    {L : LInftyAlgebra R V} :
+    isFormal L ↔
+      ∃ (H : ℤ → Type v),
+        ∃ (_instAdd : ∀ i, AddCommGroup (H i)),
+        ∃ (_instModule : ∀ i, Module R (H i)),
+        ∃ (model : LInftyAlgebra R H),
+        ∃ (_minimal : isMinimal model),
+        ∃ (q : LInftyHom R model L), q.isQuasiIso := by
+  constructor
+  · exact isFormal_unpacked
+  · exact isFormal_of_unpacked
+
 /-- Kontsevich's formality theorem: The DGLA of polyvector fields
     is formal (quasi-isomorphic to the Lie algebra of polyvectors
     with Schouten bracket). -/
