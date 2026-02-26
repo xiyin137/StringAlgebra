@@ -555,6 +555,23 @@ theorem isFormal_of_unpacked {R : Type u} [CommRing R]
     quasiIso_property := hq
   }⟩
 
+theorem isFormal_of_unpacked_with_linear_bijectivity {R : Type u} [CommRing R]
+    {V : ℤ → Type v}
+    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
+    {L : LInftyAlgebra R V}
+    (h :
+      ∃ (H : ℤ → Type v),
+        ∃ (_instAdd : ∀ i, AddCommGroup (H i)),
+        ∃ (_instModule : ∀ i, Module R (H i)),
+        ∃ (model : LInftyAlgebra R H),
+        ∃ (_minimal : isMinimal model),
+        ∃ (q : LInftyHom R model L),
+          q.isQuasiIso ∧
+          (∀ n : ℤ, Function.Bijective (((q.components 1 (by omega)).map n)))) :
+    isFormal L := by
+  rcases h with ⟨H, instAdd, instModule, model, minimal, q, hq, _hlin⟩
+  exact isFormal_of_unpacked (L := L) ⟨H, instAdd, instModule, model, minimal, q, hq⟩
+
 theorem isFormal_iff_unpacked {R : Type u} [CommRing R]
     {V : ℤ → Type v}
     [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
@@ -569,6 +586,35 @@ theorem isFormal_iff_unpacked {R : Type u} [CommRing R]
   constructor
   · exact isFormal_unpacked
   · exact isFormal_of_unpacked
+
+theorem isFormal_iff_unpacked_with_linear_bijectivity {R : Type u} [CommRing R]
+    {V : ℤ → Type v}
+    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
+    {L : LInftyAlgebra R V} :
+    isFormal L ↔
+      ∃ (H : ℤ → Type v),
+        ∃ (_instAdd : ∀ i, AddCommGroup (H i)),
+        ∃ (_instModule : ∀ i, Module R (H i)),
+        ∃ (model : LInftyAlgebra R H),
+        ∃ (_minimal : isMinimal model),
+        ∃ (q : LInftyHom R model L),
+          q.isQuasiIso ∧
+          (∀ n : ℤ, Function.Bijective (((q.components 1 (by omega)).map n))) := by
+  constructor
+  · exact isFormal_unpacked_with_linear_bijectivity
+  · exact isFormal_of_unpacked_with_linear_bijectivity
+
+theorem isFormal_iff_exists_formalityLinear_isBijective {R : Type u} [CommRing R]
+    {V : ℤ → Type v}
+    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
+    {L : LInftyAlgebra R V} :
+    isFormal L ↔
+      ∃ F : FormalityResult L, ∀ n : ℤ, Function.Bijective (F.linear n) := by
+  constructor
+  · exact isFormal_exists_formalityLinear_isBijective
+  · intro h
+    rcases h with ⟨F, _hlin⟩
+    exact ⟨F⟩
 
 /-- Kontsevich's formality theorem: The DGLA of polyvector fields
     is formal (quasi-isomorphic to the Lie algebra of polyvectors
