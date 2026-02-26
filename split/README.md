@@ -13,6 +13,7 @@ into domain repositories without changing Lean module names.
 6. `templates/lean-toolchain`
 7. `split_audit.sh`
 8. `dry_run_extract.sh`
+9. `extract_domain.sh`
 
 ## Design Choice
 
@@ -31,3 +32,13 @@ bash split/dry_run_extract.sh MZV
 ```
 
 Supported domain arguments are `Linfinity`, `MZV`, `VOA`, `MTC`.
+
+## Actual Local Extraction
+
+Create a standalone local repo directory for a domain:
+
+```bash
+bash split/extract_domain.sh MZV /tmp/StringAlgebra-MZV
+```
+
+Add `--no-checks` to only scaffold files without running build/audits.

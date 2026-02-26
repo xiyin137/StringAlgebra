@@ -85,6 +85,7 @@ Implemented artifacts (current monorepo):
 6. `split/templates/lean-toolchain`
 7. `split/split_audit.sh`
 8. `split/dry_run_extract.sh`
+9. `split/extract_domain.sh`
 
 Dry-run extraction status (all domains validated locally in isolated temp repos):
 
@@ -124,6 +125,12 @@ For each extraction:
 2. Add domain `lakefile.toml`, `lean-toolchain`, and domain README/TODO.
 3. Run domain build and audits.
 4. Tag initial split commit and enable CI.
+
+Current local execution status:
+
+1. `MZV` was extracted with `split/extract_domain.sh` to a standalone local repo
+   (`/tmp/StringAlgebra-MZV-20260226-164100`) and passed build + boundary +
+   anti-smuggling checks.
 
 ### Phase 3 - Monorepo Transition Cleanup
 
