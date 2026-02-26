@@ -40,6 +40,7 @@ This file tracks formal soundness debt for `StringAlgebra/Linfinity` under `agen
    - `DGLA.lean`: added converse/iff theorems for the canonical DGLA→L∞ quasi-isomorphism criterion (`isLinearQuasiIso ↔ toLInftyMorphism.isQuasiIso`) and its canonical-lift restatement.
    - `DGLA.lean`: strengthened `DGLAMorphismLInftyLift` witnesses with explicit unary-higher agreement and non-unary higher vanishing constraints, so canonical-lift packages cannot hide arbitrary higher components.
    - `BVAlgebra.lean`: `CyclicLInfty.antibracket` now uses explicit `l2` and cyclicity law instead of a fabricated zero output.
+   - `BVAlgebra.lean`: renamed the `Δ`-closure witness field to `triple_delta_zero` and aligned documentation with the actual encoded condition (no implicit claim of full seven-term second-order identity).
    - `MaurerCartan.lean`: removed hardcoded zero Kuranishi map; Kuranishi local model now requires explicit `KuranishiTheory` data with base-point normalization.
    - `MaurerCartan.lean`: gauge equivalence now has explicit reflexive/symmetric/transitive lemmas and a canonical `Setoid`; smoothness now exposes an explicit moduli-point constructor (`smoothPoint_when_unobstructed`) with a `Nonempty` wrapper theorem.
    - `MaurerCartan.lean`: added explicit MC-to-moduli projection with exact characterization `a.toModuli = b.toModuli ↔ GaugeEquivalent T a b`.
@@ -97,7 +98,7 @@ PolyvectorFieldsDGLA.toDGLAData
 12. `MaurerCartan.lean`: medium risk. MC/gauge/twisting operations are explicit interface data, and Kuranishi outputs are no longer fabricated; canonical constructive formulas and cohomological quotient realization remain pending.
 13. `Transfer.lean`: high risk. Fabricated outputs removed, witness-return theorems now preserve supplied comparison data explicitly, but transferred brackets/structures are still witness-driven and not yet constructed from trees internally.
 14. `Formality.lean`: high risk. Placeholder outputs removed; MC transport plus gauge-equivalence/gauge-class interfaces are explicit and gauge-transformation normalization/composition are data-preserving, while the theorem-level bridge still remains witness-driven and awaits constructive graph-weight/operator machinery.
-15. `BVAlgebra.lean`: medium risk. No `sorry`; cyclic antibracket interface is explicit, while key BV-to-Gerstenhaber/CME derivations still rely on explicit assumptions pending closure.
+15. `BVAlgebra.lean`: medium risk. No `sorry`; cyclic antibracket interface is explicit, `Δ`-closure is tracked via an explicit trilinear vanishing witness (`triple_delta_zero`), and key BV-to-Gerstenhaber/CME derivations still rely on explicit assumptions pending closure.
 16. `TODO.md`: active audit ledger.
 
 ## Open Work Packages

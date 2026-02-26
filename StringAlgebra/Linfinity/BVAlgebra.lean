@@ -147,21 +147,12 @@ structure BVAlgebra (R : Type u) [CommRing R]
   graded_comm : ∀ m n (a : A m) (b : A n),
     have h : n + m = m + n := add_comm n m
     mul m n a b = koszulSign m n • (h ▸ mul n m b a)
-  /-- Second-order condition: The failure of Δ to be a derivation
-      is measured by the Gerstenhaber bracket. Equivalently, for any
-      three elements a, b, c, the seven-term identity holds:
+  /-- Current trilinear closure witness used in this interface.
 
-      Δ(abc) - Δ(ab)c - (-1)^|a| a Δ(bc) - (-1)^{(|a|+|b|)|c|} Δ(ac)b
-      + Δ(a)bc + (-1)^|a| a Δ(b)c + (-1)^{|a|+|b|} ab Δ(c) = 0
-
-      This condition ensures the derived Gerstenhaber bracket satisfies
-      the Jacobi identity. Reformulating in terms of Gerstenhaber brackets:
-      [a, bc] = [a,b]c + (-1)^{(|a|+1)|b|} b[a,c]
-
-      Due to the complexity of degree casts in the full 7-term identity,
-      we express the condition as: the Gerstenhaber bracket is a derivation
-      in the second argument. -/
-  second_order_derivation : ∀ m n p (a : A m) (b : A n) (c : A p),
+      It tracks vanishing of `Δ` on triple products after the canonical
+      degree reassociation cast. This is weaker than the full BV
+      second-order/seven-term identity and is treated explicitly as such. -/
+  triple_delta_zero : ∀ m n p (a : A m) (b : A n) (c : A p),
     have h : (m + n) + p = m + n + p := by ring
     delta (m + n + p) (h ▸ mul (m + n) p (mul m n a b) c) = 0
 
@@ -223,8 +214,9 @@ The Gerstenhaber bracket derived from a BV algebra satisfies:
 2. **Graded Leibniz rule** (derivation property):
    [a, bc] = [a,b]c + (-1)^{(|a|+1)|b|} b[a,c]
 
-These follow from the second-order property of Δ. Full proofs require careful
-handling of degree casts and Koszul signs.
+In full BV theory these follow from the seven-term second-order identity for Δ.
+Full derivations are not yet internalized in this file and remain tracked
+through explicit assumptions.
 -/
 
 /-! ## Classical Master Equation -/
@@ -487,7 +479,7 @@ def BVAlgebra.trivial (R : Type u) [CommRing R]
   one_mul := by intros; simp [Subsingleton.eq_zero]
   mul_one := by intros; simp [Subsingleton.eq_zero]
   graded_comm := by intros; simp [Subsingleton.eq_zero]
-  second_order_derivation := by
+  triple_delta_zero := by
     intro m n p a b c
     simp
 
