@@ -428,6 +428,36 @@ theorem minimalModelMorphism_linear_isBijective {R : Type u} [CommRing R]
   intro n
   simpa [minimalModelMorphism] using M.linear_spec n
 
+/-- If the explicit linear part in a minimal-model package is degreewise
+    bijective, then the canonical accessor morphism is a quasi-isomorphism
+    (under the current `isQuasiIso` surrogate). -/
+theorem minimalModelMorphism_isQuasiIso_of_linear_bijective {R : Type u} [CommRing R]
+    {V : ℤ → Type v}
+    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
+    {L : LInftyAlgebra R V} (M : MinimalModelResult L)
+    (hlin : ∀ n : ℤ, Function.Bijective (M.linear n)) :
+    (minimalModelMorphism M).isQuasiIso := by
+  intro n
+  simpa [minimalModelMorphism_linear_eq M n] using hlin n
+
+/-- Under the current `isQuasiIso` surrogate (`bijective f₁`), the canonical
+    minimal-model accessor morphism is quasi-isomorphic iff the packaged linear
+    part is degreewise bijective. -/
+theorem minimalModelMorphism_isQuasiIso_iff_linear_bijective {R : Type u} [CommRing R]
+    {V : ℤ → Type v}
+    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
+    {L : LInftyAlgebra R V} (M : MinimalModelResult L) :
+    (minimalModelMorphism M).isQuasiIso ↔
+      (∀ n : ℤ, Function.Bijective (M.linear n)) := by
+  constructor
+  · intro hq n
+    have hqn :
+        Function.Bijective (((minimalModelMorphism M).components 1 (by omega)).map n) :=
+      hq n
+    simpa [minimalModelMorphism_linear_eq M n] using hqn
+  · intro hlin
+    exact minimalModelMorphism_isQuasiIso_of_linear_bijective M hlin
+
 /-- The explicit linear part in a minimal-model package is degreewise bijective. -/
 theorem minimalModelLinear_isBijective {R : Type u} [CommRing R]
     {V : ℤ → Type v}
@@ -545,6 +575,36 @@ theorem formalityMorphism_linear_isBijective {R : Type u} [CommRing R]
     ∀ n : ℤ, (((formalityMorphism F).components 1 (by omega)).map n) = F.linear n := by
   intro n
   simpa [formalityMorphism] using F.linear_spec n
+
+/-- If the explicit linear part in a formality package is degreewise bijective,
+    then the canonical accessor morphism is a quasi-isomorphism (under the
+    current `isQuasiIso` surrogate). -/
+theorem formalityMorphism_isQuasiIso_of_linear_bijective {R : Type u} [CommRing R]
+    {V : ℤ → Type v}
+    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
+    {L : LInftyAlgebra R V} (F : FormalityResult L)
+    (hlin : ∀ n : ℤ, Function.Bijective (F.linear n)) :
+    (formalityMorphism F).isQuasiIso := by
+  intro n
+  simpa [formalityMorphism_linear_eq F n] using hlin n
+
+/-- Under the current `isQuasiIso` surrogate (`bijective f₁`), the canonical
+    formality accessor morphism is quasi-isomorphic iff the packaged linear part
+    is degreewise bijective. -/
+theorem formalityMorphism_isQuasiIso_iff_linear_bijective {R : Type u} [CommRing R]
+    {V : ℤ → Type v}
+    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
+    {L : LInftyAlgebra R V} (F : FormalityResult L) :
+    (formalityMorphism F).isQuasiIso ↔
+      (∀ n : ℤ, Function.Bijective (F.linear n)) := by
+  constructor
+  · intro hq n
+    have hqn :
+        Function.Bijective (((formalityMorphism F).components 1 (by omega)).map n) :=
+      hq n
+    simpa [formalityMorphism_linear_eq F n] using hqn
+  · intro hlin
+    exact formalityMorphism_isQuasiIso_of_linear_bijective F hlin
 
 /-- The explicit linear part in a formality package is degreewise bijective. -/
 theorem formalityLinear_isBijective {R : Type u} [CommRing R]

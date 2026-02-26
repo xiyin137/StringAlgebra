@@ -39,6 +39,7 @@ This file tracks formal soundness debt for `StringAlgebra/Linfinity` under `agen
    - `LInfinityAlgebra.lean`: added explicit quasi-isomorphism dependency bridges for transfer (`transferMorphism_linear_surjective_of_isQuasiIso`, `transferMorphism_isQuasiIso_of_linear_surjective`, `transferMorphism_isQuasiIso_iff_linear_surjective`), making the missing degreewise surjectivity requirement theorem-level explicit under the current `isQuasiIso` surrogate.
    - `Transfer.lean`: added SDR-level/transfer-level arity-1 injectivity infrastructure (`sdrInclusion_isInjective`, `transferInclusionLinear_isInjective`) independent of quasi-isomorphism closure.
    - `Transfer.lean`: added transfer-level quasi-isomorphism dependency bridges (`transferInclusionLinear_surjective_of_isQuasiIso`, `transfer_is_quasiIso_of_incl_surjective`, `transfer_is_quasiIso_iff_incl_surjective`) exposing exact dependence on degreewise surjectivity of SDR inclusions.
+   - `Transfer.lean`: added explicit minimal-model/formality quasi-isomorphism dependency bridges (`minimalModelMorphism_isQuasiIso_of_linear_bijective`, `minimalModelMorphism_isQuasiIso_iff_linear_bijective`, `formalityMorphism_isQuasiIso_of_linear_bijective`, `formalityMorphism_isQuasiIso_iff_linear_bijective`) so accessor-level quasi-isomorphism claims are theorem-equivalent to degreewise bijectivity of packaged linear parts.
    - `LInfinityAlgebra.lean`/`Transfer.lean`: removed unused tautological forwarding wrappers (`transferMorphism_linear`, `transfer_l1`, `transfer_l2_DGLA`, `isFormal_of_formalityResult`) so these APIs now consume witness fields directly where needed.
    - `Transfer.lean`: discharged `transfer_is_quasiIso` by explicit conversion to `LInfinityAlgebra.HomotopyTransferTheory` and reuse of the core theorem `transferMorphism_isQuasiIso` via the `LInftyHom`↔`LInftyMorphism` bridge.
    - `Formality.lean`: removed hardcoded zero graph/quantization outputs; now requires explicit witness data for formality, MC transport, and quantization outputs.
@@ -139,10 +140,16 @@ minimalModelMorphism_isQuasiIso
 -> minimalModelMorphism_linear_isBijective
 -> minimalModelLinear_isBijective
 
+minimalModelMorphism_isQuasiIso
+<-> minimalModelMorphism_isQuasiIso_iff_linear_bijective
+
 formalityMorphism_isQuasiIso
 + formalityMorphism_linear_eq
 -> formalityMorphism_linear_isBijective
 -> formalityLinear_isBijective
+
+formalityMorphism_isQuasiIso
+<-> formalityMorphism_isQuasiIso_iff_linear_bijective
 
 MinimalModelResult + canonical accessor bridges
 -> minimal_model_exists_with_linear_bijectivity
