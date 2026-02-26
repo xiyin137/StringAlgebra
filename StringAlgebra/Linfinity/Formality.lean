@@ -350,6 +350,10 @@ structure MCPreservation
     (F : LInftyHom R L L') where
   /-- Image of Maurer-Cartan elements under the given morphism. -/
   map : MaurerCartanElement R V L → MaurerCartanElement R W L'
+  /-- Element-level linear compatibility with the arity-1 component of `F`. -/
+  map_element_linear :
+    ∀ a : MaurerCartanElement R V L,
+      (map a).element = ((F.components 1 (by omega)).map 1) a.element
 
 /-- L∞ morphisms preserve Maurer-Cartan elements when equipped with explicit
     MC-preservation data. -/
@@ -363,6 +367,20 @@ def linfty_preserves_mc
     (H : MCPreservation (R := R) L L' F) :
     MaurerCartanElement R W L' :=
   H.map a
+
+/-- The produced MC element has underlying degree-1 element equal to the
+    arity-1 image under the supplied L∞ morphism. -/
+theorem linfty_preserves_mc_element
+    {V W : ℤ → Type v}
+    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
+    [∀ i, AddCommGroup (W i)] [∀ i, Module R (W i)]
+    (L : LInftyAlgebra R V) (L' : LInftyAlgebra R W)
+    (F : LInftyHom R L L')
+    (a : MaurerCartanElement R V L)
+    (H : MCPreservation (R := R) L L' F) :
+    (linfty_preserves_mc (R := R) L L' F a H).element =
+      ((F.components 1 (by omega)).map 1) a.element :=
+  H.map_element_linear a
 
 /-- Nonempty-form of `linfty_preserves_mc` for existence-style consumers. -/
 theorem linfty_preserves_mc_nonempty
