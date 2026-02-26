@@ -1,4 +1,3 @@
-import StringAlgebra.MTC.Bridge.Assumptions
 import StringAlgebra.MTC.Bridge.VOAToMTC
 import StringAlgebra.MTC.Bridge.Harness
 

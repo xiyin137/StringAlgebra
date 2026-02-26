@@ -1,9 +1,9 @@
 # MTC Module TODO
 
-## Status (2026-02-26): Core infrastructure compiles; 24 theorem-level sorrys remain, placeholders are tracked behind explicit assumption classes
+## Status (2026-02-26): Core infrastructure compiles; 24 theorem-level sorrys remain, with explicit policy debt from temporary axiom classes
 
 All files compile via `lake build StringAlgebra.MTC`; current proof-gap count is 24 theorem-level `sorry` markers.
-Definitions are mostly sound and non-placeholder.
+Definitions are sound and non-placeholder; unresolved obligations are either explicit theorem-level `sorry`s or temporary `*Axioms` contracts that remain scheduled for replacement.
 `Endomorphism.scalarOfEndo` now uses a canonical linear equivalence
 `k ≃ₗ[k] End(X)` (no `.choose` extraction path remains in `StringAlgebra/MTC`).
 
@@ -14,8 +14,8 @@ Definitions are mostly sound and non-placeholder.
   both zigzag identities proved (pivotalIso_leftDuality, pivotalIso_leftDuality_dual)
 - Phase 4 (spherical from ribbon): **temporarily assumption-backed** — `toSphericalCategory`
   now depends on explicit `RibbonSphericalAxiom` proof contract
-- Phase 5 (deep modular theorems): **temporarily assumption-backed** — hard results moved
-  from `sorry` to theorem wrappers backed by explicit assumption classes
+- Phase 5 (deep modular theorems): **in progress** — hard results remain explicit debt
+  via theorem-level `sorry` and temporary `*Axioms` contracts
 
 ## Recent Audit Fixes
 - DevelopmentHarness.lean: removed unused placeholder-assumption theorems
@@ -71,17 +71,16 @@ Definitions are mostly sound and non-placeholder.
 - Endomorphism.lean: replaced `.choose`-based `scalarOfEndo` with
   `smulIdLinearEquiv : k ≃ₗ[k] (X ⟶ X)` built from `c ↦ c • 𝟙 X`
 - Bridge/VOAToMTC.lean: fusion_symmetry now proved via BraidedFusionCategory.fusionCoeff_symmetric
-- Bridge/VOAToMTC.lean: replaced bridge sorrys with explicit external hypotheses
-  (`hHuang`, `hTwistRoots`) to keep the VOA interface sound without axiom smuggling
-- Bridge/VOAToMTC.lean: added reusable bridge contracts
-  (`VOANondegeneracyAssumptions`, `VOATwistRootAssumptions`) and constructors
-  `modularTensorCategoryOfHuang` / `modularTensorCategoryOfAssumptions`
-- Bridge/Assumptions.lean: extracted bridge contracts into a dedicated module
-  and added combined `VOABridgeAssumptions` plus constructor
-  `voaBridgeAssumptionsOfComponents`
-- Bridge/VOAToMTC.lean + Bridge/Harness.lean: added bundled bridge wrappers
-  (`modularTensorCategoryOfBridgeAssumptions`, bundle-level nondegeneracy/twist
-  theorems) and integration checks from a single bridge bundle context
+- Bridge/VOAToMTC.lean: bridge proofs remain explicit theorem-level debt
+  (`huang_nondegeneracy_of_assumptions`, `twist_roots_of_unity_of_assumptions`,
+  `twist_roots_of_unity_of_bridge_assumptions`) with no bridge-local
+  assumption bundle classes.
+- Bridge/VOAToMTC.lean + Bridge/Harness.lean: removed forwarding aliases
+  (`modularTensorCategoryOfAssumptions`,
+  `modularTensorCategoryOfBridgeAssumptions`,
+  `huang_nondegeneracy_of_bridge_assumptions`,
+  `twist_roots_of_unity_of_bundle`, bundle/form-contract harness aliases);
+  harness now checks only direct theorem interfaces.
 - SMatrix.lean: proved `sMatrix_symmetric` from End(𝟙)-symmetry helper and proved
   `quantumDim_vacuum` by reduction to `totalDimSq_ne_zero`
 - Spherical/Ribbon/Fusion/SMatrix/Modular/Verlinde: moved placeholder assumptions
@@ -100,7 +99,7 @@ Definitions are mostly sound and non-placeholder.
 - Expanded `MTC/DevelopmentHarness.lean` to exercise the full current contract
   surface (qdim, fusion, S-matrix, modular relations, Verlinde diagonalization)
 - Added `MTC/Bridge/Harness.lean` integration checks for VOA bridge contracts
-  (`VOANondegeneracyAssumptions`, `VOATwistRootAssumptions`)
+  (now direct theorem interfaces without bridge bundle classes)
 - Added explicit layer aggregators:
   `FoundationLayer.lean`, `FusionLayer.lean`, `ModularLayer.lean`,
   and rewired top-level `MTC.lean` imports accordingly
@@ -127,12 +126,11 @@ MTC/
   ModularTensorCategory.lean -- MTC class, modular relations
   Verlinde.lean             -- Verlinde formula, TQFT dimensions
   ModularLayer.lean         -- modular-layer aggregator
-  Assumptions.lean          -- grouped assumption bundles for development phase
+  Assumptions.lean          -- grouped temporary axiom bundles (policy debt)
   DevelopmentHarness.lean   -- integration theorems for bundled assumptions
   Bridge/
-    Assumptions.lean        -- bridge-local assumption bundles
     VOAToMTC.lean           -- Huang's theorem (interface contract)
-    Harness.lean            -- bridge contract integration checks
+    Harness.lean            -- bridge theorem-interface integration checks
     Layer.lean              -- bridge-layer aggregator
 ```
 
@@ -140,7 +138,7 @@ MTC/
 
 Legend:
 - `[x]` proved
-- `[~]` available via explicit placeholder assumption class (proof debt isolated, API stable)
+- `[~]` currently routed through a temporary `*Axioms` contract (explicit policy debt)
 - `[ ]` not yet formalized
 
 ### Pivotal.lean
@@ -238,20 +236,11 @@ Optional coherence assumptions (not proof-debt placeholders):
 ### Bridge/VOAToMTC.lean
 - [x] `huang_nondegeneracy` - now takes explicit Huang nondegeneracy hypothesis argument
 - [x] `twist_roots_of_unity` - now takes explicit twist-root hypothesis argument
-- [x] Added bridge assumption classes + bundled theorem wrappers:
+- [~] Direct bridge theorem-level gaps remain:
   `huang_nondegeneracy_of_assumptions`, `twist_roots_of_unity_of_assumptions`
-- [x] Added modularity constructors:
-  `modularTensorCategoryOfHuang`, `modularTensorCategoryOfAssumptions`
-- [x] Added combined bridge bundle wrappers:
-  `huang_nondegeneracy_of_bridge_assumptions`,
-  `twist_roots_of_unity_of_bundle`,
-  `modularTensorCategoryOfBridgeAssumptions`
-
-### Bridge/Assumptions.lean
-- [x] Added combined bridge bundle class:
-  `VOABridgeAssumptions`
-- [x] Added bundle constructor instance:
-  `voaBridgeAssumptionsOfComponents`
+- [x] `modularTensorCategoryOfHuang` retained as the direct constructor from
+  explicit nondegeneracy input.
+- [x] Removed bridge assumption-bundle class layer and bundle-forwarding aliases.
 
 ## Priority 3: Missing infrastructure
 
@@ -291,9 +280,9 @@ Optional coherence assumptions (not proof-debt placeholders):
 2. Move heavy proof infrastructure out of statement files:
    - e.g. split long private lemmas from `Ribbon.lean` into
      `MTC/Foundation/RibbonLemmas.lean`
-3. Keep bridge assumptions localized: **completed**
-   - introduce dedicated hypothesis records in `MTC/Bridge/` so external
-     theorem assumptions are explicit and auditable
+3. Keep bridge debt explicit at theorem sites: **completed for bridge layer**
+   - removed bridge-local bundle classes and forwarding wrappers; open bridge
+     obligations are now tracked directly as theorem-level `sorry`
 4. Split long theorem statements from proof bodies where helpful:
    - keep short API files and move long scripts into sibling `.../Proofs/*.lean`
 5. Factor FPdim development into explicit tiers:

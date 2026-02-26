@@ -2,7 +2,7 @@
 Copyright (c) 2025 StringAlgebra. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 -/
-import StringAlgebra.MTC.Bridge.Assumptions
+import StringAlgebra.MTC.ModularTensorCategory
 
 /-!
 # Bridge: Vertex Operator Algebras to Modular Tensor Categories
@@ -77,16 +77,6 @@ noncomputable def modularTensorCategoryOfHuang [RibbonFusionCategory k RepV]
     ModularTensorCategory k RepV where
   mueger_center_trivial := hHuang
 
-/-- Upgrade ribbon fusion data on `RepV` to a modular tensor category
-    from explicit nondegeneracy input. -/
-noncomputable def modularTensorCategoryOfAssumptions [RibbonFusionCategory k RepV]
-    (hHuang :
-      ∀ i : FusionCategory.Idx (k := k) (C := RepV),
-        BraidedFusionCategory.isTransparent (FusionCategory.simpleObj i) →
-        Nonempty (FusionCategory.simpleObj i ≅ 𝟙_ RepV)) :
-    ModularTensorCategory k RepV :=
-  modularTensorCategoryOfHuang (k := k) (RepV := RepV) hHuang
-
 /-! ### Huang's Theorem -/
 
 /-- **Huang's Theorem (non-degeneracy)**:
@@ -158,42 +148,6 @@ theorem twist_roots_of_unity_of_bridge_assumptions [RibbonFusionCategory k RepV]
   sorry
 
 end TwistRoots
-
-section BundledBridge
-
-variable [RibbonFusionCategory k RepV]
-
-/-- Upgrade ribbon fusion data on `RepV` to a modular tensor category
-    from explicit nondegeneracy input. -/
-noncomputable def modularTensorCategoryOfBridgeAssumptions :
-    (hHuang :
-      ∀ i : FusionCategory.Idx (k := k) (C := RepV),
-        BraidedFusionCategory.isTransparent (FusionCategory.simpleObj i) →
-        Nonempty (FusionCategory.simpleObj i ≅ 𝟙_ RepV)) →
-    ModularTensorCategory k RepV :=
-  modularTensorCategoryOfAssumptions (k := k) (RepV := RepV)
-
-/-- Huang nondegeneracy obtained from the bundled bridge contract. -/
-theorem huang_nondegeneracy_of_bridge_assumptions
-    (i : FusionCategory.Idx (k := k) (C := RepV))
-    (hTransparent : BraidedFusionCategory.isTransparent (FusionCategory.simpleObj i)) :
-    Nonempty (FusionCategory.simpleObj i ≅ 𝟙_ RepV) :=
-  huang_nondegeneracy_of_assumptions (k := k) (RepV := RepV) i hTransparent
-
-end BundledBridge
-
-section BundledBridgeTwist
-
-variable [IsAlgClosed k] [HasKernels RepV] [RibbonFusionCategory k RepV]
-
-/-- Twist roots-of-unity obtained from the bundled bridge contract. -/
-theorem twist_roots_of_unity_of_bundle
-    (i : FusionCategory.Idx (k := k) (C := RepV)) :
-    ∃ (n : ℕ) (_ : 0 < n),
-      RibbonFusionCategory.twistValue (C := RepV) i ^ n = (1 : k) :=
-  twist_roots_of_unity_of_bridge_assumptions (k := k) (RepV := RepV) i
-
-end BundledBridgeTwist
 
 /-- In Rep(V), the fusion coefficients are symmetric: N^m_{ij} = N^m_{ji}.
 
