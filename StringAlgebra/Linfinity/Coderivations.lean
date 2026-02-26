@@ -201,39 +201,44 @@ theorem LInfinityStructure.bracket_wordLength_one (_L : LInfinityStructure R V)
 
 /-! ## Key Properties -/
 
-/-- For an L∞ algebra, the bracket l₁ is a differential (l₁² = 0).
-
-    This follows from D² = 0 by restricting to word length 1.
-    In terms of the coderivation: for x of word length 1, (D ∘ D)(x) = 0. -/
-theorem l1_is_differential (L : LInfinityStructure R V) :
+/-- Word-length-1 square-zero witness extracted from `L.square_zero`. -/
+theorem l1_is_differential_witness (L : LInfinityStructure R V) :
     ∀ x : ReducedSymCoalg R (Shift V 1), x.wordLength = 1 →
       (L.D.square x).isZero = true := by
   intro x hx
   exact L.square_zero x
 
-/-- For an L∞ algebra, l₁ is a derivation of l₂ up to l₃ correction.
+/-- Compatibility alias for historical theorem naming. -/
+theorem l1_is_differential (L : LInfinityStructure R V) :
+    ∀ x : ReducedSymCoalg R (Shift V 1), x.wordLength = 1 →
+      (L.D.square x).isZero = true :=
+  l1_is_differential_witness L
 
-    l₁(l₂(x,y)) = l₂(l₁x, y) + (-1)^|x| l₂(x, l₁y) + l₃-terms
-
-    This follows from D² = 0 by restricting to word length 2.
-    In terms of the coderivation: for x of word length 2, (D ∘ D)(x) = 0. -/
-theorem l1_derivation_of_l2 (L : LInfinityStructure R V) :
+/-- Word-length-2 square-zero witness extracted from `L.square_zero`. -/
+theorem l1_derivation_of_l2_witness (L : LInfinityStructure R V) :
     ∀ x : ReducedSymCoalg R (Shift V 1), x.wordLength = 2 →
       (L.D.square x).isZero = true := by
   intro x hx
   exact L.square_zero x
 
-/-- The generalized Jacobi identity at level n.
+/-- Compatibility alias for historical theorem naming. -/
+theorem l1_derivation_of_l2 (L : LInfinityStructure R V) :
+    ∀ x : ReducedSymCoalg R (Shift V 1), x.wordLength = 2 →
+      (L.D.square x).isZero = true :=
+  l1_derivation_of_l2_witness L
 
-    ∑_{i+j=n+1} ∑_σ ε(σ) l_j(l_i(x_{σ(1)}, ..., x_{σ(i)}), x_{σ(i+1)}, ..., x_{σ(n)}) = 0
-
-    This is the coefficient of word length n in D² = 0.
-    The proof follows directly from the square-zero condition on the coderivation. -/
-theorem generalized_jacobi (L : LInfinityStructure R V) (n : ℕ) (_hn : n ≥ 1) :
+/-- Word-length-`n` square-zero witness extracted from `L.square_zero`. -/
+theorem generalized_jacobi_witness (L : LInfinityStructure R V) (n : ℕ) (_hn : n ≥ 1) :
     ∀ x : ReducedSymCoalg R (Shift V 1), x.wordLength = n →
       (L.D.square x).isZero = true := by
   intro x hx
   exact L.square_zero x
+
+/-- Compatibility alias for historical theorem naming. -/
+theorem generalized_jacobi (L : LInfinityStructure R V) (n : ℕ) (_hn : n ≥ 1) :
+    ∀ x : ReducedSymCoalg R (Shift V 1), x.wordLength = n →
+      (L.D.square x).isZero = true :=
+  generalized_jacobi_witness L n _hn
 
 /-! ## Special Cases -/
 
@@ -254,6 +259,18 @@ theorem ReducedCoderivation.vanishesOnWordLength_iff_componentMap
     simpa [D.component_spec n hn x hx] using h x hx
   · intro h x hx
     simpa [D.component_spec n hn x hx] using h x hx
+
+def ReducedCoderivation.squareVanishesOnWordLength (D : ReducedCoderivation R V) (n : ℕ) : Prop :=
+  ∀ x : ReducedSymCoalg R V, x.wordLength = n → (D.square x).isZero = true
+
+theorem ReducedCoderivation.isSquareZero_iff_squareVanishesOnAllWordLengths
+    (D : ReducedCoderivation R V) :
+    D.isSquareZero ↔ ∀ n : ℕ, n ≥ 1 → D.squareVanishesOnWordLength n := by
+  constructor
+  · intro h n hn x hx
+    exact h x
+  · intro h x
+    exact h x.wordLength x.wordLength_pos x rfl
 
 /-- A DGLA (differential graded Lie algebra) is an L∞ algebra
     where l_n = 0 for n ≥ 3.
