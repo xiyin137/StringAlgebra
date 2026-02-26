@@ -76,6 +76,10 @@ structure ReducedCoderivation (R : Type u) [CommRing R] (V : ℤ → Type v)
   map : ReducedSymCoalg R V → ReducedSymCoalg R V
   /-- Word-length components of the coderivation. -/
   componentMap : ∀ (n : ℕ) (_hn : n ≥ 1), ReducedSymCoalg R V → ReducedSymCoalg R V
+  /-- Consistency: on word-length-`n` inputs, the `n`-component agrees with `map`. -/
+  component_spec :
+    ∀ (n : ℕ) (hn : n ≥ 1) (x : ReducedSymCoalg R V), x.wordLength = n →
+      componentMap n hn x = map x
   /-- Degree shift property -/
   degree_shift : ∀ x : ReducedSymCoalg R V, (map x).degree = x.degree + degree
 
@@ -156,6 +160,11 @@ structure LInfinityStructure (R : Type u) [CommRing R] (V : ℤ → Type v)
 def coderivationComponent (_D : ReducedCoderivation R V) (n : ℕ) (_hn : n ≥ 1) :
     ReducedSymCoalg R V → ReducedSymCoalg R V :=
   _D.componentMap n _hn
+
+theorem coderivationComponent_spec (_D : ReducedCoderivation R V)
+    (n : ℕ) (hn : n ≥ 1) (x : ReducedSymCoalg R V) (hx : x.wordLength = n) :
+    coderivationComponent _D n hn x = _D.map x :=
+  _D.component_spec n hn x hx
 
 /-- The n-th L∞ bracket l_n : V^⊗n → V.
 

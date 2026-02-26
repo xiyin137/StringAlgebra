@@ -116,6 +116,9 @@ def LInftyAlgebra.trivial (R : Type u) [CommRing R] (V : ℤ → Type v)
           simp only [Finset.univ_unique, Fin.default_eq_zero, Finset.sum_singleton]
         isZero := true
       }
+      component_spec := by
+        intro n hn x hx
+        rfl
       degree_shift := fun _ => rfl
     }
     degree_one := rfl

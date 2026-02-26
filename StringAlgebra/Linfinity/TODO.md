@@ -47,6 +47,7 @@ This file tracks formal soundness debt for `StringAlgebra/Linfinity` under `agen
    - `MaurerCartan.lean`: gauge equivalence now has explicit reflexive/symmetric/transitive lemmas and a canonical `Setoid`; smoothness now exposes an explicit moduli-point constructor (`smoothPoint_when_unobstructed`) with a `Nonempty` wrapper theorem.
    - `MaurerCartan.lean`: added explicit MC-to-moduli projection with exact characterization `a.toModuli = b.toModuli ↔ GaugeEquivalent T a b`.
    - `MaurerCartan.lean`: aligned gauge/twisting/tangent-obstruction documentation and theorem naming with witness-level semantics (`twisted_diff_sq_zero_witness` plus compatibility alias), avoiding unencoded gauge-flow/cohomology claims.
+   - `Coderivations.lean`: strengthened `ReducedCoderivation` with explicit `component_spec` consistency (on word-length-`n` inputs, `componentMap n` agrees with `map`) and added `coderivationComponent_spec`; updated canonical trivial-model construction accordingly.
    - `Coderivations.lean`: component extraction no longer aliases the global map; explicit component maps are part of reduced coderivation data.
 
 ## Linfinity Dependency Graph
@@ -92,7 +93,7 @@ PolyvectorFieldsDGLA.toDGLAData
 3. `SymmetricTensor.lean`: low-medium risk. Technical dependent-type tensor quotient layer; no proof debt markers.
 4. `SymmetricAlgebra.lean`: low risk.
 5. `SymmetricCoalgebra.lean`: medium risk. Uses representational `Bool`-style zero tracking; mathematically usable but non-quotiented semantics remain limited.
-6. `Coderivations.lean`: medium-high risk. Core interfaces hardened; constructive co-Leibniz/component derivation remains pending.
+6. `Coderivations.lean`: medium-high risk. Core interfaces are further hardened with explicit map/component consistency on matching word lengths; constructive co-Leibniz/component derivation remains pending.
 7. `GradedInfrastructure.lean`: medium-high risk. Extraction interfaces are explicit and now enforce unary consistency across multilinear/linear extracted data; internal constructive realization is still pending.
 8. `ChainComplex.lean`: low risk.
 9. `LInfinityAlgebra.lean`: medium risk. Core object definitions compile, morphisms now enforce arity-0 normalization and transfer morphisms carry explicit linear/quasi-isomorphism certification in the homotopy-transfer interface; semantically nontrivial constructions still depend on supplied transfer/twisting data.
