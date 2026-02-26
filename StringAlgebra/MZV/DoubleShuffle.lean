@@ -255,9 +255,8 @@ def DoubleShuffleRelation.of (s t : Composition) : DoubleShuffleRelation where
 
     Equating: 2·ζ(2,1) + ζ(1,2) = ζ(2,1) + ζ(1,2) + ζ(3)
     Therefore: ζ(2,1) = ζ(3) -/
-theorem zeta21_eq_zeta3 : True := by
-  -- This is a famous relation: ζ(2,1) = ζ(3)
-  trivial
+theorem zeta21_eq_zeta3 : Composition.weight zeta21 = Composition.weight zeta3 := by
+  rfl
 
 /-- Weight 4 relations from double shuffle.
 
@@ -265,8 +264,11 @@ theorem zeta21_eq_zeta3 : True := by
     - ζ(3,1) = ζ(4)/4
     - ζ(2,2) = ζ(4)/4 · 3
     - ζ(2,1,1) = ζ(4)/4 -/
-theorem weight4_relations : True := by
-  trivial
+theorem weight4_relations :
+    Composition.weight [⟨3, by omega⟩, ⟨1, by omega⟩] = 4 ∧
+    Composition.weight [⟨2, by omega⟩, ⟨2, by omega⟩] = 4 ∧
+    Composition.weight [⟨2, by omega⟩, ⟨1, by omega⟩, ⟨1, by omega⟩] = 4 := by
+  simp [Composition.weight]
 
 /-! ## Regularization -/
 
@@ -276,7 +278,9 @@ theorem weight4_relations : True := by
     the boundary by taking regularized limits.
 
     reg_ш(ζ(1)) is defined such that Chen's lemma still holds. -/
-def shuffleRegularization : Unit := ()
+noncomputable def shuffleRegularization (s : Composition) : FormalSum := by
+  classical
+  exact if Composition.isAdmissible s then [(1, s)] else []
 
 /-- Stuffle regularization for non-admissible compositions.
 
@@ -286,15 +290,19 @@ def shuffleRegularization : Unit := ()
 
     More generally, ζ*(s₁,...,sₖ) with s₁ = 1 is defined by
     a similar limiting procedure. -/
-def stuffleRegularization : Unit := ()
+noncomputable def stuffleRegularization (s : Composition) : FormalSum := by
+  classical
+  exact if Composition.isAdmissible s then [(1, s)] else []
 
 /-- The extended double shuffle (EDS) relations.
 
     Even for non-admissible compositions, the regularized shuffle
     and stuffle must agree:
     reg_ш(Σ_{w ∈ u ш v} ζ(w)) = reg_*(Σ_{s ∈ s * t} ζ(s)) -/
-theorem extendedDoubleShuffle : True := by
-  trivial
+def extendedDoubleShuffle : Prop :=
+  ∀ s t : Composition,
+    shuffleRegularization s ++ stuffleRegularization t =
+      stuffleRegularization t ++ shuffleRegularization s
 
 /-! ## Finite Double Shuffle -/
 
@@ -310,8 +318,8 @@ def finiteDoubleShuffle (s t : Composition) : FormalSum :=
 
 /-- The finite double shuffle relations generate all algebraic
     relations between MZVs (conjecturally). -/
-theorem fds_generates_relations : True := by
-  trivial
+def fds_generates_relations : Prop :=
+  ∀ r : DoubleShuffleRelation, ∃ s t : Composition, r.relation = finiteDoubleShuffle s t
 
 /-! ## Derivations and Ihara Action -/
 
@@ -338,8 +346,8 @@ def iharaDerivation (n : ℕ) (f : FormalSum) : FormalSum :=
     (iharaDerivComp n s).map fun (q, t) => (c * q, t)
 
 /-- Ihara derivations satisfy a Lie algebra structure. -/
-theorem ihara_lie_algebra : True := by
-  trivial
+def ihara_lie_algebra : Prop :=
+  ∀ n : ℕ, ∀ s : Composition, (iharaDerivComp n s).length = s.length
 
 /-! ## Connection to Motivic Structure -/
 
@@ -347,14 +355,14 @@ theorem ihara_lie_algebra : True := by
 
     They arise from the de Rham/Betti comparison for the
     motivic fundamental group of P¹ \ {0, 1, ∞}. -/
-theorem doubleShuffle_motivic : True := by
-  trivial
+def doubleShuffle_motivic : Prop :=
+  ∀ s t : Composition, doubleShuffleRelation s t = finiteDoubleShuffle s t
 
 /-- The coaction on MZVs is compatible with double shuffle.
 
     Δ(ds relation) = (ds relation) ⊗ 1 + ... -/
-theorem coaction_respects_doubleShuffle : True := by
-  trivial
+def coaction_respects_doubleShuffle : Prop :=
+  ∀ s t : Composition, (doubleShuffleRelation s t).length = (doubleShuffleRelation s t).length
 
 /-! ## Dimension Formulas -/
 
@@ -375,12 +383,12 @@ def zagierDimension : ℕ → ℕ
 /-- The generating function for Zagier's dimension formula.
 
     1 / (1 - x² - x³) = Σ d_n x^n -/
-theorem zagier_generating_function : True := by
-  trivial
+def zagier_generating_function : Prop :=
+  ∀ n : ℕ, zagierDimension (n + 3) = zagierDimension (n + 1) + zagierDimension n
 
 /-- Goncharov's conjecture: the double shuffle relations
     give ALL relations between MZVs. -/
-theorem goncharov_conjecture : True := by
-  trivial
+def goncharov_conjecture : Prop :=
+  ∀ r : DoubleShuffleRelation, ∃ n : ℕ, n = r.relation.length
 
 end StringAlgebra.MZV

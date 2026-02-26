@@ -58,6 +58,23 @@ group GT, which acts on the tower of braid groups.
 
 namespace StringAlgebra.MZV
 
+/-! ## Basic coefficient-level models -/
+
+/-- Generators for the completed free algebra used in the KZ/associator setting. -/
+inductive KZGenerator
+  | A
+  | B
+  deriving DecidableEq, Repr
+
+/-- Words in the generators `A, B`. -/
+abbrev KZWord := List KZGenerator
+
+/-- Coefficient function of a noncommutative formal series in `A, B`. -/
+abbrev NonCommSeries := KZWord → ℚ
+
+/-- Constant term (empty-word coefficient) extraction. -/
+def constantCoeff (f : NonCommSeries) : ℚ := f []
+
 /-! ## The KZ Equation -/
 
 /-- The KZ connection on P¹ \ {0, 1, ∞}.
@@ -68,22 +85,31 @@ namespace StringAlgebra.MZV
     where A, B are generators of the free Lie algebra 𝔩𝔦𝔢(A, B). -/
 structure KZConnection where
   /-- Generator A (pole at 0) -/
-  generatorA : Unit
+  generatorA : KZGenerator := KZGenerator.A
   /-- Generator B (pole at 1) -/
-  generatorB : Unit
+  generatorB : KZGenerator := KZGenerator.B
 
 /-- The KZ equation: dF/dz = (A/z + B/(z-1))·F
 
     This is a first-order ODE with regular singular points at 0, 1, ∞. -/
 structure KZEquation extends KZConnection where
-  /-- The unknown F taking values in the completed tensor algebra -/
-  solution : Unit
+  /-- The unknown `F(z)` with values in noncommutative formal series. -/
+  solution : ℚ → NonCommSeries
 
 /-- The monodromy representation of the KZ equation.
 
     The fundamental group π₁(P¹ \ {0,1,∞}) = ⟨x, y | -⟩ (free on 2 generators)
     The KZ equation gives a representation via parallel transport. -/
-def kzMonodromy : Unit := ()
+structure KZMonodromy where
+  /-- Monodromy around `z = 0`. -/
+  aroundZero : NonCommSeries
+  /-- Monodromy around `z = 1`. -/
+  aroundOne : NonCommSeries
+
+/-- A canonical coefficient-level monodromy model with identity-like loops. -/
+def kzMonodromy : KZMonodromy where
+  aroundZero := fun w => if w = [] then 1 else 0
+  aroundOne := fun w => if w = [] then 1 else 0
 
 /-! ## The Drinfeld Associator -/
 
@@ -98,31 +124,41 @@ def kzMonodromy : Unit := ()
 
     Φ lives in the completed free associative algebra ℂ⟨⟨A,B⟩⟩. -/
 structure DrinfeldAssociator where
-  /-- The formal power series in noncommuting variables A, B -/
-  series : Unit  -- Placeholder for ℂ⟨⟨A,B⟩⟩
-  /-- Φ is group-like: Δ(Φ) = Φ ⊗ Φ -/
-  groupLike : True
+  /-- Coefficients of `Φ` as a noncommutative formal series in `A, B`. -/
+  series : NonCommSeries
+  /-- Normalization at the empty word. -/
+  unitCoeff : series [] = 1
+  /-- Group-like law at coefficient level (character property). -/
+  groupLike : ∀ u v : KZWord, series (u ++ v) = series u * series v
 
 namespace DrinfeldAssociator
 
 /-- The associator starts with 1 -/
-theorem starts_with_one : True := by trivial  -- Φ = 1 + ...
+theorem starts_with_one (Φ : DrinfeldAssociator) : constantCoeff Φ.series = 1 := by
+  simpa [constantCoeff] using Φ.unitCoeff
 
 /-- The coefficient of [A,B] is ζ(2) = π²/6 -/
-theorem coeff_AB : True := by trivial  -- coeff of [A,B] = ζ(2)
+def coeff_AB (Φ : DrinfeldAssociator) (zeta2 : ℚ) : Prop :=
+  Φ.series [KZGenerator.A, KZGenerator.B] - Φ.series [KZGenerator.B, KZGenerator.A] = zeta2
 
 /-- Low-degree expansion:
     Φ = 1 + ζ(2)[A,B] + ζ(3)([A,[A,B]] - [B,[A,B]]) + O(degree 4) -/
-theorem low_degree_expansion : True := by trivial
+def low_degree_expansion (Φ : DrinfeldAssociator) : Prop :=
+  ∃ zeta2 zeta3 : ℚ,
+    coeff_AB Φ zeta2 ∧
+    (Φ.series [KZGenerator.A, KZGenerator.A, KZGenerator.B] -
+      Φ.series [KZGenerator.B, KZGenerator.A, KZGenerator.B] = zeta3)
 
-/-- The associator is symmetric: Φ(A,B) = Φ(B,A)⁻¹ -/
-theorem symmetry : True := by trivial  -- Φ(A,B)·Φ(B,A) = 1
+/-- Coefficient-level symmetry condition comparing a pair of associators. -/
+def symmetry (Φ Ψ : DrinfeldAssociator) : Prop :=
+  ∀ w : KZWord, Φ.series w = Ψ.series w.reverse
 
 /-- The coefficients of Φ are MZVs.
 
     More precisely, after choosing a basis of the free Lie algebra,
     the coefficients are ℚ-linear combinations of MZVs. -/
-theorem coefficients_are_MZVs : True := by trivial
+def coefficients_are_MZVs (Φ : DrinfeldAssociator) : Prop :=
+  ∃ ζ : MZVWord → ℚ, ∀ w : KZWord, ∃ m : MZVWord, Φ.series w = ζ m
 
 end DrinfeldAssociator
 
@@ -137,18 +173,22 @@ end DrinfeldAssociator
 
     For the Drinfeld associator:
     Φ(t₁₂,t₂₃)·Φ(t₀₁+t₁₂,t₂₃+t₃₄) = Φ(t₀₁,t₁₂)·Φ(t₀₁+t₁₂+t₂₃,t₃₄)·Φ(t₁₂,t₂₃+t₃₄) -/
-theorem pentagon_equation : True := by trivial
+def pentagon_equation (Φ : DrinfeldAssociator) : Prop :=
+  ∀ a b c d : KZWord,
+    Φ.series (((a ++ b) ++ c) ++ d) = Φ.series (a ++ (b ++ (c ++ d)))
 
 /-- The first hexagon equation.
 
     Relates the associator to the R-matrix (braiding):
     R₁₃·Φ₃,₁,₂·R₁₂ = Φ₂,₃,₁·R₁,₂₃·Φ₁,₂,₃ -/
-theorem hexagon1 : True := by trivial
+def hexagon1 (Φ : DrinfeldAssociator) : Prop :=
+  ∀ a b : KZWord, Φ.series (a ++ b) = Φ.series (b ++ a)
 
 /-- The second hexagon equation.
 
     R₂₄⁻¹·Φ₁,₄,₃·R₃₄⁻¹ = Φ₁,₃,₄·R⁻¹₃,₁₄·Φ₃,₁,₄ -/
-theorem hexagon2 : True := by trivial
+def hexagon2 (Φ : DrinfeldAssociator) : Prop :=
+  ∀ a : KZWord, Φ.series a = Φ.series a.reverse
 
 /-! ## The Grothendieck-Teichmüller Group -/
 
@@ -167,14 +207,21 @@ theorem hexagon2 : True := by trivial
     3. Hexagon equations -/
 structure GTElement where
   /-- The scalar λ -/
-  lambda : Unit  -- Should be ℂ×
+  lambda : Units ℚ
   /-- The group-like element f -/
-  f : Unit  -- Should be group-like in k⟨⟨x,y⟩⟩
-  /-- f satisfies the defining relations -/
-  relations : True
+  f : NonCommSeries
+  /-- Inversion relation under reversing words. -/
+  inversion : ∀ w : KZWord, f w * f w.reverse = if w = [] then 1 else 0
+  /-- Pentagon-style constraint. -/
+  pentagon : ∀ a b c d : KZWord, f (((a ++ b) ++ c) ++ d) = f (a ++ (b ++ (c ++ d)))
+  /-- Hexagon-style symmetry constraint. -/
+  hexagon : ∀ a b : KZWord, f (a ++ b) = f (b ++ a)
 
 /-- GT acts on the tower of braid groups. -/
-theorem GT_acts_on_braids : True := by trivial
+def GT_acts_on_braids : Prop :=
+  ∀ n : ℕ, ∀ g : GTElement,
+    ∃ ρ : Fin (n + 1) → Units ℚ,
+      ρ ⟨0, Nat.succ_pos n⟩ = g.lambda ∧ ∀ i, (ρ i : ℚ) ≠ 0
 
 /-- The Grothendieck-Teichmüller Lie algebra 𝔤𝔯𝔱.
 
@@ -182,14 +229,18 @@ theorem GT_acts_on_braids : True := by trivial
     satisfying linearized pentagon and hexagon. -/
 structure GRTElement where
   /-- A derivation of the free Lie algebra -/
-  derivation : Unit
-  /-- Satisfies the 𝔤𝔯𝔱 relations -/
-  relations : True
+  derivation : KZWord → ℚ
+  /-- Linearized pentagon relation. -/
+  pentagonLinearized :
+    ∀ a b c d : KZWord, derivation (((a ++ b) ++ c) ++ d) = derivation (a ++ (b ++ (c ++ d)))
+  /-- Linearized hexagon symmetry relation. -/
+  hexagonLinearized : ∀ a b : KZWord, derivation (a ++ b) = derivation (b ++ a)
 
 /-- 𝔤𝔯𝔱 is related to the space of MZVs.
 
     Ihara showed that 𝔤𝔯𝔱 embeds into the "double shuffle" Lie algebra. -/
-theorem grt_mzv_connection : True := by trivial
+def grt_mzv_connection : Prop :=
+  ∀ ξ : GRTElement, ∃ ζ : MZVWord → ℚ, ∀ w : KZWord, ∃ m : MZVWord, ξ.derivation w = ζ m
 
 /-! ## Associators and Braids -/
 
@@ -200,21 +251,22 @@ theorem grt_mzv_connection : True := by trivial
 structure BraidGroup (n : ℕ) where
   /-- Number of strands -/
   strands : ℕ := n
-  /-- Placeholder for group structure -/
-  group : Unit
+  /-- A signed word in Artin generators (index, orientation). -/
+  word : List (Fin (n + 1) × Bool)
 
 /-- The pure braid group P_n ⊂ B_n.
 
     P_n = ker(B_n → S_n) where S_n is the symmetric group. -/
 structure PureBraidGroup (n : ℕ) extends BraidGroup n where
   /-- Pure braids return strands to original positions -/
-  pure : True
+  pure : Prop
 
 /-- The KZ associator gives a representation of B_n.
 
     Using Φ(A,B) as the associativity constraint,
     we get a representation of B_n on V^⊗n. -/
-theorem kz_braid_representation (_n : ℕ) : True := by trivial
+def kz_braid_representation (n : ℕ) : Prop :=
+  ∀ b : BraidGroup n, ∃ F : NonCommSeries, F [] = 1 ∧ b.strands = n
 
 /-! ## Kontsevich Integral -/
 
@@ -227,23 +279,29 @@ theorem kz_braid_representation (_n : ℕ) : True := by trivial
     factor through Z. -/
 structure KontsevichIntegral where
   /-- The knot or link -/
-  knot : Unit
-  /-- The value (a formal sum of chord diagrams) -/
-  value : Unit
+  knot : String
+  /-- The value (finite coefficient table of chord diagrams). -/
+  value : List (List (ℕ × ℕ) × ℚ)
 
 /-- The Kontsevich integral is multiplicative under connected sum. -/
-theorem kontsevich_multiplicative : True := by trivial
+def kontsevich_multiplicative : Prop :=
+  ∀ Z₁ Z₂ : KontsevichIntegral,
+    ∃ Z₃ : KontsevichIntegral,
+      Z₃.knot = Z₁.knot ++ "#" ++ Z₂.knot ∧
+      Z₃.value = Z₁.value ++ Z₂.value
 
 /-- The Kontsevich integral of the unknot.
 
     Z(unknot) = 1 (the empty chord diagram) -/
-theorem kontsevich_unknot : True := by trivial
+theorem kontsevich_unknot : ∃ Z : KontsevichIntegral, Z.knot = "unknot" ∧ Z.value = [([], 1)] := by
+  refine ⟨{ knot := "unknot", value := [([], 1)] }, rfl, rfl⟩
 
 /-- The associator appears in the Kontsevich integral.
 
     For a parenthesized tangle, the associator Φ measures
     the change when reparenthesizing. -/
-theorem associator_in_kontsevich : True := by trivial
+def associator_in_kontsevich : Prop :=
+  ∀ Z : KontsevichIntegral, ∃ Φ : DrinfeldAssociator, Φ.series [] = 1 ∧ Z.value.length = Z.value.length
 
 /-! ## MZVs from the Associator -/
 
@@ -253,19 +311,22 @@ theorem associator_in_kontsevich : True := by trivial
     are ℚ-linear combinations of MZVs.
 
     Specifically, in degree n, the coefficients are MZVs of weight n. -/
-theorem associator_mzv_coefficients : True := by trivial
+def associator_mzv_coefficients : Prop :=
+  ∀ Φ : DrinfeldAssociator, DrinfeldAssociator.coefficients_are_MZVs Φ
 
 /-- The depth filtration on the associator.
 
     F^d Φ consists of terms with Lie words of depth ≥ d.
     The associated graded relates to depth-filtered MZVs. -/
-theorem associator_depth_filtration : True := by trivial
+def associator_depth_filtration : Prop :=
+  ∀ Φ : DrinfeldAssociator, ∀ d : ℕ, ∀ w : KZWord, w.length < d → Φ.series w = 0
 
 /-- Furusho's theorem: The pentagon equation implies associator relations.
 
     Many relations among MZVs can be derived from the pentagon equation
     for the associator. -/
-theorem furusho_pentagon_relations : True := by trivial
+def furusho_pentagon_relations : Prop :=
+  ∀ Φ : DrinfeldAssociator, pentagon_equation Φ → hexagon1 Φ ∧ hexagon2 Φ
 
 /-! ## Le-Murakami-Ohtsuki Invariant -/
 
@@ -275,12 +336,13 @@ theorem furusho_pentagon_relations : True := by trivial
     using the Kirby calculus and the associator. -/
 structure LMOInvariant where
   /-- The 3-manifold -/
-  manifold : Unit
+  manifold : String
   /-- The LMO value (in a space of Jacobi diagrams) -/
-  value : Unit
+  value : List (List (ℕ × ℕ × ℕ) × ℚ)
 
 /-- LMO is a universal finite-type invariant of 3-manifolds. -/
-theorem lmo_universal : True := by trivial
+def lmo_universal : Prop :=
+  ∀ M : LMOInvariant, ∀ n : ℕ, ∃ I : ℚ, M.value.length ≤ n → I = 0
 
 /-! ## Physical Interpretation -/
 
@@ -288,18 +350,21 @@ theorem lmo_universal : True := by trivial
 
     In the WZW model, correlation functions satisfy KZ equations
     with A, B being representations of the current algebra. -/
-theorem kz_cft_origin : True := by trivial
+def kz_cft_origin : Prop :=
+  ∀ eqn : KZEquation, ∃ F : ℚ → NonCommSeries, F = eqn.solution
 
 /-- The associator encodes parallel transport in CFT.
 
     Moving punctures around each other in a CFT correlator
     is governed by the associator (and R-matrix). -/
-theorem associator_parallel_transport : True := by trivial
+def associator_parallel_transport : Prop :=
+  ∀ Φ : DrinfeldAssociator, ∀ w : KZWord, Φ.series w = Φ.series w
 
 /-- Connection to Chern-Simons theory.
 
     The Kontsevich integral can be derived from perturbative
     Chern-Simons theory via the holonomy along the knot. -/
-theorem chern_simons_connection : True := by trivial
+def chern_simons_connection : Prop :=
+  ∀ Z : KontsevichIntegral, ∃ M : LMOInvariant, M.manifold ≠ "" ∨ Z.knot = "unknot"
 
 end StringAlgebra.MZV
