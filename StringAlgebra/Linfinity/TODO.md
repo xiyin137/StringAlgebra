@@ -35,6 +35,7 @@ This file tracks formal soundness debt for `StringAlgebra/Linfinity` under `agen
    - `LInfinityAlgebra.lean`: homotopy-transfer witness package now includes explicit quasi-isomorphism certification of the lifted inclusion, with derived transfer linear/quasi-iso lemmas.
    - `LInfinityAlgebra.lean`: core `LInftyMorphism` now enforces arity-0 normalization via `higher_zero`; canonical constructors and bridge adapters (`Morphisms.lean`, `DGLA.lean`) are updated accordingly.
    - `SymmetricCoalgebra.lean`: strengthened `SymPower` with explicit total-degree consistency proof (`totalDegree_eq`) and exported simp lemma (`SymPower.totalDegree_eq_sum`), eliminating unconstrained stored total-degree metadata.
+   - `SymmetricCoalgebra.lean`: strengthened `SymPower` zero-marker semantics with explicit degree-vanishing constraint (`isZero_degrees_zero`) and derived theorems (`degrees_eq_zero_of_isZero`, `totalDegree_eq_zero_of_isZero`), preventing inconsistent zero-flag payloads.
    - `GradedInfrastructure.lean`: removed `Classical.epsilon` degree selector; degree extraction now requires a homogeneity witness.
    - `GradedInfrastructure.lean`: strengthened `ReducedSymCoalgElem` with explicit total-degree consistency proof (`totalDegree_eq`) and exported simp lemma (`ReducedSymCoalgElem.totalDegree_eq_sum`), eliminating unconstrained stored total-degree metadata.
    - `GradedInfrastructure.lean`: strengthened coderivation/L∞ extracted-bracket witness bundles with explicit unary consistency constraints (arity-1 multilinear component must match provided linear differential/bracket views), preventing silent drift between parallel unary interfaces; added explicit exported bridge theorem (`Coderivation.differential_spec_from_bracket`) so downstream proofs consume this consistency directly.
@@ -104,7 +105,7 @@ PolyvectorFieldsDGLA.toDGLAData
 2. `PlanarTree.lean`: low risk. Structural combinatorics only.
 3. `SymmetricTensor.lean`: low-medium risk. Technical dependent-type tensor quotient layer; no proof debt markers.
 4. `SymmetricAlgebra.lean`: low risk.
-5. `SymmetricCoalgebra.lean`: medium risk. Uses representational `Bool`-style zero tracking; `SymPower` now enforces stored total-degree consistency, but non-quotiented semantics remain limited.
+5. `SymmetricCoalgebra.lean`: medium risk. Uses representational `Bool`-style zero tracking; `SymPower` now enforces both stored total-degree consistency and zero-marker degree-vanishing consistency, but non-quotiented semantics remain limited.
 6. `Coderivations.lean`: medium-high risk. Core interfaces are further hardened with explicit map/component consistency, unary-output shape constraints for components/brackets, synchronized vanishing formulations, square-zero decomposition by word length, and bracket-level characterization lemmas for DGLA/Lie/Lie2 truncation; constructive co-Leibniz/component derivation remains pending.
 7. `GradedInfrastructure.lean`: medium-high risk. Extraction interfaces are explicit, enforce unary consistency across multilinear/linear extracted data, and now enforce stored total-degree consistency for reduced coalgebra elements while exposing theorem-level unary bridge access; internal constructive realization is still pending.
 8. `ChainComplex.lean`: low risk.
