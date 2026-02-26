@@ -374,9 +374,8 @@ theorem hoffman_3_isHoffman : isHoffmanComposition hoffman_3 := by
     As a consequence, every MZV is a ℚ-linear combination of Hoffman MZVs.
 
     Reference: Brown, "Mixed Tate motives over Z", Theorem 1.1 -/
-theorem brown_hoffman_basis :
-    True := -- Statement: {ζ(s) : s is Hoffman composition} spans all MZVs over ℚ
-  trivial
+def brown_hoffman_basis : Prop :=
+  ∀ w : ℕ, w ≥ 2 → ∃ s : Composition, isHoffmanComposition s ∧ s.weight = w
 
 /-! ## Level Filtration
 
@@ -406,6 +405,6 @@ theorem level0_unique (s : Composition) (hs : isLevel0 s) :
     rw [List.countP_eq_zero] at hl
     have := hl n hn
     simp only [h3, beq_self_eq_true] at this
-    exact absurd trivial this
+    exact (this True.intro).elim
 
 end StringAlgebra.MZV
