@@ -287,6 +287,10 @@ structure MinimalModelResult {R : Type u} [CommRing R]
   minimal : isMinimal model
   /-- Quasi-isomorphism from minimal model to the original algebra. -/
   quasiIso : LInftyHom R model L
+  /-- Explicit linear part of the quasi-isomorphism. -/
+  linear : (n : ℤ) → H n →ₗ[R] V n
+  /-- The linear part agrees with the arity-1 component of `quasiIso`. -/
+  linear_spec : ∀ n : ℤ, ((quasiIso.components 1 (by omega)).map n) = linear n
   /-- Quasi-isomorphism proof. -/
   quasiIso_property : quasiIso.isQuasiIso
 
@@ -307,6 +311,15 @@ theorem minimalModelMorphism_isQuasiIso {R : Type u} [CommRing R]
     {L : LInftyAlgebra R V} (M : MinimalModelResult L) :
     (minimalModelMorphism M).isQuasiIso :=
   M.quasiIso_property
+
+/-- The explicit linear part in a minimal-model package is degreewise bijective. -/
+theorem minimalModelLinear_isBijective {R : Type u} [CommRing R]
+    {V : ℤ → Type v}
+    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
+    {L : LInftyAlgebra R V} (M : MinimalModelResult L) :
+    ∀ n : ℤ, Function.Bijective (M.linear n) := by
+  intro n
+  simpa [M.linear_spec n] using M.quasiIso_property n
 
 /-- Existence of a minimal-model quasi-isomorphism from explicit witness data.
 
@@ -358,6 +371,10 @@ structure FormalityResult {R : Type u} [CommRing R]
   minimal : isMinimal model
   /-- Quasi-isomorphism exhibiting formality. -/
   quasiIso : LInftyHom R model L
+  /-- Explicit linear part of the quasi-isomorphism. -/
+  linear : (n : ℤ) → H n →ₗ[R] V n
+  /-- The linear part agrees with the arity-1 component of `quasiIso`. -/
+  linear_spec : ∀ n : ℤ, ((quasiIso.components 1 (by omega)).map n) = linear n
   /-- Quasi-isomorphism proof. -/
   quasiIso_property : quasiIso.isQuasiIso
 
@@ -378,6 +395,15 @@ theorem formalityMorphism_isQuasiIso {R : Type u} [CommRing R]
     {L : LInftyAlgebra R V} (F : FormalityResult L) :
     (formalityMorphism F).isQuasiIso :=
   F.quasiIso_property
+
+/-- The explicit linear part in a formality package is degreewise bijective. -/
+theorem formalityLinear_isBijective {R : Type u} [CommRing R]
+    {V : ℤ → Type v}
+    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
+    {L : LInftyAlgebra R V} (F : FormalityResult L) :
+    ∀ n : ℤ, Function.Bijective (F.linear n) := by
+  intro n
+  simpa [F.linear_spec n] using F.quasiIso_property n
 
 def isFormal {R : Type u} [CommRing R]
     {V : ℤ → Type v}
@@ -420,6 +446,10 @@ theorem isFormal_of_unpacked {R : Type u} [CommRing R]
     model := model
     minimal := minimal
     quasiIso := q
+    linear := fun n => ((q.components 1 (by omega)).map n)
+    linear_spec := by
+      intro n
+      rfl
     quasiIso_property := hq
   }⟩
 
