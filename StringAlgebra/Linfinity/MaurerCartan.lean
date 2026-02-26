@@ -121,25 +121,6 @@ def MCSpace (R : Type u) [CommRing R]
     {L : LInftyAlgebra R V} (T : MCTheory R L) : Type _ :=
   MCElement R T
 
-/-! ## Properties of MC Elements -/
-
-/-- The zero element is MC when l₁ = 0 -/
-theorem zero_is_MC {R : Type u} [CommRing R]
-    {V : ℤ → Type v}
-    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
-    (L : LInftyAlgebra R V) (T : MCTheory R L) : satisfiesMC L T 0 :=
-  T.zero_curvature
-
-/-- For a DGLA, the MC equation is quadratic: l₁(a) + (1/2)l₂(a,a) = 0.
-
-    Since l_n = 0 for n ≥ 3, the infinite sum truncates.
-    This is the classical MC equation from differential geometry. -/
-theorem DGLA_MC_quadratic {R : Type u} [CommRing R]
-    {V : ℤ → Type v}
-    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
-    (L : DGLA R V) : isDGLA L.toStructure :=
-  L.higher_vanish  -- The DGLA condition states higher brackets vanish
-
 /-! ## Gauge Equivalence -/
 
 /-- The infinitesimal gauge action.

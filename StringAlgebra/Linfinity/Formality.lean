@@ -418,18 +418,6 @@ theorem linfty_preserves_mc_element
       ((F.components 1 (by omega)).map 1) a.element :=
   H.map_element_linear a
 
-/-- Nonempty-form of `linfty_preserves_mc` for existence-style consumers. -/
-theorem linfty_preserves_mc_nonempty
-    {V W : ℤ → Type v}
-    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
-    [∀ i, AddCommGroup (W i)] [∀ i, Module R (W i)]
-    (L : LInftyAlgebra R V) (L' : LInftyAlgebra R W)
-    (F : LInftyHom R L L')
-    (a : MaurerCartanElement R V L)
-    (H : MCPreservation (R := R) L L' F) :
-    Nonempty (MaurerCartanElement R W L') :=
-  ⟨linfty_preserves_mc (R := R) L L' F a H⟩
-
 /-! ## Deformation Quantization
 
 A star product is an associative R[[ℏ]]-bilinear product on C^∞(M)[[ℏ]]:
@@ -918,13 +906,6 @@ theorem starProductClassificationByGaugeClass_toGauge
     (hclass : StarProductClassificationByGaugeClass data π) :
     StarProductClassificationByGauge data π :=
   (starProductClassification_iff_toGaugeClass data π).2 hclass
-
-/-- Gauge-based and quotient-class-based classification contracts are equivalent. -/
-theorem starProductClassificationByGauge_iff_byGaugeClass
-    (data : FormalityData R) (π : PoissonStructure R data.tPoly) :
-    StarProductClassificationByGauge data π ↔
-      StarProductClassificationByGaugeClass data π :=
-  starProductClassification_iff_toGaugeClass data π
 
 /-- Directional extraction from a gauge-based classification contract. -/
 theorem starProductClassificationByGauge_gaugeEquivalent_of_poisson_eq

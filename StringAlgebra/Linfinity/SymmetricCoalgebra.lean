@@ -297,10 +297,6 @@ namespace ReducedSymCoalg
 variable {R : Type u} [CommRing R] {V : ℤ → Type v}
     [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
 
-theorem wordLength_eq_one_of_isZero (x : ReducedSymCoalg R V)
-    (hzero : x.isZero = true) : x.wordLength = 1 :=
-  x.isZero_wordLength_one hzero
-
 /-- Zero element in the reduced symmetric coalgebra.
     Note: This is a formal zero, represented with word length 1. -/
 protected def zero : ReducedSymCoalg R V where
