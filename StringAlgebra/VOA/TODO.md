@@ -11,6 +11,7 @@ This file tracks semantic and proof debt for `StringAlgebra/VOA` under `agent.md
 3. No `axiom`/`admit`/`Classical.choose`/`Classical.epsilon` usage in VOA Lean files.
 4. Placeholder `True := trivial` stubs in core module/formal-distribution/example interfaces have been removed.
 5. Conformal-weight extraction and lattice rationality criteria now use explicit witness packages (`L0Grading`, `RationalityCriterion`) instead of implicit selection.
+6. `FormalDistributions.lean` now includes explicit locality constructors/derived symmetry lemmas (`mutuallyLocal_of_mode_commute`, `mutuallyLocal_symm`).
 
 ## VOA Dependency Graph
 

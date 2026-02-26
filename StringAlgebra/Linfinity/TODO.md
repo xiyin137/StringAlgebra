@@ -21,6 +21,7 @@ This file tracks formal soundness debt for `StringAlgebra/Linfinity` under `agen
    - `LInfinityAlgebra.lean`: removed fake twisted/Lie conversion fallbacks and synthetic transfer morphism defaults; transfer morphisms are now explicit witness fields, and core `LInftyMorphism` composition now uses explicit composition data with canonical identity instances.
    - `GradedInfrastructure.lean`: removed `Classical.epsilon` degree selector; degree extraction now requires a homogeneity witness.
    - `Morphisms.lean`: quasi-isomorphism criterion strengthened to degreewise bijectivity; composition now uses explicit `CompositionData`, with derived canonical instances for identity and strict-morphism composition.
+   - `Morphisms.lean`: added explicit conversion bridges between bundled `LInftyHom` data and core `LInftyMorphism`, including composition-data transport.
    - `DGLA.lean`: replaced tautological `toLInftyQuasiIso` shell with an explicit `DGLAMorphismLInftyLift` bridge and degreewise linear quasi-isomorphism criterion; added canonical DGLA-to-L∞ lift, DGLA morphism identity/composition, and composition-aware lift transport in the current `LInftyMorphism` interface.
    - `BVAlgebra.lean`: `CyclicLInfty.antibracket` now uses explicit `l2` and cyclicity law instead of a fabricated zero output.
    - `Coderivations.lean`: component extraction no longer aliases the global map; explicit component maps are part of reduced coderivation data.

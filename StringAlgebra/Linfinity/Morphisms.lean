@@ -141,6 +141,55 @@ def compData_id_right {L : LInftyAlgebra R V} {L' : LInftyAlgebra R W}
     (F : LInftyHom R L L') :
     F.comp (id L) (compData_id_right F) = F := rfl
 
+/-- Convert bundled `LInftyHom` data to the core `LInftyMorphism` interface. -/
+def toCoreMorphism {L : LInftyAlgebra R V} {L' : LInftyAlgebra R W}
+    (F : LInftyHom R L L') : LInftyMorphism R L L' where
+  linear := fun n => (F.components 1 (by omega)).map n
+  higher := fun k n => by
+    by_cases hk : k = 0
+    · exact 0
+    · exact (F.components k (Nat.succ_le_of_lt (Nat.pos_iff_ne_zero.mpr hk))).map n
+  compatible := by
+    intro n
+    have hk : (1 : ℕ) ≠ 0 := by decide
+    simp [hk]
+
+/-- Convert a core `LInftyMorphism` into bundled component data. -/
+def ofCoreMorphism {L : LInftyAlgebra R V} {L' : LInftyAlgebra R W}
+    (F : LInftyMorphism R L L') : LInftyHom R L L' where
+  components := fun n _hn => {
+    degree := 1 - n
+    map := fun i =>
+      if n = 1 then F.linear i else F.higher n i
+  }
+
+@[simp] theorem ofCoreMorphism_linear {L : LInftyAlgebra R V} {L' : LInftyAlgebra R W}
+    (F : LInftyMorphism R L L') (i : ℤ) :
+    ((ofCoreMorphism F).components 1 (by omega)).map i = F.linear i := by
+  simp [ofCoreMorphism]
+
+@[simp] theorem toCoreMorphism_linear {L : LInftyAlgebra R V} {L' : LInftyAlgebra R W}
+    (F : LInftyHom R L L') (i : ℤ) :
+    (toCoreMorphism F).linear i = ((F.components 1 (by omega)).map i) := rfl
+
+/-- Transport explicit composition data to the core `LInftyMorphism` layer. -/
+def toCoreCompositionData
+    {L : LInftyAlgebra R V} {L' : LInftyAlgebra R W} {L'' : LInftyAlgebra R U}
+    {G : LInftyHom R L' L''} {F : LInftyHom R L L'}
+    (C : CompositionData G F) :
+    LInftyMorphism.CompositionData G.toCoreMorphism F.toCoreMorphism where
+  composite := C.composite.toCoreMorphism
+  linear_spec := by
+    intro n
+    simpa [toCoreMorphism] using C.linear_spec n
+
+@[simp] theorem toCoreMorphism_comp
+    {L : LInftyAlgebra R V} {L' : LInftyAlgebra R W} {L'' : LInftyAlgebra R U}
+    (G : LInftyHom R L' L'') (F : LInftyHom R L L')
+    (C : CompositionData G F) :
+    (G.comp F C).toCoreMorphism =
+      (G.toCoreMorphism).comp (F.toCoreMorphism) (toCoreCompositionData C) := rfl
+
 end LInftyHom
 
 /-! ## Strict Morphisms -/
@@ -219,6 +268,26 @@ def LInftyHom.isQuasiIso {R : Type u} [CommRing R]
     {L : LInftyAlgebra R V} {L' : LInftyAlgebra R W}
     (F : LInftyHom R L L') : Prop :=
   ∀ i : ℤ, Function.Bijective ((F.components 1 (by omega)).map i)
+
+theorem toCoreMorphism_isQuasiIso {R : Type u} [CommRing R]
+    {V W : ℤ → Type v}
+    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
+    [∀ i, AddCommGroup (W i)] [∀ i, Module R (W i)]
+    {L : LInftyAlgebra R V} {L' : LInftyAlgebra R W}
+    (F : LInftyHom R L L') (hF : F.isQuasiIso) :
+    (LInftyHom.toCoreMorphism F).isQuasiIso := by
+  intro n
+  simpa [LInftyHom.toCoreMorphism] using hF n
+
+theorem ofCoreMorphism_isQuasiIso {R : Type u} [CommRing R]
+    {V W : ℤ → Type v}
+    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
+    [∀ i, AddCommGroup (W i)] [∀ i, Module R (W i)]
+    {L : LInftyAlgebra R V} {L' : LInftyAlgebra R W}
+    (F : LInftyMorphism R L L') (hF : F.isQuasiIso) :
+    (LInftyHom.ofCoreMorphism F).isQuasiIso := by
+  intro i
+  simpa [LInftyHom.ofCoreMorphism] using hF i
 
 /-- The identity morphism is a quasi-isomorphism. -/
 theorem id_isQuasiIso {R : Type u} [CommRing R]

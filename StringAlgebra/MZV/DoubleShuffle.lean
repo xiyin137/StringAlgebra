@@ -349,6 +349,10 @@ def addAtPositionDS (s : Composition) (i : ℕ) (n : ℕ) : Composition :=
 def iharaDerivComp (n : ℕ) (s : Composition) : FormalSum :=
   (List.range s.length).map fun i => (1, addAtPositionDS s i n)
 
+theorem iharaDerivComp_length (n : ℕ) (s : Composition) :
+    (iharaDerivComp n s).length = s.length := by
+  simp [iharaDerivComp]
+
 /-- The Ihara derivation D_n acts on formal sums of compositions.
 
     D_n(Σ cᵢ sᵢ) = Σᵢ cᵢ · D_n(sᵢ)
@@ -357,6 +361,9 @@ def iharaDerivComp (n : ℕ) (s : Composition) : FormalSum :=
 def iharaDerivation (n : ℕ) (f : FormalSum) : FormalSum :=
   f.flatMap fun (c, s) =>
     (iharaDerivComp n s).map fun (q, t) => (c * q, t)
+
+@[simp] theorem iharaDerivation_nil (n : ℕ) :
+    iharaDerivation n [] = [] := rfl
 
 theorem iharaDerivation_append (n : ℕ) (f g : FormalSum) :
     iharaDerivation n (f ++ g) = iharaDerivation n f ++ iharaDerivation n g := by

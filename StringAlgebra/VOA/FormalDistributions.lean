@@ -133,6 +133,22 @@ def mutuallyLocal (a b : FormalDistribution R V) : Prop :=
   ∃ N : ℤ, ∀ v : V, ∀ m n : ℤ, m + n ≥ N → (a m) ((b n) v) = (b n) ((a m) v
   )
 
+theorem mutuallyLocal_of_mode_commute (a b : FormalDistribution R V)
+    (hcomm : ∀ v : V, ∀ m n : ℤ, (a m) ((b n) v) = (b n) ((a m) v)) :
+    mutuallyLocal R V a b := by
+  refine ⟨0, ?_⟩
+  intro v m n _h
+  exact hcomm v m n
+
+theorem mutuallyLocal_symm (a b : FormalDistribution R V) :
+    mutuallyLocal R V a b → mutuallyLocal R V b a := by
+  intro h
+  rcases h with ⟨N, hN⟩
+  refine ⟨N, ?_⟩
+  intro v m n hmn
+  have hcomm : (a n) ((b m) v) = (b m) ((a n) v) := hN v n m (by simpa [add_comm] using hmn)
+  exact hcomm.symm
+
 /-- The OPE data: the singular part of a(z)b(w) -/
 structure OPEData where
   /-- Order of the pole (locality order) -/
