@@ -35,6 +35,7 @@ The four-domain split (`Linfinity`, `MZV`, `VOA`, `MTC`) is tracked as a gate-dr
 Detailed staged plan:
 
 - `SPLIT_REPO_READINESS.md`
+- `split/README.md`
 
 ## Structure
 

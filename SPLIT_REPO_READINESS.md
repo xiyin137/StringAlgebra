@@ -75,6 +75,16 @@ It is intentionally gate-driven: no split until anti-smuggling and interface sta
 3. Exit criterion:
    - dry-run extraction checklist validated locally.
 
+Implemented artifacts (current monorepo):
+
+1. `split/EXTRACTION_CHECKLIST.md`
+2. `split/templates/lakefile.linfinity.toml`
+3. `split/templates/lakefile.mzv.toml`
+4. `split/templates/lakefile.voa.toml`
+5. `split/templates/lakefile.mtc.toml`
+6. `split/templates/lean-toolchain`
+7. `split/split_audit.sh`
+
 ### Phase 2 - Repository Extraction (One Domain at a Time)
 
 Recommended order:

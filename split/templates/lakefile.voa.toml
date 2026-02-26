@@ -1,0 +1,11 @@
+name = "StringAlgebraVOA"
+version = "0.1.0"
+defaultTargets = ["StringAlgebra.VOA"]
+
+[[require]]
+name = "mathlib"
+scope = "leanprover-community"
+rev = "master"
+
+[[lean_lib]]
+name = "StringAlgebra"
