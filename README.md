@@ -14,6 +14,16 @@ Counted as lines matching `^\s*sorry` in Lean files.
 4. `StringAlgebra/MTC`: 26
 5. Total (`StringAlgebra/**/*.lean`): 33
 
+Recompute command:
+
+```bash
+echo "Linfinity $(rg -n '^\s*sorry\\b' StringAlgebra/Linfinity --glob '*.lean' | wc -l | tr -d ' ')"
+echo "MZV $(rg -n '^\s*sorry\\b' StringAlgebra/MZV --glob '*.lean' | wc -l | tr -d ' ')"
+echo "VOA $(rg -n '^\s*sorry\\b' StringAlgebra/VOA --glob '*.lean' | wc -l | tr -d ' ')"
+echo "MTC $(rg -n '^\s*sorry\\b' StringAlgebra/MTC --glob '*.lean' | wc -l | tr -d ' ')"
+echo "TOTAL $(rg -n '^\s*sorry\\b' StringAlgebra --glob '*.lean' | wc -l | tr -d ' ')"
+```
+
 ## Structure
 
 ```
@@ -77,8 +87,12 @@ Current audited status (2026-02-26):
 
 1. `lake build StringAlgebra.Linfinity` passes.
 2. `StringAlgebra/Linfinity` currently has 7 explicit theorem-level `sorry` markers for active proof gaps (`LInfinityAlgebra.lean`: 1, `Transfer.lean`: 3, `Formality.lean`: 3); no `sorry` appears in `def`/`structure`/`abbrev` bodies.
-3. No `axiom`/`admit`/`Classical.choose`/`Classical.epsilon` usage in Linfinity Lean files.
-4. Recent hardening removed fabricated transfer/formality/BV outputs and tautological bridge shells; nontrivial constructions now require explicit witness data rather than hidden defaults, both `LInftyHom` and core `LInftyMorphism` composition have explicit identity/derived composition data and core morphisms enforce arity-0 normalization (`higher_zero`), and transfer/formality quasi-isomorphism obligations are now tracked explicitly at theorem sites (`transferMorphism_isQuasiIso`, `transfer_is_quasiIso`, `minimalModelMorphism_isQuasiIso`, `formalityMorphism_isQuasiIso`) instead of being carried as hidden proof fields in witness structures.
+3. Current Linfinity proof-gap loci are:
+   - `LInfinityAlgebra.lean`: `transferMorphism_isQuasiIso`
+   - `Transfer.lean`: `transfer_is_quasiIso`, `minimalModelMorphism_isQuasiIso`, `formalityMorphism_isQuasiIso`
+   - `Formality.lean`: `kontsevichFormality_is_quasi_iso`, `deformationQuantization`, `starProductClassification`
+4. No `axiom`/`admit`/`Classical.choose`/`Classical.epsilon` usage in Linfinity Lean files.
+5. Recent hardening removed fabricated transfer/formality/BV outputs and tautological bridge shells; nontrivial constructions now require explicit witness data rather than hidden defaults, both `LInftyHom` and core `LInftyMorphism` composition have explicit identity/derived composition data and core morphisms enforce arity-0 normalization (`higher_zero`), and transfer/formality quasi-isomorphism obligations are now tracked explicitly at theorem sites (`transferMorphism_isQuasiIso`, `transfer_is_quasiIso`, `minimalModelMorphism_isQuasiIso`, `formalityMorphism_isQuasiIso`) instead of being carried as hidden proof fields in witness structures.
 5. Transfer hardening now also exports `transferInclusionLinear_isBijective`, making degreewise bijectivity of SDR inclusions explicit from `transfer_is_quasiIso` plus arity-1 coherence (`transferInclusion_linear`).
 6. Minimal/formality witness packages now also expose canonical accessor-level linear bridges (`minimalModelMorphism_linear_isBijective`, `formalityMorphism_linear_isBijective`) plus simp identification lemmas to the packaged linear maps, so degreewise bijectivity can be consumed uniformly from accessor morphisms.
 7. Transfer extraction interfaces now include linear-bijectivity-preserving existence theorems (`minimal_model_exists_with_linear_bijectivity`, `isFormal_unpacked_with_linear_bijectivity`, `isFormal_exists_formalityLinear_isBijective`) so witness unpacking does not lose arity-1 isomorphism data.

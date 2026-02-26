@@ -13,8 +13,12 @@ This file tracks formal soundness debt for `StringAlgebra/Linfinity` under `agen
 
 1. `lake build StringAlgebra.Linfinity` passes.
 2. `StringAlgebra/Linfinity/*.lean` currently carries 7 explicit theorem-level `sorry` markers for active proof gaps (`LInfinityAlgebra.lean`: 1, `Transfer.lean`: 3, `Formality.lean`: 3); there is no `sorry` in `def`/`structure`/`abbrev` bodies.
-3. `rg` scans show no `axiom`, `admit`, `Classical.choose`, or placeholder markers in Linfinity Lean files.
-4. Recent hardening completed:
+3. Current Linfinity theorem-level `sorry` loci:
+   - `LInfinityAlgebra.lean`: `transferMorphism_isQuasiIso`
+   - `Transfer.lean`: `transfer_is_quasiIso`, `minimalModelMorphism_isQuasiIso`, `formalityMorphism_isQuasiIso`
+   - `Formality.lean`: `kontsevichFormality_is_quasi_iso`, `deformationQuantization`, `starProductClassification`
+4. `rg` scans show no `axiom`, `admit`, `Classical.choose`, or placeholder markers in Linfinity Lean files.
+5. Recent hardening completed:
    - `Transfer.lean`: removed fabricated transfer outputs and `Classical.choose` inversion; now uses explicit transfer witness packages.
    - `Transfer.lean`: removed tautological minimal-model "uniqueness" wrappers that merely restated provided comparison-map assumptions.
    - `Transfer.lean`: added unpacked formality interface (`isFormal_unpacked`/`isFormal_of_unpacked`/`isFormal_iff_unpacked`) exposing explicit minimal-model and quasi-isomorphism data from/to `isFormal`.
