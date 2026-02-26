@@ -628,6 +628,26 @@ theorem gaugeEquivalent_of_toGaugeClass_eq {R : Type u} [CommRing R]
 
 end StarProduct
 
+/-- Classification contract for a fixed Poisson bivector, phrased via
+    gauge equivalence of star products. -/
+def StarProductClassificationByGauge (data : FormalityData R)
+    (π : PoissonStructure R data.tPoly) : Prop :=
+  ∀ (star₁ star₂ : StarProduct R data.dPoly),
+    star₁.poissonBracket = data.hkr.component 1 π.bivector →
+    star₂.poissonBracket = data.hkr.component 1 π.bivector →
+    (star₁.gaugeEquivalent star₂ ↔
+      star₁.poissonBracket = star₂.poissonBracket)
+
+/-- Classification contract for a fixed Poisson bivector, phrased via equality
+    of gauge-equivalence classes. -/
+def StarProductClassificationByGaugeClass (data : FormalityData R)
+    (π : PoissonStructure R data.tPoly) : Prop :=
+  ∀ (star₁ star₂ : StarProduct R data.dPoly),
+    star₁.poissonBracket = data.hkr.component 1 π.bivector →
+    star₂.poissonBracket = data.hkr.component 1 π.bivector →
+    (star₁.toGaugeClass = star₂.toGaugeClass ↔
+      star₁.poissonBracket = star₂.poissonBracket)
+
 /-- Classification of star products.
 
     For a Poisson manifold (M, π), the gauge equivalence classes of
@@ -863,6 +883,73 @@ theorem starProductClassification_iff_toGaugeClass (data : FormalityData R)
     exact starProductClassification_toGaugeClass data π hclass star₁ star₂ h1 h2
   · intro hclass star₁ star₂ h1 h2
     exact starProductClassification_of_toGaugeClass data π hclass star₁ star₂ h1 h2
+
+/-- Convert a gauge-based classification contract to the quotient-class form. -/
+theorem starProductClassificationByGauge_toGaugeClass
+    (data : FormalityData R) (π : PoissonStructure R data.tPoly)
+    (hclass : StarProductClassificationByGauge data π) :
+    StarProductClassificationByGaugeClass data π :=
+  (starProductClassification_iff_toGaugeClass data π).1 hclass
+
+/-- Convert a quotient-class classification contract to the gauge-based form. -/
+theorem starProductClassificationByGaugeClass_toGauge
+    (data : FormalityData R) (π : PoissonStructure R data.tPoly)
+    (hclass : StarProductClassificationByGaugeClass data π) :
+    StarProductClassificationByGauge data π :=
+  (starProductClassification_iff_toGaugeClass data π).2 hclass
+
+/-- Gauge-based and quotient-class-based classification contracts are equivalent. -/
+theorem starProductClassificationByGauge_iff_byGaugeClass
+    (data : FormalityData R) (π : PoissonStructure R data.tPoly) :
+    StarProductClassificationByGauge data π ↔
+      StarProductClassificationByGaugeClass data π :=
+  starProductClassification_iff_toGaugeClass data π
+
+/-- Directional extraction from a gauge-based classification contract. -/
+theorem starProductClassificationByGauge_gaugeEquivalent_of_poisson_eq
+    (data : FormalityData R) (π : PoissonStructure R data.tPoly)
+    (hclass : StarProductClassificationByGauge data π)
+    (star₁ star₂ : StarProduct R data.dPoly)
+    (h1 : star₁.poissonBracket = data.hkr.component 1 π.bivector)
+    (h2 : star₂.poissonBracket = data.hkr.component 1 π.bivector)
+    (hpoisson : star₁.poissonBracket = star₂.poissonBracket) :
+    star₁.gaugeEquivalent star₂ :=
+  starProductClassification_gaugeEquivalent_of_poisson_eq data π hclass star₁ star₂ h1 h2 hpoisson
+
+/-- Directional extraction from a gauge-based classification contract. -/
+theorem starProductClassificationByGauge_poisson_eq_of_gaugeEquivalent
+    (data : FormalityData R) (π : PoissonStructure R data.tPoly)
+    (hclass : StarProductClassificationByGauge data π)
+    (star₁ star₂ : StarProduct R data.dPoly)
+    (h1 : star₁.poissonBracket = data.hkr.component 1 π.bivector)
+    (h2 : star₂.poissonBracket = data.hkr.component 1 π.bivector)
+    (hgauge : star₁.gaugeEquivalent star₂) :
+    star₁.poissonBracket = star₂.poissonBracket :=
+  starProductClassification_poisson_eq_of_gaugeEquivalent data π hclass star₁ star₂ h1 h2 hgauge
+
+/-- Directional extraction from a quotient-class classification contract. -/
+theorem starProductClassificationByGaugeClass_gaugeEquivalent_of_poisson_eq
+    (data : FormalityData R) (π : PoissonStructure R data.tPoly)
+    (hclass : StarProductClassificationByGaugeClass data π)
+    (star₁ star₂ : StarProduct R data.dPoly)
+    (h1 : star₁.poissonBracket = data.hkr.component 1 π.bivector)
+    (h2 : star₂.poissonBracket = data.hkr.component 1 π.bivector)
+    (hpoisson : star₁.poissonBracket = star₂.poissonBracket) :
+    star₁.gaugeEquivalent star₂ :=
+  starProductClassification_gaugeEquivalent_of_poisson_eq_of_toGaugeClass
+    data π hclass star₁ star₂ h1 h2 hpoisson
+
+/-- Directional extraction from a quotient-class classification contract. -/
+theorem starProductClassificationByGaugeClass_poisson_eq_of_gaugeEquivalent
+    (data : FormalityData R) (π : PoissonStructure R data.tPoly)
+    (hclass : StarProductClassificationByGaugeClass data π)
+    (star₁ star₂ : StarProduct R data.dPoly)
+    (h1 : star₁.poissonBracket = data.hkr.component 1 π.bivector)
+    (h2 : star₂.poissonBracket = data.hkr.component 1 π.bivector)
+    (hgauge : star₁.gaugeEquivalent star₂) :
+    star₁.poissonBracket = star₂.poissonBracket :=
+  starProductClassification_poisson_eq_of_gaugeEquivalent_of_toGaugeClass
+    data π hclass star₁ star₂ h1 h2 hgauge
 
 /-! ## Physical Interpretation -/
 
