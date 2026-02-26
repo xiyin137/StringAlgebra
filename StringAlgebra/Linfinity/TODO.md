@@ -19,6 +19,7 @@ This file tracks formal soundness debt for `StringAlgebra/Linfinity` under `agen
    - `Transfer.lean`: tightened `minimal_model_unique` output from bare `Nonempty` to an explicit quasi-isomorphic comparison witness that is returned identically (no hidden witness substitution).
    - `Transfer.lean`: added unpacked formality interface (`isFormal_unpacked`/`isFormal_of_unpacked`/`isFormal_iff_unpacked`) exposing explicit minimal-model and quasi-isomorphism data from/to `isFormal`.
    - `Transfer.lean`: added canonical accessor morphisms (`minimalModelMorphism`, `formalityMorphism`) with explicit quasi-isomorphism theorems and routed `minimal_model_exists` through these accessors.
+   - `Transfer.lean`: strengthened `TransferResult` with explicit linear-consistency constraint (`inclusion_linear`) tying the lifted inclusion's arity-1 component to the underlying SDR inclusion map; added exported theorem `transferInclusion_linear`.
    - `Formality.lean`: removed hardcoded zero graph/quantization outputs; now requires explicit witness data for formality, MC transport, and quantization outputs.
    - `Formality.lean`: strengthened MC transport to explicit element-level output (`linfty_preserves_mc`) with an existence wrapper lemma, and added reflexive/symmetric/transitive gauge-equivalence infrastructure with a `Setoid` instance on star products.
    - `Formality.lean`: added explicit star-product gauge-class quotient interface (`StarProductGaugeClass`, projection, and exact equality↔gauge-equivalence bridge lemmas).
@@ -103,7 +104,7 @@ PolyvectorFieldsDGLA.toDGLAData
 10. `Morphisms.lean`: medium risk. Composition/quasi-isomorphism interfaces are explicit and include canonical strict/identity composition data, bridge conversions now have explicit higher-component round-trip guarantees, and first-order homotopy-equation semantics exist with explicit symmetry/transitivity constructors; higher coherence equations and homology-level semantics remain pending.
 11. `DGLA.lean`: medium risk. Tautological bridge shells removed, canonical lift/compose wiring has bidirectional quasi-isomorphism criterion equivalence, arbitrary explicit lift packages now also carry bidirectional quasi-isomorphism criteria plus derived linear-vs-unary coherence, and lift witnesses explicitly constrain higher-component shape; full bracket-sensitive constructive bridge from DGLA structure to higher L∞ components is still pending.
 12. `MaurerCartan.lean`: medium risk. MC/gauge/twisting operations are explicit interface data with witness-aligned theorem/docs, and Kuranishi outputs are no longer fabricated; canonical constructive formulas and cohomological quotient realization remain pending.
-13. `Transfer.lean`: high risk. Fabricated outputs removed, witness-return theorems now preserve supplied comparison data explicitly, but transferred brackets/structures are still witness-driven and not yet constructed from trees internally.
+13. `Transfer.lean`: high risk. Fabricated outputs removed, witness-return theorems now preserve supplied comparison data explicitly, and lifted transfer inclusions now carry explicit arity-1 agreement with SDR inclusion maps; transferred brackets/structures are still witness-driven and not yet constructed from trees internally.
 14. `Formality.lean`: high risk. Placeholder outputs removed; `KontsevichGraph.ordering` now records explicit ground-target bounds (no tautological ground branch), `FormalityMorphism` enforces arity-wise component consistency with bundled L∞ data and explicit HKR normalization at arity 1, MC transport plus gauge-equivalence/gauge-class interfaces are explicit, theorem naming now reflects witness-level semantics, and gauge-transformation normalization/composition are data-preserving, while the theorem-level bridge still remains witness-driven and awaits constructive graph-weight/operator machinery.
 15. `BVAlgebra.lean`: medium risk. No `sorry`; cyclic antibracket interface is explicit, `Δ`-closure is tracked via an explicit trilinear vanishing witness (`triple_delta_zero`), and key BV-to-Gerstenhaber/CME derivations still rely on explicit assumptions pending closure.
 16. `TODO.md`: active audit ledger.
@@ -141,6 +142,7 @@ Target: `Transfer.lean`
 
 1. Build transferred brackets from rooted-tree formulas internally.
 2. Prove SDR-based transfer identities from those constructions.
+   Partial closure: arity-1 agreement between lifted inclusion and SDR inclusion is now encoded in `TransferResult`.
 3. Strengthen minimal-model uniqueness and formality outputs from witness-level to derived statements.
 
 ### WP5 - Formality Internalization

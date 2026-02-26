@@ -207,6 +207,9 @@ structure TransferResult {R : Type u} [CommRing R]
   transferred : LInftyAlgebra R H
   /-- Inclusion morphism H → V upgraded to an L∞ morphism. -/
   inclusion : LInftyHom R transferred L
+  /-- Linear component of the lifted inclusion agrees with the SDR inclusion. -/
+  inclusion_linear :
+    ∀ n : ℤ, ((inclusion.components 1 (by omega)).map n) = data.incl n
   /-- The inclusion morphism is a quasi-isomorphism. -/
   inclusion_isQuasiIso : inclusion.isQuasiIso
 
@@ -231,6 +234,16 @@ def transferInclusion {R : Type u} [CommRing R]
     (T : TransferResult L data) :
     LInftyHom R (transferredLInfty L data T) L :=
   T.inclusion
+
+/-- The linear component of `transferInclusion` is the SDR inclusion map. -/
+theorem transferInclusion_linear {R : Type u} [CommRing R]
+    {V H : ℤ → Type v}
+    [∀ i, AddCommGroup (V i)] [∀ i, Module R (V i)]
+    [∀ i, AddCommGroup (H i)] [∀ i, Module R (H i)]
+    (L : LInftyAlgebra R V) (data : SDR R V H)
+    (T : TransferResult L data) :
+    ∀ n : ℤ, (((transferInclusion L data T).components 1 (by omega)).map n) = data.incl n :=
+  T.inclusion_linear
 
 /-- The transfer inclusion is a quasi-isomorphism.
 
